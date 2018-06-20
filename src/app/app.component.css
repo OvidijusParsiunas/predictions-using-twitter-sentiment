@@ -1,0 +1,45 @@
+.split {
+    height: 100%;
+    width: 50%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.left {
+    left: 0;
+}
+
+.right {
+    right: 0;
+}
+@media (max-width:768px) {
+  .centered1 {
+    padding: 1rem;
+  }
+  .centered2 {
+    padding: 1rem;
+  }
+}
+
+@media (min-width:768px) {
+  .centered1 {
+    margin-top: 20vh;
+    position: absolute;
+    left: 10%;
+    width: 60%;
+    text-align: center;
+}
+.centered2 {
+    margin-top: 20vh;
+    position: absolute;
+    right: 10%;
+    width: 60%;
+    text-align: center;
+} }
+
+#titleCard{
+  background-color: #ffeb99;
+}

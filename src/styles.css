@@ -1,0 +1,13 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    /* The image used */
+    background-image: url("image.jpg");
+
+    /* Full height */
+    height: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
