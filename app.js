@@ -10,35 +10,38 @@ var client2 = {
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
-console.log(JSON.stringify(client2));
 var client = new TwitterStreamChannels(client2);
 
 var channels = {
-	"team1" : 'portugal',
-	"team2" : 'morocco'
+	"team1" : 'brazil',
+	"team2" : 'france'
 };
 
 var stream = client.streamChannels({track:channels});
 
-stream.on('channels/team1',function(tweet){
-    // if(checkKeyWords(tweet.text)){
-    //   console.log('executed');
-    team1Tweets[team1Increment++] = {'text': tweet.text};
-    if(team1Increment >= 400){
-      team1Increment = 0;
-    }
-  //}
-});
+startStreamWithFilters();
 
-stream.on('channels/team2',function(tweet){
-  // if(checkKeyWords(tweet.text)){
-  //console.log('executed');
-    team2Tweets[team2Increment++] = {'text': tweet.text};
-    if(team2Increment >= 400){
-      team2Increment = 0;
-    }
-  //}
-});
+function startStreamWithFilters(){
+  stream.on('channels/team1',function(tweet){
+      // if(checkKeyWords(tweet.text)){
+      //   console.log('executed');
+      team1Tweets[team1Increment++] = {'text': tweet.text};
+      if(team1Increment >= 400){
+        team1Increment = 0;
+      }
+    //}
+  });
+
+  stream.on('channels/team2',function(tweet){
+    // if(checkKeyWords(tweet.text)){
+    //console.log('executed');
+      team2Tweets[team2Increment++] = {'text': tweet.text};
+      if(team2Increment >= 400){
+        team2Increment = 0;
+      }
+    //}
+  });
+}
 
 let footballAssociatedKeyWords = ["fifa","win","world","2018","football","lose","cup","going","luck","score","save","draw","player","ticket","history","ball","streak","kick","penalty","free","moscow"];
 function checkKeyWords(text){
@@ -86,12 +89,13 @@ var options = {
 setInterval(function() {
 if(team1Increment > 0){
   options.body = {"data": team1Tweets};
+  console.log(JSON.stringify(options.body));
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
       team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
       team1TotalSentiment = team1TotalSentiment + team1Sentiment;
       team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
-      if(team1NoOfSentiments >= 100){
+      if(team1NoOfSentiments >= 1600){
         team1TotalSentiment = team1AverageSentiment;
         team1NoOfSentiments = 0;
       }
@@ -105,17 +109,17 @@ if(team1Increment > 0){
     }
   })
 }
+if(team2Increment > 0){
   options.body = {"data": team2Tweets};
-
-  if(team2Increment > 0){
   //precaution
+  console.log(JSON.stringify(options.body));
   setTimeout(function(){
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
       team2Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
       team2TotalSentiment = team2TotalSentiment + team2Sentiment;
       team2AverageSentiment = team2TotalSentiment/++team2NoOfSentiments;
-      if(team2NoOfSentiments >= 100){
+      if(team2NoOfSentiments >= 1600){
         team2TotalSentiment = team2AverageSentiment;
         team2NoOfSentiments = 0;
       }
@@ -138,8 +142,39 @@ app.use(function(req, res, next) {
     next();
 });
 app.listen(9000,()=>{
-    console.log('live on port '+9000);
+    console.log('live on port '+ 9000);
 });
 app.get('/',function(req,res){
 res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1AverageSentiment, 'team2AverageSentiment':team2AverageSentiment}});
+});
+
+app.get('/teamNames',function(req,res){
+res.send({'teams':{'team1':channels['team1'], 'team2':channels['team2']}});
+});
+
+app.get('/stopStream', function(req,res){
+  stream.stop();
+  res.send('Stream has been stopped');
+})
+
+app.post('/startWithDifferentTeams', function(req, res){
+  stream.stop();//closes the stream connected to Twitter
+  channels['team1'] = req.body.team1Name;
+  channels['team2'] = req.body.team2Name;
+  team1Tweets = [400];
+  team1Sentiment = 0;
+  team1Increment = 0;
+  team1TotalSentiment = 0;
+  team1NoOfSentiments = 0;
+  team1AverageSentiment = 0;
+  team2Tweets = [400];
+  team2Sentiment = 0;
+  team2Increment = 0;
+  team2TotalSentiment = 0;
+  team2NoOfSentiments = 0;
+  team2AverageSentiment = 0;
+  client = new TwitterStreamChannels(client2);
+  stream = client.streamChannels({track:channels});
+  startStreamWithFilters();
+  res.send('Success');
 });

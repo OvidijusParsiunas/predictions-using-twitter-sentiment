@@ -13,6 +13,13 @@ interface responseData{
   data: sentimentDetails;
 }
 
+interface teamNames{
+  teams: {
+    team1:string;
+    team2: string
+  };
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -23,6 +30,8 @@ export class AppComponent {
   constructor( private http: HttpClient){}
   chart: Chart;
   chart2: Chart;
+  team1Name = 'Team 1 name';
+  team2Name = 'Team 2 name';
   team1Sentiment  = [0,0,0,0,0,0,0,0,0,0];
   team2Sentiment  = [0,0,0,0,0,0,0,0,0,0];
   team1AverageSentiment = 0;
@@ -101,6 +110,12 @@ export class AppComponent {
         }
       }
 });
+    this.http.get('http://localhost:9000/teamNames')
+    .subscribe(response => {
+      var data = response as teamNames;
+      this.team1Name = data.teams.team1;
+      this.team2Name = data.teams.team2;
+    });
     setInterval(() => {
     this.http.get('http://localhost:9000')
     .subscribe(response => {
