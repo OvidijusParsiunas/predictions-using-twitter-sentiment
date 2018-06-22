@@ -13,8 +13,8 @@ var client2 = {
 var client = new TwitterStreamChannels(client2);
 
 var channels = {
-	"team1" : 'brazil',
-	"team2" : 'france'
+	"team1" : 'Brazil',
+	"team2" : 'Costa,Rica,CostaRica'
 };
 
 var stream = client.streamChannels({track:channels});

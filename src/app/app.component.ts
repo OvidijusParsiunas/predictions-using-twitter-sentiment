@@ -1,6 +1,7 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, Inject} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { Chart } from 'chart.js';
+import {DOCUMENT} from '@angular/common';
+import {Chart} from 'chart.js';
 
 interface sentimentDetails{
   team1Sentiment: number;
@@ -27,20 +28,23 @@ interface teamNames{
 })
 export class AppComponent {
   title = 'app';
-  constructor( private http: HttpClient){}
+  constructor(@Inject(DOCUMENT) private document: any, private http: HttpClient){}
   chart: Chart;
   chart2: Chart;
-  team1Name = 'Team 1 name';
-  team2Name = 'Team 2 name';
+  team1Name = 'Brazil';
+  team2Name = 'Costa Rica';
   team1Sentiment  = [0,0,0,0,0,0,0,0,0,0];
   team2Sentiment  = [0,0,0,0,0,0,0,0,0,0];
   team1AverageSentiment = 0;
   team2AverageSentiment = 0;
+  team1Sparkles = true;
+  team2Sparkles = true;
   initialLabel = new Date().getMinutes() + ':' + new Date().getSeconds();
   labels = [this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel,
   this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel]
 @ViewChild('chart')
     htmlRef: ElementRef;
+
 
 @ViewChild('chart2')
     htmlRef2: ElementRef;
@@ -66,13 +70,23 @@ export class AppComponent {
                     ticks : {
                       min : 0,
                       max : 4,
-                      fontColor: "Red" // this here
-                    }
+                      fontColor: "Red" // this here#
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Positive Sentiment Score',
+                      fontColor: "Red"
+                   }
                 }],
                 xAxes : [{
                     ticks : {
                       fontColor: "Red" // this here
-                    }
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Time m/s',
+                      fontColor: "Red"
+                   }
                 }]
             }
           }
@@ -100,12 +114,22 @@ export class AppComponent {
                   min : 0,
                   max : 4,
                   fontColor: "Red" // this here
-                }
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Positive Sentiment Score',
+                  fontColor: "Red"
+               }
             }],
             xAxes : [{
                 ticks : {
                   fontColor: "Red" // this here
-                }
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Time m/s',
+                  fontColor: "Red"
+               }
             }]
         }
       }
@@ -143,6 +167,25 @@ export class AppComponent {
             // this.chart.data.datasets[0].data.push(data.data.team1team1Sentiment);
             // this.chart.data.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
         console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
+        if(this.team1AverageSentiment > this.team2AverageSentiment){
+          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
+          this.team1Sparkles = false;
+          this.team2Sparkles = true;
+        }
+        else if(this.team1AverageSentiment < this.team2AverageSentiment){
+          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
+          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+          this.team1Sparkles = true;
+          this.team2Sparkles = false;
+        }
+        else if(this.team1AverageSentiment < this.team2AverageSentiment){
+          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
+          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
+          this.team1Sparkles = false;
+          this.team2Sparkles = false;
+        }
+
         this.chart.update();
         this.chart2.update();
       });

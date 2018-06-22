@@ -1,29 +1,31 @@
 <div class="modal-body row" style="margin-left: 0; margin-right:0">
   <div class="col-md-6">
-    <div class="centered1">
+    <div class="centered1" id="teamCards1">
       <div class="card">
-      <div class="card-body" id="titleCard">
-      <h2 class="card-title">Portugal</h2>
+        <div [hidden]="team1Sparkles" class="team1Sparkle"></div>
+        <div #team1TitleCard class="card-body" id="titleCard">
+        <h2 class="card-title">Portugal</h2>
       </div>
       </div>
       <div class="card">
   <div class="card-body">
-    <h5 class="card-title">Average Sentiment: {{team1AverageSentiment}}</h5>
+    <h5 class="card-title">Average Sentiment Score: {{team1AverageSentiment}}</h5>
     <canvas #chart></canvas>
   </div>
 </div>
 </div>
   </div>
   <div class="col-md-6">
-    <div class="centered2">
+    <div class="centered2" id="teamCards2">
       <div class="card">
-      <div class="card-body" id="titleCard">
+        <div [hidden]="team2Sparkles" class="team2Sparkle"></div>
+        <div class="card-body" id="titleCard">
       <h2 class="card-title">Morocco</h2>
       </div>
       </div>
     <div class="card">
   <div class="card-body">
-    <h5 class="card-title">Average Sentiment: {{team2AverageSentiment}}</h5>
+    <h5 class="card-title">Average Sentiment Score: {{team2AverageSentiment}}</h5>
     <canvas #chart2></canvas>
   </div>
 </div>

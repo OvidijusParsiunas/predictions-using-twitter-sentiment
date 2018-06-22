@@ -17,10 +17,12 @@
 }
 @media (max-width:768px) {
   .centered1 {
-    padding: 1rem;
+    margin: 1rem;
+    text-align: center;
   }
   .centered2 {
-    padding: 1rem;
+    margin: 1rem;
+    text-align: center;
   }
 }
 
@@ -29,17 +31,111 @@
     margin-top: 20vh;
     position: absolute;
     left: 10%;
-    width: 60%;
+    width: 62%;
     text-align: center;
 }
 .centered2 {
     margin-top: 20vh;
     position: absolute;
     right: 10%;
-    width: 60%;
+    width: 62%;
     text-align: center;
 } }
 
 #titleCard{
   background-color: #ffeb99;
+}
+
+#titleCard {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+/**
+ * The "shine" element
+ */
+
+/* https://codepen.io/olam/pen/zcqea */
+#titleCard:after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -210%;
+  width: 100%;
+  height: 140%;
+  opacity: 0;
+  transform: rotate(30deg);
+
+  background: rgba(255, 255, 255, 0.13);
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.9) 77%,
+    rgba(255, 255, 255, 0.9) 92%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
+}
+
+#titleCard:hover:after {
+  opacity: 1;
+  top: -30%;
+  left: 95%;
+  transition-property: left, top, opacity;
+  transition-duration: 1s, 1s, 0.8s;
+  transition-timing-function: ease;
+}
+
+.team1Sparkle{
+width:20px;
+height:20px;
+background-color:red;
+position:absolute;
+z-index: 1;
+background:url(http://i.imgur.com/2T5M8.png?1);
+ -webkit-animation:
+ 	sparkle 2.5s infinite steps(1),
+ 	movetop 15s infinite steps(1),
+ 	moveleft 20s infinite steps(1)
+}
+
+.team2Sparkle{
+width:20px;
+height:20px;
+background-color:red;
+position:absolute;
+z-index: 1;
+background:url(http://i.imgur.com/2T5M8.png?1);
+ -webkit-animation:
+ 	sparkle 2.5s infinite steps(1),
+ 	movetop 15s infinite steps(1),
+ 	moveleft 20s infinite steps(1)
+}
+
+@keyframes sparkle {
+  0%, 100%{background-position:0px 0}
+  10%{background-position:0px 0}
+  12%{background-position:20px 0}
+  16%{background-position:40px 0}
+  20%{background-position:60px 0}
+  24%{background-position:80px 0}
+  28%{background-position:0px 0}
+}
+
+@keyframes movetop {
+  0%, 100%{top:0;}
+  14%{top:40px;}
+  28%{top:30px;}
+  40%{top:50px;}
+  52%{top:10px}
+}
+
+@keyframes moveleft {
+  0%, 100%{left:20%}
+  14%{ left:80%}
+  28.57%{ left:50%}
+  36.00%{ left:10%}
+  71.42%{ left:70%}
+  85.71%{ left:38%}
+
 }
