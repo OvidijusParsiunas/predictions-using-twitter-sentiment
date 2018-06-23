@@ -1,10 +1,23 @@
 <div class="modal-body row" style="margin-left: 0; margin-right:0">
   <div class="col-md-6">
+    <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" style="position:absolute" aria-haspopup="true" aria-expanded="false">
+      Customisation
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item" (click)="combinedView()">Combined View</a>
+      <a class="dropdown-item" (click)="setOneMinute()">1 minute time scale</a>
+      <a class="dropdown-item" (click)="setThirtyMinutes()">30 minute time scale</a>
+      <a class="dropdown-item" (click)="setOneHour()">1 hour time scale</a>
+      <a class="dropdown-item" (click)="setTwoHours()">2 hour time scale</a>
+      <a class="dropdown-item" (click)="setFourHours()">4 hour time scale</a>
+</div>
+  </div>
     <div class="centered1" id="teamCards1">
       <div class="card">
         <div [hidden]="team1Sparkles" class="team1Sparkle"></div>
         <div #team1TitleCard class="card-body" id="titleCard">
-        <h2 class="card-title">Portugal</h2>
+        <h2 class="card-title">Brazil</h2>
       </div>
       </div>
       <div class="card">
@@ -20,7 +33,7 @@
       <div class="card">
         <div [hidden]="team2Sparkles" class="team2Sparkle"></div>
         <div class="card-body" id="titleCard">
-      <h2 class="card-title">Morocco</h2>
+      <h2 class="card-title">Costa Rica</h2>
       </div>
       </div>
     <div class="card">

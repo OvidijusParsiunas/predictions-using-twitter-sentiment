@@ -31,14 +31,15 @@ export class AppComponent {
   constructor(@Inject(DOCUMENT) private document: any, private http: HttpClient){}
   chart: Chart;
   chart2: Chart;
-  team1Name = 'Brazil';
-  team2Name = 'Costa Rica';
+  team1Name = 'Team 1 Name';
+  team2Name = 'Team 2 Name';
   team1Sentiment  = [0,0,0,0,0,0,0,0,0,0];
   team2Sentiment  = [0,0,0,0,0,0,0,0,0,0];
   team1AverageSentiment = 0;
   team2AverageSentiment = 0;
   team1Sparkles = true;
   team2Sparkles = true;
+  timeScaleTitle = "For Past 30 Minutes"
   initialLabel = new Date().getMinutes() + ':' + new Date().getSeconds();
   labels = [this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel,
   this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel]
@@ -192,4 +193,32 @@ export class AppComponent {
   }, 7000);
   }
 
+  public setTimeScale(){
+    console.log('Timescale');
+  }
+
+  public combinedView(){
+
+  }
+
+  public setOneMinute(){
+
+    //get one minute average sentiment
+  }
+
+  public setThirtyMinutes(){
+    //get thirty minute average sentiment
+  }
+
+  public setOneHour(){
+
+  }
+
+  public setTwoHours(){
+
+  }
+
+  public setFourHours(){
+
+  }
 }

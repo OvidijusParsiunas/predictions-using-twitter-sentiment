@@ -310,7 +310,7 @@ webpackEmptyAsyncContext.id = "./src/$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".split {\r\n    height: 100%;\r\n    width: 50%;\r\n    position: fixed;\r\n    z-index: 1;\r\n    top: 0;\r\n    overflow-x: hidden;\r\n    padding-top: 20px;\r\n}\r\n\r\n.left {\r\n    left: 0;\r\n}\r\n\r\n.right {\r\n    right: 0;\r\n}\r\n\r\n.centered1 {\r\n    margin-top: 20vh;\r\n    position: absolute;\r\n    left: 10%;\r\n    width: 60%;\r\n    text-align: center;\r\n}\r\n\r\n.centered2 {\r\n    margin-top: 20vh;\r\n    position: absolute;\r\n    right: 10%;\r\n    width: 60%;\r\n    text-align: center;\r\n}\r\n\r\n#titleCard{\r\n  background-color: #ffeb99;\r\n}\r\n"
+module.exports = ".split {\r\n    height: 100%;\r\n    width: 50%;\r\n    position: fixed;\r\n    z-index: 1;\r\n    top: 0;\r\n    overflow-x: hidden;\r\n    padding-top: 20px;\r\n}\r\n\r\n.left {\r\n    left: 0;\r\n}\r\n\r\n.right {\r\n    right: 0;\r\n}\r\n\r\n@media (max-width:768px) {\r\n  .centered1 {\r\n    margin: 1rem;\r\n    text-align: center;\r\n  }\r\n  .centered2 {\r\n    margin: 1rem;\r\n    text-align: center;\r\n  }\r\n}\r\n\r\n@media (min-width:768px) {\r\n  .centered1 {\r\n    margin-top: 20vh;\r\n    position: absolute;\r\n    left: 10%;\r\n    width: 62%;\r\n    text-align: center;\r\n}\r\n.centered2 {\r\n    margin-top: 20vh;\r\n    position: absolute;\r\n    right: 10%;\r\n    width: 62%;\r\n    text-align: center;\r\n} }\r\n\r\n#titleCard{\r\n  background-color: #ffeb99;\r\n}\r\n\r\n#titleCard {\r\n  position: relative;\r\n  overflow: hidden;\r\n  display: inline-block;\r\n}\r\n\r\n/**\r\n * The \"shine\" element\r\n */\r\n\r\n/* https://codepen.io/olam/pen/zcqea */\r\n\r\n#titleCard:after {\r\n  content: \"\";\r\n  position: absolute;\r\n  top: -20%;\r\n  left: -210%;\r\n  width: 100%;\r\n  height: 140%;\r\n  opacity: 0;\r\n  -webkit-transform: rotate(30deg);\r\n          transform: rotate(30deg);\r\n\r\n  background: rgba(255, 255, 255, 0.13);\r\n  background: linear-gradient(\r\n    to right,\r\n    rgba(255, 255, 255, 0.9) 0%,\r\n    rgba(255, 255, 255, 0.9) 77%,\r\n    rgba(255, 255, 255, 0.9) 92%,\r\n    rgba(255, 255, 255, 0.9) 100%\r\n  );\r\n}\r\n\r\n#titleCard:hover:after {\r\n  opacity: 1;\r\n  top: -30%;\r\n  left: 95%;\r\n  transition-property: left, top, opacity;\r\n  transition-duration: 1s, 1s, 0.8s;\r\n  transition-timing-function: ease;\r\n}\r\n\r\n.team1Sparkle{\r\nwidth:20px;\r\nheight:20px;\r\nbackground-color:red;\r\nposition:absolute;\r\nz-index: 1;\r\nbackground:url(http://i.imgur.com/2T5M8.png?1);\r\n -webkit-animation:\r\n \tsparkle 2.5s infinite steps(1),\r\n \tmovetop 15s infinite steps(1),\r\n \tmoveleft 20s infinite steps(1)\r\n}\r\n\r\n.team2Sparkle{\r\nwidth:20px;\r\nheight:20px;\r\nbackground-color:red;\r\nposition:absolute;\r\nz-index: 1;\r\nbackground:url(http://i.imgur.com/2T5M8.png?1);\r\n -webkit-animation:\r\n \tsparkle 2.5s infinite steps(1),\r\n \tmovetop 15s infinite steps(1),\r\n \tmoveleft 20s infinite steps(1)\r\n}\r\n\r\n@-webkit-keyframes sparkle {\r\n  0%, 100%{background-position:0px 0}\r\n  10%{background-position:0px 0}\r\n  12%{background-position:20px 0}\r\n  16%{background-position:40px 0}\r\n  20%{background-position:60px 0}\r\n  24%{background-position:80px 0}\r\n  28%{background-position:0px 0}\r\n}\r\n\r\n@keyframes sparkle {\r\n  0%, 100%{background-position:0px 0}\r\n  10%{background-position:0px 0}\r\n  12%{background-position:20px 0}\r\n  16%{background-position:40px 0}\r\n  20%{background-position:60px 0}\r\n  24%{background-position:80px 0}\r\n  28%{background-position:0px 0}\r\n}\r\n\r\n@-webkit-keyframes movetop {\r\n  0%, 100%{top:0;}\r\n  14%{top:40px;}\r\n  28%{top:30px;}\r\n  40%{top:50px;}\r\n  52%{top:10px}\r\n}\r\n\r\n@keyframes movetop {\r\n  0%, 100%{top:0;}\r\n  14%{top:40px;}\r\n  28%{top:30px;}\r\n  40%{top:50px;}\r\n  52%{top:10px}\r\n}\r\n\r\n@-webkit-keyframes moveleft {\r\n  0%, 100%{left:20%}\r\n  14%{ left:80%}\r\n  28.57%{ left:50%}\r\n  36.00%{ left:10%}\r\n  71.42%{ left:70%}\r\n  85.71%{ left:38%}\r\n\r\n}\r\n\r\n@keyframes moveleft {\r\n  0%, 100%{left:20%}\r\n  14%{ left:80%}\r\n  28.57%{ left:50%}\r\n  36.00%{ left:10%}\r\n  71.42%{ left:70%}\r\n  85.71%{ left:38%}\r\n\r\n}\r\n\r\n.dropdown-item{\r\n    cursor: pointer;\r\n}\r\n"
 
 /***/ }),
 
@@ -321,7 +321,7 @@ module.exports = ".split {\r\n    height: 100%;\r\n    width: 50%;\r\n    positi
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body row\" style=\"margin-left: 0; margin-right:0\">\n  <div class=\"col-md-6\">\n    <div class=\"centered1\">\n      <div class=\"card\">\n      <div class=\"card-body\" id=\"titleCard\">\n      <h2 class=\"card-title\">Portugal</h2>\n      </div>\n      </div>\n      <div class=\"card\">\n  <div class=\"card-body\">\n    <h5 class=\"card-title\">Average Sentiment: {{team1AverageSentiment}}</h5>\n    <canvas #chart></canvas>\n  </div>\n</div>\n</div>\n  </div>\n  <div class=\"col-md-6\">\n    <div class=\"centered2\">\n      <div class=\"card\">\n      <div class=\"card-body\" id=\"titleCard\">\n      <h2 class=\"card-title\">Morocco</h2>\n      </div>\n      </div>\n    <div class=\"card\">\n  <div class=\"card-body\">\n    <h5 class=\"card-title\">Average Sentiment: {{team2AverageSentiment}}</h5>\n    <canvas #chart2></canvas>\n  </div>\n</div>\n</div>\n  </div>\n</div>\n"
+module.exports = "<div class=\"modal-body row\" style=\"margin-left: 0; margin-right:0\">\n  <div class=\"col-md-6\">\n    <div class=\"dropdown\">\n    <button class=\"btn btn-secondary dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" style=\"position:absolute\" aria-haspopup=\"true\" aria-expanded=\"false\">\n      Customisation\n    </button>\n    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\">\n      <a class=\"dropdown-item\" (click)=\"combinedView()\">Combined View</a>\n      <a class=\"dropdown-item\" (click)=\"setOneMinute()\">1 minute time scale</a>\n      <a class=\"dropdown-item\" (click)=\"setThirtyMinutes()\">30 minute time scale</a>\n      <a class=\"dropdown-item\" (click)=\"setOneHour()\">1 hour time scale</a>\n      <a class=\"dropdown-item\" (click)=\"setTwoHours()\">2 hour time scale</a>\n      <a class=\"dropdown-item\" (click)=\"setFourHours()\">4 hour time scale</a>\n</div>\n  </div>\n    <div class=\"centered1\" id=\"teamCards1\">\n      <div class=\"card\">\n        <div [hidden]=\"team1Sparkles\" class=\"team1Sparkle\"></div>\n        <div #team1TitleCard class=\"card-body\" id=\"titleCard\">\n        <h2 class=\"card-title\">Brazil</h2>\n      </div>\n      </div>\n      <div class=\"card\">\n  <div class=\"card-body\">\n    <h5 class=\"card-title\">Average Sentiment Score: {{team1AverageSentiment}}</h5>\n    <canvas #chart></canvas>\n  </div>\n</div>\n</div>\n  </div>\n  <div class=\"col-md-6\">\n    <div class=\"centered2\" id=\"teamCards2\">\n      <div class=\"card\">\n        <div [hidden]=\"team2Sparkles\" class=\"team2Sparkle\"></div>\n        <div class=\"card-body\" id=\"titleCard\">\n      <h2 class=\"card-title\">Costa Rica</h2>\n      </div>\n      </div>\n    <div class=\"card\">\n  <div class=\"card-body\">\n    <h5 class=\"card-title\">Average Sentiment Score: {{team2AverageSentiment}}</h5>\n    <canvas #chart2></canvas>\n  </div>\n</div>\n</div>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -337,8 +337,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/src/chart.js");
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/fesm5/common.js");
+/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/src/chart.js");
+/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_3__);
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -348,24 +349,34 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (undefined && undefined.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
 
 
 
 var AppComponent = /** @class */ (function () {
-    function AppComponent(http) {
+    function AppComponent(document, http) {
+        this.document = document;
         this.http = http;
         this.title = 'app';
+        this.team1Name = 'Team 1 Name';
+        this.team2Name = 'Team 2 Name';
         this.team1Sentiment = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         this.team2Sentiment = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         this.team1AverageSentiment = 0;
         this.team2AverageSentiment = 0;
+        this.team1Sparkles = true;
+        this.team2Sparkles = true;
+        this.timeScaleTitle = "For Past 30 Minutes";
         this.initialLabel = new Date().getMinutes() + ':' + new Date().getSeconds();
         this.labels = [this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel,
             this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel];
     }
     AppComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.chart = new chart_js__WEBPACK_IMPORTED_MODULE_2__["Chart"](this.htmlRef.nativeElement, {
+        this.chart = new chart_js__WEBPACK_IMPORTED_MODULE_3__["Chart"](this.htmlRef.nativeElement, {
             type: 'line',
             data: {
                 datasets: [{
@@ -385,18 +396,28 @@ var AppComponent = /** @class */ (function () {
                             ticks: {
                                 min: 0,
                                 max: 4,
-                                fontColor: "Red" // this here
+                                fontColor: "Red" // this here#
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Positive Sentiment Score',
+                                fontColor: "Red"
                             }
                         }],
                     xAxes: [{
                             ticks: {
                                 fontColor: "Red" // this here
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time m/s',
+                                fontColor: "Red"
                             }
                         }]
                 }
             }
         });
-        this.chart2 = new chart_js__WEBPACK_IMPORTED_MODULE_2__["Chart"](this.htmlRef2.nativeElement, {
+        this.chart2 = new chart_js__WEBPACK_IMPORTED_MODULE_3__["Chart"](this.htmlRef2.nativeElement, {
             type: 'line',
             data: {
                 datasets: [{
@@ -417,18 +438,34 @@ var AppComponent = /** @class */ (function () {
                                 min: 0,
                                 max: 4,
                                 fontColor: "Red" // this here
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Positive Sentiment Score',
+                                fontColor: "Red"
                             }
                         }],
                     xAxes: [{
                             ticks: {
                                 fontColor: "Red" // this here
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time m/s',
+                                fontColor: "Red"
                             }
                         }]
                 }
             }
         });
+        this.http.get('http://localhost:9000/teamNames')
+            .subscribe(function (response) {
+            var data = response;
+            _this.team1Name = data.teams.team1;
+            _this.team2Name = data.teams.team2;
+        });
         setInterval(function () {
-            _this.http.get('http://34.254.123.0:9000')
+            _this.http.get('http://localhost:9000')
                 .subscribe(function (response) {
                 var data = response;
                 for (var index = 0; index < _this.team1Sentiment.length - 1; index++) {
@@ -453,10 +490,45 @@ var AppComponent = /** @class */ (function () {
                 // this.chart.data.datasets[0].data.push(data.data.team1team1Sentiment);
                 // this.chart.data.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
                 console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
+                if (_this.team1AverageSentiment > _this.team2AverageSentiment) {
+                    document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+                    document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
+                    _this.team1Sparkles = false;
+                    _this.team2Sparkles = true;
+                }
+                else if (_this.team1AverageSentiment < _this.team2AverageSentiment) {
+                    document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
+                    document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+                    _this.team1Sparkles = true;
+                    _this.team2Sparkles = false;
+                }
+                else if (_this.team1AverageSentiment < _this.team2AverageSentiment) {
+                    document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+                    document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+                    _this.team1Sparkles = false;
+                    _this.team2Sparkles = false;
+                }
                 _this.chart.update();
                 _this.chart2.update();
             });
         }, 7000);
+    };
+    AppComponent.prototype.setTimeScale = function () {
+        console.log('Timescale');
+    };
+    AppComponent.prototype.combinedView = function () {
+    };
+    AppComponent.prototype.setOneMinute = function () {
+        //get one minute average sentiment
+    };
+    AppComponent.prototype.setThirtyMinutes = function () {
+        //get thirty minute average sentiment
+    };
+    AppComponent.prototype.setOneHour = function () {
+    };
+    AppComponent.prototype.setTwoHours = function () {
+    };
+    AppComponent.prototype.setFourHours = function () {
     };
     __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"])('chart'),
@@ -472,7 +544,8 @@ var AppComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./app.component.html */ "./src/app/app.component.html"),
             styles: [__webpack_require__(/*! ./app.component.css */ "./src/app/app.component.css")]
         }),
-        __metadata("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"]])
+        __param(0, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_angular_common__WEBPACK_IMPORTED_MODULE_2__["DOCUMENT"])),
+        __metadata("design:paramtypes", [Object, _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"]])
     ], AppComponent);
     return AppComponent;
 }());
@@ -588,7 +661,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\Users\ovidijus\Desktop\sports analyser app\sport-predictions\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! C:\Users\ovidijus\Desktop\sport predictions\src\main.ts */"./src/main.ts");
 
 
 /***/ })

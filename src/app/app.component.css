@@ -139,3 +139,7 @@ background:url(http://i.imgur.com/2T5M8.png?1);
   85.71%{ left:38%}
 
 }
+
+.dropdown-item{
+    cursor: pointer;
+}
