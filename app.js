@@ -64,12 +64,26 @@ let team1Increment = 0;
 let team1TotalSentiment = 0;
 let team1NoOfSentiments = 0;
 let team1AverageSentiment = 0;
+let team1AverageSentimentArray = [240];
+let team1AverageSentimentArrayIndex = 0;
+let team1AverageSentimentForOneMinute = 0;
+let team1AverageSentimentForThirtyMinutes = 0;
+let team1AverageSentimentForOneHour = 0;
+let team1AverageSentimentForTwoHours = 0;
+let team1AverageSentimentForFourHours = 0;
 let team2Tweets = [400];
 let team2Sentiment = 0;
 let team2Increment = 0;
 let team2TotalSentiment = 0;
 let team2NoOfSentiments = 0;
 let team2AverageSentiment = 0;
+let team2AverageSentimentArray = [240];
+let team2AverageSentimentArrayIndex = 0;
+let team2AverageSentimentForOneMinute = 0;
+let team2AverageSentimentForThirtyMinutes = 0;
+let team2AverageSentimentForOneHour = 0;
+let team2AverageSentimentForTwoHours = 0;
+let team2AverageSentimentForFourHours = 0;
 
 var the_interval = 10 * 1000;
 
