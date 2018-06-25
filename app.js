@@ -61,10 +61,14 @@ function checkKeyWords(text){
 let team1Tweets = [400];
 let team1Sentiment = 0;
 let team1Increment = 0;
-let team1TotalSentiment = 0;
+let team1TotalSentimentOneMinute = 0;
 let team1NoOfSentiments = 0;
+let team1TotalSentimentAllMinutes = 0;
 let team1AverageSentiment = 0;
-let team1AverageSentimentArray = [240];
+let team1AverageSentimentArrayFor1Minute = [10];
+let team1AverageSentimentArrayIndexFor1Minute = 0;
+let team1AverageSentimentOneMinuteCounter = 0;
+let team1AverageSentimentArray = [5];
 let team1AverageSentimentArrayIndex = 0;
 let team1AverageSentimentForOneMinute = 0;
 let team1AverageSentimentForThirtyMinutes = 0;
@@ -77,6 +81,9 @@ let team2Increment = 0;
 let team2TotalSentiment = 0;
 let team2NoOfSentiments = 0;
 let team2AverageSentiment = 0;
+let team2AverageSentimentArrayFor1Minute = [10];
+let team2AverageSentimentArrayIndexFor1Minute = 0;
+let team2AverageSentimentOneMinuteCounter = 0;
 let team2AverageSentimentArray = [240];
 let team2AverageSentimentArrayIndex = 0;
 let team2AverageSentimentForOneMinute = 0;
@@ -93,7 +100,7 @@ var headers = {
 }
 
 var options = {
-    url: 'http://www.sentiment140.com/api/bulkClassifyJson?appid=' + process.env.SENTIMENT_140_EMAIL,
+    url: 'http://www.sentiment140.com/api/bulkClassifyJson?appid' + process.env.SENTIMENT_140_EMAIL,
     method: 'POST',
     headers: headers,
     json: true,
@@ -103,15 +110,35 @@ var options = {
 setInterval(function() {
 if(team1Increment > 0){
   options.body = {"data": team1Tweets};
-  console.log(JSON.stringify(options.body));
+  //console.log(JSON.stringify(options.body));
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
       team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
-      team1TotalSentiment = team1TotalSentiment + team1Sentiment;
-      team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
+      team1TotalSentimentOneMinute = team1TotalSentimentOneMinute + team1Sentiment;
+      team1AverageSentiment = team1TotalSentimentOneMinute/++team1NoOfSentiments;
       if(team1NoOfSentiments >= 1600){
-        team1TotalSentiment = team1AverageSentiment;
+        team1TotalSentimentOneMinute = team1AverageSentiment;
         team1NoOfSentiments = 0;
+      }
+      if(team1AverageSentimentArrayIndexFor1Minute < 10){
+        team1AverageSentimentArrayFor1Minute[team1AverageSentimentArrayIndexFor1Minute++] = team1Sentiment;
+      }
+      else{
+        team1AverageSentimentArrayFor1Minute.shift();
+        team1AverageSentimentArrayFor1Minute[9] = team1Sentiment;
+        team1AverageSentimentOneMinuteCounter++;
+        if(team1AverageSentimentOneMinuteCounter === 10){
+          if(team1AverageSentimentArrayIndex < 5){
+            team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
+            console.log(JSON.stringify(team1AverageSentimentArray));
+          }else{
+            team1AverageSentimentArray.shift();
+            team1AverageSentimentArray[4] = team1Sentiment;
+            console.log(JSON.stringify(team1AverageSentimentArray));
+          }
+          team1TotalSentimentAllMinutes = team1TotalSentimentAllMinutes + team1AverageSentiment;
+          team1AverageSentimentOneMinuteCounter = 0;
+        }
       }
       team1Tweets = [400];
       team1Increment = 0;
@@ -126,7 +153,7 @@ if(team1Increment > 0){
 if(team2Increment > 0){
   options.body = {"data": team2Tweets};
   //precaution
-  console.log(JSON.stringify(options.body));
+  //console.log(JSON.stringify(options.body));
   setTimeout(function(){
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
@@ -178,7 +205,7 @@ app.post('/startWithDifferentTeams', function(req, res){
   team1Tweets = [400];
   team1Sentiment = 0;
   team1Increment = 0;
-  team1TotalSentiment = 0;
+  team1TotalSentimentOneMinute = 0;
   team1NoOfSentiments = 0;
   team1AverageSentiment = 0;
   team2Tweets = [400];
