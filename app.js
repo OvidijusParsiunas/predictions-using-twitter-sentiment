@@ -62,16 +62,18 @@ let team1Tweets = [400];
 let team1Sentiment = 0;
 let team1Increment = 0;
 let team1TotalSentimentOneMinute = 0;
-let team1NoOfSentiments = 0;
-let team1TotalSentimentAllMinutes = 0;
+let team1NoOfSentiments = 1;
+let team1TotalSentimentThirtyMinutes = 0;
+let team1NoOfSentimentsForThirtyMinutes = 1;
 let team1AverageSentiment = 0;
 let team1AverageSentimentArrayFor1Minute = [10];
 let team1AverageSentimentArrayIndexFor1Minute = 0;
-let team1AverageSentimentOneMinuteCounter = 0;
-let team1AverageSentimentArray = [5];
+let team1AverageSentimentOneMinuteCounter = 10;
+let team1AverageSentimentArray = [240];
 let team1AverageSentimentArrayIndex = 0;
 let team1AverageSentimentForOneMinute = 0;
 let team1AverageSentimentForThirtyMinutes = 0;
+let team1AverageSentimentForThirtyMinutesSaved = 0;
 let team1AverageSentimentForOneHour = 0;
 let team1AverageSentimentForTwoHours = 0;
 let team1AverageSentimentForFourHours = 0;
@@ -92,6 +94,7 @@ let team2AverageSentimentForOneHour = 0;
 let team2AverageSentimentForTwoHours = 0;
 let team2AverageSentimentForFourHours = 0;
 
+let thirtyMinutesHavePassed = false;
 var the_interval = 10 * 1000;
 
 // Set the headers
@@ -115,10 +118,10 @@ if(team1Increment > 0){
   if (!error && response.statusCode == 200) {
       team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
       team1TotalSentimentOneMinute = team1TotalSentimentOneMinute + team1Sentiment;
-      team1AverageSentiment = team1TotalSentimentOneMinute/++team1NoOfSentiments;
-      if(team1NoOfSentiments >= 1600){
+      team1AverageSentiment = team1TotalSentimentOneMinute/team1NoOfSentiments++;
+      if(team1NoOfSentiments == 10){
         team1TotalSentimentOneMinute = team1AverageSentiment;
-        team1NoOfSentiments = 0;
+        team1NoOfSentiments = 2;
       }
       if(team1AverageSentimentArrayIndexFor1Minute < 10){
         team1AverageSentimentArrayFor1Minute[team1AverageSentimentArrayIndexFor1Minute++] = team1Sentiment;
@@ -126,19 +129,56 @@ if(team1Increment > 0){
       else{
         team1AverageSentimentArrayFor1Minute.shift();
         team1AverageSentimentArrayFor1Minute[9] = team1Sentiment;
-        team1AverageSentimentOneMinuteCounter++;
         if(team1AverageSentimentOneMinuteCounter === 10){
-          if(team1AverageSentimentArrayIndex < 5){
+          if(team1AverageSentimentArrayIndex < 240){
             team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
-            console.log(JSON.stringify(team1AverageSentimentArray));
           }else{
             team1AverageSentimentArray.shift();
-            team1AverageSentimentArray[4] = team1Sentiment;
-            console.log(JSON.stringify(team1AverageSentimentArray));
+            team1AverageSentimentArray[239] = team1Sentiment;
           }
-          team1TotalSentimentAllMinutes = team1TotalSentimentAllMinutes + team1AverageSentiment;
+          if(team1NoOfSentimentsForThirtyMinutes < 5){
+            //total sentiment for 30 minutes
+            team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1AverageSentiment;
+            //average sentiment for 30 minutes
+            team1AverageSentimentForThirtyMinutes = team1TotalSentimentThirtyMinutes / team1NoOfSentimentsForThirtyMinutes;
+            if(thirtyMinutesHavePassed === true){
+              //update the hour average when half an hour had passed
+              team1AverageSentimentForOneHour = (team1AverageSentimentForThirtyMinutes + team1AverageSentimentForThirtyMinutesSaved)/2;
+            }
+            else{
+              //update the hour average before half an hour has passed
+              team1AverageSentimentForOneHour = team1AverageSentimentForThirtyMinutes;
+            }
+            console.log('average sentiment array for one minute ' + JSON.stringify(team1AverageSentimentArrayFor1Minute));
+            console.log('average sentiment array ' + JSON.stringify(team1AverageSentimentArray));
+            console.log('number of sentiments for thirty minutes: ' + team1NoOfSentimentsForThirtyMinutes);
+            console.log('total sentiments for thirty minutes: ' + team1TotalSentimentThirtyMinutes);
+            console.log('average of sentiments for thirty minutes: ' + team1AverageSentimentForThirtyMinutes);
+            console.log('average of sentiments for an hour: ' + team1AverageSentimentForOneHour);
+            team1NoOfSentimentsForThirtyMinutes++;
+          }
+          else{
+            team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1AverageSentiment;
+            team1AverageSentimentForThirtyMinutes = team1TotalSentimentThirtyMinutes / team1NoOfSentimentsForThirtyMinutes;
+            if(team1AverageSentimentForThirtyMinutesSaved != 0){
+              team1AverageSentimentForOneHour = (team1AverageSentimentForThirtyMinutesSaved + team1AverageSentimentForThirtyMinutes)/2;
+            }
+            team1AverageSentimentForThirtyMinutesSaved = team1AverageSentimentForThirtyMinutes;
+            team1TotalSentimentThirtyMinutes = team1AverageSentimentForThirtyMinutesSaved;
+            console.log('///////////////////////////////////////////////////////////////////////////////');
+            console.log('average sentiment array for one minute ' + JSON.stringify(team1AverageSentimentArrayFor1Minute));
+            console.log('average sentiment array ' + JSON.stringify(team1AverageSentimentArray));
+            console.log('number of sentiments for thirty minutes: ' + team1NoOfSentimentsForThirtyMinutes);
+            console.log('total sentiments for thirty minutes: ' + team1TotalSentimentThirtyMinutes);
+            console.log('average of sentiments for thirty minutes: ' + team1AverageSentimentForThirtyMinutes);
+            console.log('average of sentiments for an hour: ' + team1AverageSentimentForOneHour);
+            console.log('///////////////////////////////////////////////////////////////////////////////');
+            team1NoOfSentimentsForThirtyMinutes = 2;
+            thirtyMinutesHavePassed = true;
+          }
           team1AverageSentimentOneMinuteCounter = 0;
         }
+        team1AverageSentimentOneMinuteCounter++;
       }
       team1Tweets = [400];
       team1Increment = 0;
@@ -206,7 +246,7 @@ app.post('/startWithDifferentTeams', function(req, res){
   team1Sentiment = 0;
   team1Increment = 0;
   team1TotalSentimentOneMinute = 0;
-  team1NoOfSentiments = 0;
+  team1NoOfSentiments = 1;
   team1AverageSentiment = 0;
   team2Tweets = [400];
   team2Sentiment = 0;
