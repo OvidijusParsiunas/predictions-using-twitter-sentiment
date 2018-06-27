@@ -62,6 +62,7 @@ let team1Tweets = [400];
 let team1Sentiment = 0;
 let team1Increment = 0;
 let team1TotalSentimentOneMinute = 0;
+let team1TotalSentimentOneMinuteCompleteRefresh = 0;
 let team1NoOfSentiments = 1;
 let team1TotalSentimentThirtyMinutes = 0;
 let team1NoOfSentimentsForThirtyMinutes = 1;
@@ -119,26 +120,28 @@ if(team1Increment > 0){
       team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
       team1TotalSentimentOneMinute = team1TotalSentimentOneMinute + team1Sentiment;
       team1AverageSentiment = team1TotalSentimentOneMinute/team1NoOfSentiments++;
-      if(team1NoOfSentiments == 10){
+      //Because team1NoOfSentiments starts with 1 and increments to 2
+      if(team1NoOfSentiments == 11){
         team1TotalSentimentOneMinute = team1AverageSentiment;
         team1NoOfSentiments = 2;
       }
       if(team1AverageSentimentArrayIndexFor1Minute < 10){
+        //Using own implementation for tracking total as previous one gets out of track and retains the previous average
         team1AverageSentimentArrayFor1Minute[team1AverageSentimentArrayIndexFor1Minute++] = team1Sentiment;
+        team1TotalSentimentOneMinuteCompleteRefresh =  team1TotalSentimentOneMinuteCompleteRefresh + team1Sentiment;
       }
       else{
-        team1AverageSentimentArrayFor1Minute.shift();
-        team1AverageSentimentArrayFor1Minute[9] = team1Sentiment;
+        //set to 10 initially
         if(team1AverageSentimentOneMinuteCounter === 10){
           if(team1AverageSentimentArrayIndex < 240){
-            team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
+            team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1TotalSentimentOneMinuteCompleteRefresh/team1AverageSentimentOneMinuteCounter;
           }else{
             team1AverageSentimentArray.shift();
-            team1AverageSentimentArray[239] = team1Sentiment;
+            team1AverageSentimentArray[239] = team1TotalSentimentOneMinuteCompleteRefresh/10;
           }
           if(team1NoOfSentimentsForThirtyMinutes < 5){
             //total sentiment for 30 minutes
-            team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1AverageSentiment;
+            team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1TotalSentimentOneMinuteCompleteRefresh/team1AverageSentimentOneMinuteCounter;
             //average sentiment for 30 minutes
             team1AverageSentimentForThirtyMinutes = team1TotalSentimentThirtyMinutes / team1NoOfSentimentsForThirtyMinutes;
             if(thirtyMinutesHavePassed === true){
@@ -176,8 +179,12 @@ if(team1Increment > 0){
             team1NoOfSentimentsForThirtyMinutes = 2;
             thirtyMinutesHavePassed = true;
           }
+          team1TotalSentimentOneMinuteCompleteRefresh = 0;
           team1AverageSentimentOneMinuteCounter = 0;
         }
+        team1AverageSentimentArrayFor1Minute.shift();
+        team1AverageSentimentArrayFor1Minute[9] = team1Sentiment;
+        team1TotalSentimentOneMinuteCompleteRefresh = team1TotalSentimentOneMinuteCompleteRefresh + team1Sentiment;
         team1AverageSentimentOneMinuteCounter++;
       }
       team1Tweets = [400];
