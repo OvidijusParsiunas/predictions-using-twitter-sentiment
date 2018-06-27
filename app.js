@@ -119,6 +119,7 @@ if(team1Increment > 0){
   if (!error && response.statusCode == 200) {
       team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
       team1TotalSentimentOneMinute = team1TotalSentimentOneMinute + team1Sentiment;
+      //current average sentiment for minute scale
       team1AverageSentiment = team1TotalSentimentOneMinute/team1NoOfSentiments++;
       //Because team1NoOfSentiments starts with 1 and increments to 2
       if(team1NoOfSentiments == 11){
@@ -137,7 +138,7 @@ if(team1Increment > 0){
             team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1TotalSentimentOneMinuteCompleteRefresh/team1AverageSentimentOneMinuteCounter;
           }else{
             team1AverageSentimentArray.shift();
-            team1AverageSentimentArray[239] = team1TotalSentimentOneMinuteCompleteRefresh/10;
+            team1AverageSentimentArray[239] = team1TotalSentimentOneMinuteCompleteRefresh/team1AverageSentimentOneMinuteCounter;
           }
           if(team1NoOfSentimentsForThirtyMinutes < 5){
             //total sentiment for 30 minutes
