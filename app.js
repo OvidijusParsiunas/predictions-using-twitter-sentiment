@@ -4,10 +4,10 @@ var app = express();
 var TwitterStreamChannels = require('twitter-stream-channels');
 
 var client2 = {
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token: process.env.ACCESS_TOKEN,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -62,7 +62,7 @@ let team1Tweets = [400];
 let team1Sentiment = 0;
 let team1Increment = 0;
 let team1TotalSentimentOneMinute = 0;
-let team1TotalSentimentOneMinuteCompleteRefresh = 0;
+let team1TotalSentimentOneMinuteWithRefresh = 0;
 let team1NoOfSentiments = 1;
 let team1TotalSentimentThirtyMinutes = 0;
 let team1NoOfSentimentsForThirtyMinutes = 1;
@@ -129,20 +129,21 @@ if(team1Increment > 0){
       if(team1AverageSentimentArrayIndexFor1Minute < 10){
         //Using own implementation for tracking total as previous one gets out of track and retains the previous average
         team1AverageSentimentArrayFor1Minute[team1AverageSentimentArrayIndexFor1Minute++] = team1Sentiment;
-        team1TotalSentimentOneMinuteCompleteRefresh =  team1TotalSentimentOneMinuteCompleteRefresh + team1Sentiment;
+        team1TotalSentimentOneMinuteWithRefresh =  team1TotalSentimentOneMinuteWithRefresh + team1Sentiment;
+        console.log('Average Sentiment for 1 minute prior to one minute: ' + team1AverageSentimentArrayFor1Minute);
       }
       else{
         //set to 10 initially
         if(team1AverageSentimentOneMinuteCounter === 10){
           if(team1AverageSentimentArrayIndex < 240){
-            team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1TotalSentimentOneMinuteCompleteRefresh/team1AverageSentimentOneMinuteCounter;
+            team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter;
           }else{
             team1AverageSentimentArray.shift();
-            team1AverageSentimentArray[239] = team1TotalSentimentOneMinuteCompleteRefresh/team1AverageSentimentOneMinuteCounter;
+            team1AverageSentimentArray[239] = team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter;
           }
           if(team1NoOfSentimentsForThirtyMinutes < 5){
             //total sentiment for 30 minutes
-            team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1TotalSentimentOneMinuteCompleteRefresh/team1AverageSentimentOneMinuteCounter;
+            team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter;
             //average sentiment for 30 minutes
             team1AverageSentimentForThirtyMinutes = team1TotalSentimentThirtyMinutes / team1NoOfSentimentsForThirtyMinutes;
             if(thirtyMinutesHavePassed === true){
@@ -180,12 +181,12 @@ if(team1Increment > 0){
             team1NoOfSentimentsForThirtyMinutes = 2;
             thirtyMinutesHavePassed = true;
           }
-          team1TotalSentimentOneMinuteCompleteRefresh = 0;
+          team1TotalSentimentOneMinuteWithRefresh = 0;
           team1AverageSentimentOneMinuteCounter = 0;
         }
         team1AverageSentimentArrayFor1Minute.shift();
         team1AverageSentimentArrayFor1Minute[9] = team1Sentiment;
-        team1TotalSentimentOneMinuteCompleteRefresh = team1TotalSentimentOneMinuteCompleteRefresh + team1Sentiment;
+        team1TotalSentimentOneMinuteWithRefresh = team1TotalSentimentOneMinuteWithRefresh + team1Sentiment;
         team1AverageSentimentOneMinuteCounter++;
       }
       team1Tweets = [400];
