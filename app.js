@@ -4,10 +4,10 @@ var app = express();
 var TwitterStreamChannels = require('twitter-stream-channels');
 
 var client2 = {
-    consumer_key: process.env.CONSUMER_KEY,
-    consumer_secret: process.env.CONSUMER_SECRET,
-    access_token: process.env.ACCESS_TOKEN,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -163,14 +163,22 @@ if(team1Increment > 0){
             team1NoOfSentimentsForThirtyMinutes++;
           }
           else{
+            //total sentiment for 30 minutes
+            //team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter
             team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1AverageSentiment;
+            var potentialTeam1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter;
             team1AverageSentimentForThirtyMinutes = team1TotalSentimentThirtyMinutes / team1NoOfSentimentsForThirtyMinutes;
             if(team1AverageSentimentForThirtyMinutesSaved != 0){
               team1AverageSentimentForOneHour = (team1AverageSentimentForThirtyMinutesSaved + team1AverageSentimentForThirtyMinutes)/2;
             }
+            else{
+              team1AverageSentimentForOneHour = team1AverageSentimentForThirtyMinutes;
+            }
             team1AverageSentimentForThirtyMinutesSaved = team1AverageSentimentForThirtyMinutes;
             team1TotalSentimentThirtyMinutes = team1AverageSentimentForThirtyMinutesSaved;
             console.log('///////////////////////////////////////////////////////////////////////////////');
+            console.log('check if the calculation using the total sentiment via a more thorough divison provides an accurate result: ' + potentialTeam1TotalSentimentThirtyMinutes);
+            console.log('check if the result matches one of these numbers, and if so change the calculation ' + JSON.stringify(team1AverageSentimentArrayFor1Minute));
             console.log('average sentiment array for one minute ' + JSON.stringify(team1AverageSentimentArrayFor1Minute));
             console.log('average sentiment array ' + JSON.stringify(team1AverageSentimentArray));
             console.log('number of sentiments for thirty minutes: ' + team1NoOfSentimentsForThirtyMinutes);
