@@ -76,8 +76,11 @@ let team1AverageSentimentForOneMinute = 0;
 let team1AverageSentimentForThirtyMinutes = 0;
 let team1AverageSentimentForThirtyMinutesSaved = 0;
 let team1AverageSentimentForOneHour = 0;
+let team1AverageSentimentForOneHourSaved = 0;
 let team1AverageSentimentForTwoHours = 0;
+let team1AverageSentimentForTwoHoursSaved = 0;
 let team1AverageSentimentForFourHours = 0;
+let team1AverageSentimentForFourHoursSaved = 0;
 let team2Tweets = [400];
 let team2Sentiment = 0;
 let team2Increment = 0;
@@ -96,6 +99,9 @@ let team2AverageSentimentForTwoHours = 0;
 let team2AverageSentimentForFourHours = 0;
 
 let thirtyMinutesHavePassed = false;
+let oneHourHasPassed = false;
+let twoHoursHavePassed = false;
+let FourHoursHavePassed = false;
 var the_interval = 10 * 1000;
 
 // Set the headers
