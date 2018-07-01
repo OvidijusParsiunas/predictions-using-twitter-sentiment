@@ -19,6 +19,11 @@ var channels = {
 
 var stream = client.streamChannels({track:channels});
 
+//select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
+//Update the readme for this
+let precision = 'minutes';
+let scaleOfPersistance = 4;
+
 startStreamWithFilters();
 
 function startStreamWithFilters(){
@@ -71,6 +76,10 @@ let team2TotalSentiment = 0;
 let team2NoOfSentiments = 0;
 let team2AverageSentiment = 0;
 
+let averageSentimentArray = [scaleOfPersistance];
+let team1AverageSentimentArrayIndex = 0;
+let currentAverage = 0;
+let currentTotal = 0;
 var the_interval = 10 * 1000;
 
 // Set the headers
@@ -93,11 +102,35 @@ if(team1Increment > 0){
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
     team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
-    team1TotalSentiment = team1TotalSentiment + team1Sentiment;
-    team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
-    if(team1NoOfSentiments >= 1600){
-      team1TotalSentiment = team1AverageSentiment;
-      team1NoOfSentiments = 0;
+    if(precision === 'seconds'){
+      
+    }
+    if(precision === 'minutes'){
+      team1TotalSentiment = team1TotalSentiment + team1Sentiment;
+      team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
+      console.log(team1Sentiment);
+      if(team1NoOfSentiments === 6){
+        if(team1AverageSentimentArrayIndex != scaleOfPersistance){
+          currentTotal = currentTotal + team1AverageSentiment;
+          currentAverage = currentTotal/(team1AverageSentimentArrayIndex+1);
+          averageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
+        }
+        else{
+          currentTotal = currentTotal - averageSentimentArray[0] + team1AverageSentiment;
+          averageSentimentArray.shift();
+          currentAverage = currentTotal/team1AverageSentimentArrayIndex;
+          averageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
+          team1NoOfSentiments = 0;
+          console.log('second if statement executed now');
+        }
+        team1TotalSentiment = 0;
+        team1NoOfSentiments = 0;
+        console.log('resultant array for sentiment average in minutes: ' + averageSentimentArray);
+        console.log('the resultant average for the minute sentiment: ' + currentAverage);
+      }
+    }
+    if(precision === 'hours'){
+
     }
     team1Tweets = [400];
     team1Increment = 0;
@@ -165,7 +198,7 @@ app.post('/startWithDifferentTeams', function(req, res){
   team1Sentiment = 0;
   team1Increment = 0;
   team1TotalSentimentOneMinute = 0;
-  team1NoOfSentiments = 1;
+  team1NoOfSentiments = 0;
   team1AverageSentiment = 0;
   team2Tweets = [400];
   team2Sentiment = 0;
