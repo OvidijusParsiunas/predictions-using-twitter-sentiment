@@ -66,6 +66,7 @@ let team1TotalSentimentOneMinuteWithRefresh = 0;
 let team1NoOfSentiments = 1;
 let team1TotalSentimentThirtyMinutes = 0;
 let team1NoOfSentimentsForThirtyMinutes = 1;
+let team1NoOfSentimentsForThirtyMinutesLimit = 5;
 let team1AverageSentiment = 0;
 let team1AverageSentimentArrayFor1Minute = [10];
 let team1AverageSentimentArrayIndexFor1Minute = 0;
@@ -101,7 +102,9 @@ let team2AverageSentimentForFourHours = 0;
 let thirtyMinutesHavePassed = false;
 let oneHourHasPassed = false;
 let twoHoursHavePassed = false;
-let FourHoursHavePassed = false;
+
+let counterToAnHour = 0;
+let counterToTwoHours = 0;
 var the_interval = 10 * 1000;
 
 // Set the headers
@@ -133,7 +136,8 @@ if(team1Increment > 0){
         team1NoOfSentiments = 2;
       }
       if(team1AverageSentimentArrayIndexFor1Minute < 10){
-        //Using own implementation for tracking total as previous one gets out of track and retains the previous average
+        //Using own implementation for tracking total as previous one gets out of track and retains the previous average -- important as
+        //each minute needs to be fully independent
         team1AverageSentimentArrayFor1Minute[team1AverageSentimentArrayIndexFor1Minute++] = team1Sentiment;
         team1TotalSentimentOneMinuteWithRefresh =  team1TotalSentimentOneMinuteWithRefresh + team1Sentiment;
         console.log('Average Sentiment for 1 minute prior to one minute: ' + team1AverageSentimentArrayFor1Minute);
@@ -147,7 +151,7 @@ if(team1Increment > 0){
             team1AverageSentimentArray.shift();
             team1AverageSentimentArray[239] = team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter;
           }
-          if(team1NoOfSentimentsForThirtyMinutes < 5){
+          if(team1NoOfSentimentsForThirtyMinutes < team1NoOfSentimentsForThirtyMinutesLimit){
             //total sentiment for 30 minutes
             team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter;
             //average sentiment for 30 minutes
@@ -155,10 +159,25 @@ if(team1Increment > 0){
             if(thirtyMinutesHavePassed === true){
               //update the hour average when half an hour had passed
               team1AverageSentimentForOneHour = (team1AverageSentimentForThirtyMinutes + team1AverageSentimentForThirtyMinutesSaved)/2;
+              if(oneHourHasPassed === true){
+                team1AverageSentimentForTwoHours = (team1AverageSentimentForThirtyMinutes + team1AverageSentimentForOneHourSaved)/2;
+                if(twoHoursHavePassed === true){
+                  team1AverageSentimentForFourHours = (team1AverageSentimentForThirtyMinutes + team1AverageSentimentForTwoHoursSaved)/2;
+                }
+                else{
+                  team1AverageSentimentForFourHours  = team1AverageSentimentForTwoHours;
+                }
+              }
+              else{
+                team1AverageSentimentForTwoHours = team1AverageSentimentForOneHour;
+                team1AverageSentimentForFourHours  = team1AverageSentimentForOneHour;
+              }
             }
             else{
               //update the hour average before half an hour has passed
               team1AverageSentimentForOneHour = team1AverageSentimentForThirtyMinutes;
+              team1AverageSentimentForTwoHours = team1AverageSentimentForThirtyMinutes;
+              team1AverageSentimentForFourHours  = team1AverageSentimentForThirtyMinutes;
             }
             console.log('average sentiment array for one minute ' + JSON.stringify(team1AverageSentimentArrayFor1Minute));
             console.log('average sentiment array ' + JSON.stringify(team1AverageSentimentArray));
@@ -171,20 +190,51 @@ if(team1Increment > 0){
           else{
             //total sentiment for 30 minutes
             //team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter
-            team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1AverageSentiment;
-            var potentialTeam1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter;
+            team1TotalSentimentThirtyMinutes = team1TotalSentimentThirtyMinutes + team1TotalSentimentOneMinuteWithRefresh/team1AverageSentimentOneMinuteCounter;
             team1AverageSentimentForThirtyMinutes = team1TotalSentimentThirtyMinutes / team1NoOfSentimentsForThirtyMinutes;
             if(team1AverageSentimentForThirtyMinutesSaved != 0){
               team1AverageSentimentForOneHour = (team1AverageSentimentForThirtyMinutesSaved + team1AverageSentimentForThirtyMinutes)/2;
+              if(team1AverageSentimentForOneHourSaved != 0){
+                team1AverageSentimentForTwoHours = (team1AverageSentimentForOneHourSaved + team1AverageSentimentForThirtyMinutes)/2;
+                if(counterToAnHour === 1){
+                  team1AverageSentimentForOneHourSaved = team1AverageSentimentForOneHour;
+                  counterToAnHour = 0;
+                }
+                else{
+                  counterToAnHour++;
+                }
+                if(team1AverageSentimentForTwoHourSaved != 0){
+                  team1AverageSentimentForFourHours = (team1AverageSentimentForTwoHoursSaved + team1AverageSentimentForThirtyMinutes)/2;
+                  if(counterToTwoHours === 3){
+                    team1AverageSentimentForTwoHourSaved = team1AverageSentimentForTwoHours;
+                    counterToTwoHours = 0;
+                  }
+                  else{
+                    counterToTwoHours++;
+                  }
+                }
+                else{
+                  team1AverageSentimentForTwoHourSaved = team1AverageSentimentForTwoHours;
+                  twoHoursHavePassed = true;
+                  team1AverageSentimentForFourHours  = team1AverageSentimentForTwoHours;
+                }
+              }
+              else{
+                team1AverageSentimentForOneHourSaved = team1AverageSentimentForOneHour;
+                oneHourHasPassed = true;
+                team1AverageSentimentForTwoHours = team1AverageSentimentForOneHour;
+                team1AverageSentimentForFourHours  = team1AverageSentimentForOneHour;
+              }
             }
             else{
               team1AverageSentimentForOneHour = team1AverageSentimentForThirtyMinutes;
+              team1AverageSentimentForTwoHours = team1AverageSentimentForThirtyMinutes;
+              team1AverageSentimentForFourHours  = team1AverageSentimentForThirtyMinutes;
+              team1NoOfSentimentsForThirtyMinutesLimit = 6;
             }
             team1AverageSentimentForThirtyMinutesSaved = team1AverageSentimentForThirtyMinutes;
             team1TotalSentimentThirtyMinutes = team1AverageSentimentForThirtyMinutesSaved;
             console.log('///////////////////////////////////////////////////////////////////////////////');
-            console.log('check if the calculation using the total sentiment via a more thorough divison provides an accurate result: ' + potentialTeam1TotalSentimentThirtyMinutes);
-            console.log('check if the result matches one of these numbers, and if so change the calculation ' + JSON.stringify(team1AverageSentimentArrayFor1Minute));
             console.log('average sentiment array for one minute ' + JSON.stringify(team1AverageSentimentArrayFor1Minute));
             console.log('average sentiment array ' + JSON.stringify(team1AverageSentimentArray));
             console.log('number of sentiments for thirty minutes: ' + team1NoOfSentimentsForThirtyMinutes);
