@@ -4,10 +4,10 @@ var app = express();
 var TwitterStreamChannels = require('twitter-stream-channels');
 
 var client2 = {
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token: process.env.ACCESS_TOKEN,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -22,7 +22,24 @@ var stream = client.streamChannels({track:channels});
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'seconds';
-let scaleOfPersistance = 40;
+let scaleOfPersistance = 10;
+
+let apiCallntervalSeconds = 10;
+let averageSentimentArray;
+let secondsTrueScale;
+if(precision === 'seconds'){
+  if(scaleOfPersistance<apiCallntervalSeconds)
+  {
+    console.log('ERROR - The scale of precision needs to be equal to or higher than the frequency at which text sentiment is retrieved.');
+    process.exit();
+  }
+  secondsTrueScale = Math.floor(scaleOfPersistance/apiCallntervalSeconds);
+  averageSentimentArray = [secondsTrueScale];
+}
+else{
+  averageSentimentArray = [scaleOfPersistance];
+}
+
 
 startStreamWithFilters();
 
@@ -76,16 +93,6 @@ let team2TotalSentiment = 0;
 let team2NoOfSentiments = 0;
 let team2AverageSentiment = 0;
 
-let apiCallntervalSeconds = 10;
-let averageSentimentArray;
-let secondsTrueScale;
-if(precision === 'seconds'){
-  secondsTrueScale = Math.floor(scaleOfPersistance/apiCallntervalSeconds);
-  averageSentimentArray = [secondsTrueScale];
-}
-else{
-  averageSentimentArray = [scaleOfPersistance];
-}
 let team1AverageSentimentArrayIndex = 0;
 let currentAverage = 0;
 let currentTotal = 0;
