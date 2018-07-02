@@ -21,8 +21,8 @@ var stream = client.streamChannels({track:channels});
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'minutes';
-let scaleOfPersistance = 4;
+let precision = 'seconds';
+let scaleOfPersistance = 40;
 
 startStreamWithFilters();
 
@@ -76,11 +76,20 @@ let team2TotalSentiment = 0;
 let team2NoOfSentiments = 0;
 let team2AverageSentiment = 0;
 
-let averageSentimentArray = [scaleOfPersistance];
+let apiCallntervalSeconds = 10;
+let averageSentimentArray;
+let secondsTrueScale;
+if(precision === 'seconds'){
+  secondsTrueScale = Math.floor(scaleOfPersistance/apiCallntervalSeconds);
+  averageSentimentArray = [secondsTrueScale];
+}
+else{
+  averageSentimentArray = [scaleOfPersistance];
+}
 let team1AverageSentimentArrayIndex = 0;
 let currentAverage = 0;
 let currentTotal = 0;
-var the_interval = 10 * 1000;
+var apiCallInterval = apiCallntervalSeconds * 1000;
 
 // Set the headers
 var headers = {
@@ -103,8 +112,22 @@ if(team1Increment > 0){
   if (!error && response.statusCode == 200) {
     team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
     if(precision === 'seconds'){
+      console.log(secondsTrueScale);
       team1TotalSentiment = team1TotalSentiment + team1Sentiment;
-      team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
+      if(team1AverageSentimentArrayIndex != secondsTrueScale){
+        currentAverage = team1TotalSentiment/++team1NoOfSentiments;
+        averageSentimentArray[team1AverageSentimentArrayIndex++] = team1Sentiment;
+        console.log('average sentiment array: ' + averageSentimentArray);
+        console.log('current average: ' + currentAverage);
+      }
+      else{
+        team1TotalSentiment = team1TotalSentiment - averageSentimentArray[0];
+        averageSentimentArray.shift();
+        currentAverage = team1TotalSentiment/team1NoOfSentiments;
+        averageSentimentArray[team1AverageSentimentArrayIndex-1] = team1Sentiment;
+        console.log('average sentiment array: ' + averageSentimentArray);
+        console.log('current average: ' + currentAverage);
+      }
     }
     if(precision === 'minutes'){
       team1TotalSentiment = team1TotalSentiment + team1Sentiment;
@@ -189,7 +212,7 @@ if(team2Increment > 0){
   })}
   , 2000);
 }
-}, the_interval);
+}, apiCallInterval);
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
     res.setHeader('Access-Control-Allow-Origin', '*');
