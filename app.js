@@ -4,10 +4,10 @@ var app = express();
 var TwitterStreamChannels = require('twitter-stream-channels');
 
 var client2 = {
-  consumer_key: 'b',
-  consumer_secret: 'm',
-  access_token: 'a',
-  access_token_secret: 'i'
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -25,7 +25,8 @@ let precision = 'seconds';
 let scaleOfPersistance = 10;
 
 let apiCallntervalSeconds = 10;
-let averageSentimentArray;
+let team1AverageSentimentArray;
+let team2AverageSentimentArray;
 let secondsTrueScale;
 if(precision != 'seconds' && precision != 'minutes' && precision!= 'hours'){
   //have an enum to spit out the array and use a loop instead of an if statement
@@ -38,7 +39,8 @@ if(precision === 'seconds'){
     process.exit();
   }
   secondsTrueScale = Math.floor(scaleOfPersistance/apiCallntervalSeconds);
-  averageSentimentArray = [secondsTrueScale];
+  team1AverageSentimentArray = [secondsTrueScale];
+  team2AverageSentimentArray = [secondsTrueScale];
 }
 else{
   if(precision === 'minutes' && apiCallInterval > 60){
@@ -49,7 +51,8 @@ else{
     console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment in hours precision');
     process.exit();
   }
-  averageSentimentArray = [scaleOfPersistance];
+  team1AverageSentimentArray = [scaleOfPersistance];
+  team2AverageSentimentArray = [scaleOfPersistance];
 }
 
 
@@ -106,8 +109,11 @@ let team2NoOfSentiments = 0;
 let team2AverageSentiment = 0;
 
 let team1AverageSentimentArrayIndex = 0;
-let currentAverage = 0;
 let currentTotal = 0;
+let team1CurrentTotal = 0;
+let team1CurrentAverage = 0;
+let team2CurrentTotal = 0;
+let team2CurrentAverage = 0;
 let numberOfIterationsForMinutes;
 let numberOfIterationsForHours;
 var apiCallInterval;
@@ -140,7 +146,7 @@ var headers = {
 }
 
 var options = {
-    url: 'http://www.sentiment140.com/api/bulkClassifyJson?appid=a',
+    url: 'http://www.sentiment140.com/api/bulkClassifyJson?appid=' + process.env.SENTIMENT_140_EMAIL,
     method: 'POST',
     headers: headers,
     json: true,
@@ -158,18 +164,18 @@ if(team1Increment > 0){
       console.log(secondsTrueScale);
       team1TotalSentiment = team1TotalSentiment + team1Sentiment;
       if(team1AverageSentimentArrayIndex != secondsTrueScale){
-        currentAverage = team1TotalSentiment/++team1NoOfSentiments;
-        averageSentimentArray[team1AverageSentimentArrayIndex++] = team1Sentiment;
-        console.log('average sentiment array: ' + averageSentimentArray);
-        console.log('current average: ' + currentAverage);
+        team1CurrentAverage = team1TotalSentiment/++team1NoOfSentiments;
+        team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1Sentiment;
+        console.log('average sentiment array: ' + team1AverageSentimentArray);
+        console.log('current average: ' + team1CurrentAverage);
       }
       else{
-        team1TotalSentiment = team1TotalSentiment - averageSentimentArray[0];
-        averageSentimentArray.shift();
-        currentAverage = team1TotalSentiment/team1NoOfSentiments;
-        averageSentimentArray[team1AverageSentimentArrayIndex-1] = team1Sentiment;
-        console.log('average sentiment array: ' + averageSentimentArray);
-        console.log('current average: ' + currentAverage);
+        team1TotalSentiment = team1TotalSentiment - team1AverageSentimentArray[0];
+        team1AverageSentimentArray.shift();
+        team1CurrentAverage = team1TotalSentiment/team1NoOfSentiments;
+        team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1Sentiment;
+        console.log('average sentiment array: ' + team1AverageSentimentArray);
+        console.log('current average: ' + team1CurrentAverage);
       }
     }
     if(precision === 'minutes'){
@@ -178,22 +184,22 @@ if(team1Increment > 0){
       console.log(team1Sentiment);
       if(team1NoOfSentiments === numberOfIterationsForMinutes){
         if(team1AverageSentimentArrayIndex != scaleOfPersistance){
-          currentTotal = currentTotal + team1AverageSentiment;
-          currentAverage = currentTotal/(team1AverageSentimentArrayIndex+1);
-          averageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
+          team1CurrentTotal = team1CurrentTotal + team1AverageSentiment;
+          team1CurrentAverage = team1CurrentTotal/(team1AverageSentimentArrayIndex+1);
+          team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
         }
         else{
-          currentTotal = currentTotal - averageSentimentArray[0] + team1AverageSentiment;
-          averageSentimentArray.shift();
-          currentAverage = currentTotal/team1AverageSentimentArrayIndex;
-          averageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
+          team1CurrentTotal = team1CurrentTotal - team1AverageSentimentArray[0] + team1AverageSentiment;
+          team1AverageSentimentArray.shift();
+          team1CurrentAverage = team1CurrentTotal/team1AverageSentimentArrayIndex;
+          team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
           team1NoOfSentiments = 0;
           console.log('second if statement executed now');
         }
         team1TotalSentiment = 0;
         team1NoOfSentiments = 0;
-        console.log('resultant array for sentiment average in minutes: ' + averageSentimentArray);
-        console.log('the resultant average for the minute sentiment: ' + currentAverage);
+        console.log('resultant array for sentiment average in minutes: ' + team1AverageSentimentArray);
+        console.log('the resultant average for the minute sentiment: ' + team1CurrentAverage);
       }
     }
     if(precision === 'hours'){
@@ -202,22 +208,22 @@ if(team1Increment > 0){
       console.log(team1Sentiment);
       if(team1NoOfSentiments === numberOfIterationsForHours){
         if(team1AverageSentimentArrayIndex != scaleOfPersistance){
-          currentTotal = currentTotal + team1AverageSentiment;
-          currentAverage = currentTotal/(team1AverageSentimentArrayIndex+1);
-          averageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
+          team1CurrentTotal = team1CurrentTotal + team1AverageSentiment;
+          team1CurrentAverage = team1CurrentTotal/(team1AverageSentimentArrayIndex+1);
+          team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
         }
         else{
-          currentTotal = currentTotal - averageSentimentArray[0] + team1AverageSentiment;
-          averageSentimentArray.shift();
-          currentAverage = currentTotal/team1AverageSentimentArrayIndex;
-          averageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
+          team1CurrentTotal = team1CurrentTotal - team1AverageSentimentArray[0] + team1AverageSentiment;
+          team1AverageSentimentArray.shift();
+          team1CurrentAverage = team1CurrentTotal/team1AverageSentimentArrayIndex;
+          team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
           team1NoOfSentiments = 0;
           console.log('second if statement executed now');
         }
         team1TotalSentiment = 0;
         team1NoOfSentiments = 0;
-        console.log('resultant array for sentiment average in minutes: ' + averageSentimentArray);
-        console.log('the resultant average for the minute sentiment: ' + currentAverage);
+        console.log('resultant array for sentiment average in minutes: ' + team1AverageSentimentArray);
+        console.log('the resultant average for the minute sentiment: ' + team1CurrentAverage);
       }
     }
     team1Tweets = [400];
@@ -243,6 +249,73 @@ if(team2Increment > 0){
       if(team2NoOfSentiments >= 1600){
         team2TotalSentiment = team2AverageSentiment;
         team2NoOfSentiments = 0;
+      }
+      team2Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
+      if(precision === 'seconds'){
+        console.log(secondsTrueScale);
+        team2TotalSentiment = team2TotalSentiment + team2Sentiment;
+        if(team2AverageSentimentArrayIndex != secondsTrueScale){
+          team2CurrentAverage = team2TotalSentiment/++team2NoOfSentiments;
+          team2AverageSentimentArray[team2AverageSentimentArrayIndex++] = team2Sentiment;
+          console.log('average sentiment array: ' + team2AverageSentimentArray);
+          console.log('current average: ' + team2CurrentAverage);
+        }
+        else{
+          team2TotalSentiment = team2TotalSentiment - team2AverageSentimentArray[0];
+          team2AverageSentimentArray.shift();
+          team2CurrentAverage = team2TotalSentiment/team2NoOfSentiments;
+          team2AverageSentimentArray[team2AverageSentimentArrayIndex-1] = team2Sentiment;
+          console.log('average sentiment array: ' + team2AverageSentimentArray);
+          console.log('current average: ' + team2CurrentAverage);
+        }
+      }
+      if(precision === 'minutes'){
+        team2TotalSentiment = team2TotalSentiment + team2Sentiment;
+        team2AverageSentiment = team2TotalSentiment/++team2NoOfSentiments;
+        console.log(team2Sentiment);
+        if(team2NoOfSentiments === numberOfIterationsForMinutes){
+          if(team2AverageSentimentArrayIndex != scaleOfPersistance){
+            team2CurrentTotal = team2CurrentTotal + team2AverageSentiment;
+            team2CurrentAverage = team2CurrentTotal/(team2AverageSentimentArrayIndex+1);
+            team2AverageSentimentArray[team2AverageSentimentArrayIndex++] = team2AverageSentiment;
+          }
+          else{
+            team2CurrentTotal = team2CurrentTotal - team2AverageSentimentArray[0] + team2AverageSentiment;
+            team2AverageSentimentArray.shift();
+            team2CurrentAverage = team2CurrentTotal/team2AverageSentimentArrayIndex;
+            team2AverageSentimentArray[team2AverageSentimentArrayIndex-1] = team2AverageSentiment;
+            team2NoOfSentiments = 0;
+            console.log('second if statement executed now');
+          }
+          team2TotalSentiment = 0;
+          team2NoOfSentiments = 0;
+          console.log('resultant array for sentiment average in minutes: ' + team2AverageSentimentArray);
+          console.log('the resultant average for the minute sentiment: ' + team2CurrentAverage);
+        }
+      }
+      if(precision === 'hours'){
+        team2TotalSentiment = team2TotalSentiment + team2Sentiment;
+        team2AverageSentiment = team2TotalSentiment/++team2NoOfSentiments;
+        console.log(team2Sentiment);
+        if(team2NoOfSentiments === numberOfIterationsForHours){
+          if(team2AverageSentimentArrayIndex != scaleOfPersistance){
+            team2CurrentTotal = team2CurrentTotal + team2AverageSentiment;
+            team2CurrentAverage = team2CurrentTotal/(team2AverageSentimentArrayIndex+1);
+            team2AverageSentimentArray[team2AverageSentimentArrayIndex++] = team2AverageSentiment;
+          }
+          else{
+            team2CurrentTotal = team2CurrentTotal - team2AverageSentimentArray[0] + team2AverageSentiment;
+            team2AverageSentimentArray.shift();
+            team2CurrentAverage = team2CurrentTotal/team2AverageSentimentArrayIndex;
+            team2AverageSentimentArray[team2AverageSentimentArrayIndex-1] = team2AverageSentiment;
+            team2NoOfSentiments = 0;
+            console.log('second if statement executed now');
+          }
+          team2TotalSentiment = 0;
+          team2NoOfSentiments = 0;
+          console.log('resultant array for sentiment average in minutes: ' + team2AverageSentimentArray);
+          console.log('the resultant average for the minute sentiment: ' + team2CurrentAverage);
+        }
       }
       team2Tweets = [400];
       team2Increment = 0;
