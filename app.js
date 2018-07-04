@@ -4,10 +4,10 @@ var app = express();
 var TwitterStreamChannels = require('twitter-stream-channels');
 
 var client2 = {
-    consumer_key: process.env.CONSUMER_KEY,
-    consumer_secret: process.env.CONSUMER_SECRET,
-    access_token: process.env.ACCESS_TOKEN,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
+  consumer_key: 'b',
+  consumer_secret: 'm',
+  access_token: 'a',
+  access_token_secret: 'i'
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -27,6 +27,10 @@ let scaleOfPersistance = 10;
 let apiCallntervalSeconds = 10;
 let averageSentimentArray;
 let secondsTrueScale;
+if(precision != 'seconds' && precision != 'minutes' && precision!= 'hours'){
+  //have an enum to spit out the array and use a loop instead of an if statement
+  console.log('ERROR - precision variable unidentified, please set the precision variable to one of the following values: seconds, minutes, hours');
+}
 if(precision === 'seconds'){
   if(scaleOfPersistance<apiCallntervalSeconds)
   {
@@ -37,6 +41,14 @@ if(precision === 'seconds'){
   averageSentimentArray = [secondsTrueScale];
 }
 else{
+  if(precision === 'minutes' && apiCallInterval > 60){
+      console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment in minutes precision');
+      process.exit();
+}
+  else if(precision === 'hours' && apiCallInterval > 3600){
+    console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment in hours precision');
+    process.exit();
+  }
   averageSentimentArray = [scaleOfPersistance];
 }
 
@@ -96,7 +108,31 @@ let team2AverageSentiment = 0;
 let team1AverageSentimentArrayIndex = 0;
 let currentAverage = 0;
 let currentTotal = 0;
-var apiCallInterval = apiCallntervalSeconds * 1000;
+let numberOfIterationsForMinutes;
+let numberOfIterationsForHours;
+var apiCallInterval;
+// if one of the variables is not a full number; such as 7.5, change the interval to match interval
+// 7.5 -> use floor, and lower the interval by 25%;
+if(precision === 'seconds'){
+  apiCallInterval = apiCallntervalSeconds * 1000;
+}
+if(precision === 'minutes'){
+  numberOfIterationsForMinutes = Math.floor(60/apiCallntervalSeconds);
+  // if(numberOfIterationsForMinutes == not round){
+  //   iterationChangeRatio = numberOfIterationsForMinutes / Math.floor(numberOfIterationsForMinutes);
+  //   apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
+  // }
+}
+if(precision === 'hours'){
+  numberOfIterationsForHours = Math.roof(3600/apiCallntervalSeconds);
+  // if(numberOfIterationsForMinutes == not round){
+  //   iterationChangeRatio = numberOfIterationsForHours / Math.floor(numberOfIterationsForHours);
+  //   apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
+  // }
+}
+
+//60/8 = 7.5; Meaning if the we say a minute is 7 iterations, we will be wrong as a minute will not have passed yet
+//60/8 = 8; Meaning if the way say a minute is 8 iterations, we will be ahead of time
 
 // Set the headers
 var headers = {
@@ -104,7 +140,7 @@ var headers = {
 }
 
 var options = {
-    url: 'http://www.sentiment140.com/api/bulkClassifyJson?appid' + process.env.SENTIMENT_140_EMAIL,
+    url: 'http://www.sentiment140.com/api/bulkClassifyJson?appid=a',
     method: 'POST',
     headers: headers,
     json: true,
@@ -140,7 +176,7 @@ if(team1Increment > 0){
       team1TotalSentiment = team1TotalSentiment + team1Sentiment;
       team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
       console.log(team1Sentiment);
-      if(team1NoOfSentiments === 6){
+      if(team1NoOfSentiments === numberOfIterationsForMinutes){
         if(team1AverageSentimentArrayIndex != scaleOfPersistance){
           currentTotal = currentTotal + team1AverageSentiment;
           currentAverage = currentTotal/(team1AverageSentimentArrayIndex+1);
@@ -164,7 +200,7 @@ if(team1Increment > 0){
       team1TotalSentiment = team1TotalSentiment + team1Sentiment;
       team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
       console.log(team1Sentiment);
-      if(team1NoOfSentiments === 360){
+      if(team1NoOfSentiments === numberOfIterationsForHours){
         if(team1AverageSentimentArrayIndex != scaleOfPersistance){
           currentTotal = currentTotal + team1AverageSentiment;
           currentAverage = currentTotal/(team1AverageSentimentArrayIndex+1);
@@ -230,17 +266,34 @@ app.listen(9000,()=>{
     console.log('live on port '+ 9000);
 });
 app.get('/',function(req,res){
-res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1AverageSentiment, 'team2AverageSentiment':team2AverageSentiment}});
+  //depending on the number of fields in the graph, send back an indicator to how many columns should be skipped
+  res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1AverageSentiment, 'team2AverageSentiment':team2AverageSentiment}});
 });
 
 app.get('/teamNames',function(req,res){
-res.send({'teams':{'team1':channels['team1'], 'team2':channels['team2']}});
+  res.send({'teams':{'team1':channels['team1'], 'team2':channels['team2']}});
 });
 
 app.get('/stopStream', function(req,res){
   stream.stop();
   res.send('Stream has been stopped');
-})
+});
+
+//send the amount of fields as a parameter
+app.get('/getPersistedData10Fields', function(req,res){
+});
+
+app.get('/getPersistedData20Fields', function(req,res){
+});
+
+//potential functionality
+app.get('/getGraphScale', function(req, res){
+});
+
+app.get('/getRetrievalRate', function(req, res){
+  //get parameter, the rate will be different for a different scale
+  //scaleOfPersistance/graphScale
+});
 
 app.post('/startWithDifferentTeams', function(req, res){
   stream.stop();//closes the stream connected to Twitter
