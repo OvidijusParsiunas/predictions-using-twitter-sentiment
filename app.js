@@ -124,17 +124,17 @@ if(precision === 'seconds'){
 }
 if(precision === 'minutes'){
   numberOfIterationsForMinutes = Math.floor(60/apiCallntervalSeconds);
-  // if(numberOfIterationsForMinutes == not round){
-  //   iterationChangeRatio = numberOfIterationsForMinutes / Math.floor(numberOfIterationsForMinutes);
-  //   apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
-  // }
+  if(numberOfIterationsForMinutes % 1 === 0){
+    iterationChangeRatio = numberOfIterationsForMinutes / Math.floor(numberOfIterationsForMinutes);
+    apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
+  }
 }
 if(precision === 'hours'){
   numberOfIterationsForHours = Math.roof(3600/apiCallntervalSeconds);
-  // if(numberOfIterationsForMinutes == not round){
-  //   iterationChangeRatio = numberOfIterationsForHours / Math.floor(numberOfIterationsForHours);
-  //   apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
-  // }
+  if(numberOfIterationsForMinutes % 1 === 0){
+    iterationChangeRatio = numberOfIterationsForHours / Math.floor(numberOfIterationsForHours);
+    apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
+  }
 }
 
 //60/8 = 7.5; Meaning if the we say a minute is 7 iterations, we will be wrong as a minute will not have passed yet
