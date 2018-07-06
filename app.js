@@ -22,7 +22,7 @@ var stream = client.streamChannels({track:channels});
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'seconds';
-let scaleOfPersistance = 10;
+let scaleOfPersistance = 60;
 
 let apiCallntervalSeconds = 10;
 let team1AverageSentimentArray;
@@ -109,6 +109,7 @@ let team2NoOfSentiments = 0;
 let team2AverageSentiment = 0;
 
 let team1AverageSentimentArrayIndex = 0;
+let team2AverageSentimentArrayIndex = 0;
 let currentTotal = 0;
 let team1CurrentTotal = 0;
 let team1CurrentAverage = 0;
@@ -124,14 +125,14 @@ if(precision === 'seconds'){
 }
 if(precision === 'minutes'){
   numberOfIterationsForMinutes = Math.floor(60/apiCallntervalSeconds);
-  if(numberOfIterationsForMinutes % 1 === 0){
+  if(numberOfIterationsForMinutes % 1 !== 0){
     iterationChangeRatio = numberOfIterationsForMinutes / Math.floor(numberOfIterationsForMinutes);
     apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
   }
 }
 if(precision === 'hours'){
   numberOfIterationsForHours = Math.roof(3600/apiCallntervalSeconds);
-  if(numberOfIterationsForMinutes % 1 === 0){
+  if(numberOfIterationsForMinutes % 1 !== 0){
     iterationChangeRatio = numberOfIterationsForHours / Math.floor(numberOfIterationsForHours);
     apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
   }
@@ -166,6 +167,7 @@ if(team1Increment > 0){
       if(team1AverageSentimentArrayIndex != secondsTrueScale){
         team1CurrentAverage = team1TotalSentiment/++team1NoOfSentiments;
         team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1Sentiment;
+        console.log('team1AverageSentimentArrayIndex ' + team1AverageSentimentArrayIndex);
         console.log('average sentiment array: ' + team1AverageSentimentArray);
         console.log('current average: ' + team1CurrentAverage);
       }
@@ -341,6 +343,33 @@ app.listen(9000,()=>{
 app.get('/',function(req,res){
   //depending on the number of fields in the graph, send back an indicator to how many columns should be skipped
   res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1AverageSentiment, 'team2AverageSentiment':team2AverageSentiment}});
+});
+
+app.get('/persistedData/:scale',function(req,res){
+  let clientScale = req.params.scale;
+  let rateOfArrayIndexJump;
+  if(precision === 'seconds'){
+   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallntervalSeconds/clientScale);
+ }
+ else{
+   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/clientScale);
+ }
+  let team1SentimentArrayIndex = rateOfArrayIndexJump;
+  //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
+  //for seconds too!
+  let team1ClientArray = [clientScale];
+  console.log('team1AverageSentimentArrayIndex ' + team1AverageSentimentArrayIndex);
+  for(var i = 0; i < clientScale; i++){
+    if(team1AverageSentimentArrayIndex <= i){
+      console.log('break')
+      break;
+    };
+    console.log('team1SentimentArrayIndex ' + team1SentimentArrayIndex);
+    console.log('team1AverageSentimentArray ' + team1AverageSentimentArray);
+    team1ClientArray[i] = team1AverageSentimentArray[team1SentimentArrayIndex-1];
+    team1SentimentArrayIndex = team1SentimentArrayIndex + rateOfArrayIndexJump;
+  }
+  res.send({'data':{'team1Sentiment':team1ClientArray}});
 });
 
 app.get('/teamNames',function(req,res){
