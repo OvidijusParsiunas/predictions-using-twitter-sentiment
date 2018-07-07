@@ -4,10 +4,10 @@ var app = express();
 var TwitterStreamChannels = require('twitter-stream-channels');
 
 var client2 = {
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token: process.env.ACCESS_TOKEN,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -342,34 +342,36 @@ app.listen(9000,()=>{
 });
 app.get('/',function(req,res){
   //depending on the number of fields in the graph, send back an indicator to how many columns should be skipped
-  res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1AverageSentiment, 'team2AverageSentiment':team2AverageSentiment}});
+  res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1CurrentAverage, 'team2AverageSentiment':team2CurrentAverage}});
 });
 
 app.get('/persistedData/:scale',function(req,res){
   let clientScale = req.params.scale;
   let rateOfArrayIndexJump;
+  //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
+  //for seconds too!
   if(precision === 'seconds'){
    rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallntervalSeconds/clientScale);
  }
  else{
    rateOfArrayIndexJump = Math.floor(scaleOfPersistance/clientScale);
  }
-  let team1SentimentArrayIndex = rateOfArrayIndexJump;
-  //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
-  //for seconds too!
+  let sentimentArrayIndex = rateOfArrayIndexJump;
   let team1ClientArray = [clientScale];
-  console.log('team1AverageSentimentArrayIndex ' + team1AverageSentimentArrayIndex);
+  let team2ClientArray = [clientScale];
+  console.log('sentimentArrayIndex ' + sentimentArrayIndex);
   for(var i = 0; i < clientScale; i++){
-    if(team1AverageSentimentArrayIndex <= i){
+    if(team1AverageSentimentArrayIndex <= i || team2AverageSentimentArrayIndex <=i){
       console.log('break')
       break;
     };
-    console.log('team1SentimentArrayIndex ' + team1SentimentArrayIndex);
+    console.log('sentimentArrayIndex ' + sentimentArrayIndex);
     console.log('team1AverageSentimentArray ' + team1AverageSentimentArray);
-    team1ClientArray[i] = team1AverageSentimentArray[team1SentimentArrayIndex-1];
-    team1SentimentArrayIndex = team1SentimentArrayIndex + rateOfArrayIndexJump;
+    team1ClientArray[i] = team1AverageSentimentArray[sentimentArrayIndex-1];
+    team2ClientArray[i] = team2AverageSentimentArray[sentimentArrayIndex-1];
+    sentimentArrayIndex = sentimentArrayIndex + rateOfArrayIndexJump;
   }
-  res.send({'data':{'team1Sentiment':team1ClientArray}});
+  res.send({'data':{'team1Sentiment':team1ClientArray,'team2ClientArray':team2ClientArray, 'team1CurrentAverage': team1CurrentAverage, 'team2CurrentAverage':team2CurrentAverage}});
 });
 
 app.get('/teamNames',function(req,res){
