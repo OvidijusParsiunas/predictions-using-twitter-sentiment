@@ -22,7 +22,24 @@ var stream = client.streamChannels({track:channels});
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'seconds';
-let scaleOfPersistance = 60;
+let scaleOfPersistance = 5;
+
+function retrieveAvailableScales(){
+  if(scaleOfPersistance < 10){
+    return [scaleOfPersistance];
+  }
+  else{
+  var numberOfScales = Math.floor(scaleOfPersistance/10);
+  let availableScales = new Array(numberOfScales);
+  var availableScaleArrayIndex = 0;
+  var initialScale = 10;
+  for(var i = 0; i < numberOfScales; i++){
+      availableScales[availableScaleArrayIndex++] = initialScale;
+      initialScale = initialScale + 10;
+  }
+  return availableScales;
+  }
+}
 
 let apiCallntervalSeconds = 10;
 let team1AverageSentimentArray;
@@ -392,6 +409,7 @@ app.get('/getPersistedData20Fields', function(req,res){
 
 //potential functionality
 app.get('/getGraphScale', function(req, res){
+  res.send(retrieveAvailableScales());
 });
 
 app.get('/getRetrievalRate', function(req, res){
