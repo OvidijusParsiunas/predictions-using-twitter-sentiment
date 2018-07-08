@@ -24,7 +24,7 @@ var stream = client.streamChannels({track:channels});
 let precision = 'seconds';
 let scaleOfPersistance = 5;
 
-function retrieveAvailableScales(){
+function retrieveAvailableGraphScales(){
   if(scaleOfPersistance < 10){
     return [scaleOfPersistance];
   }
@@ -41,7 +41,7 @@ function retrieveAvailableScales(){
   }
 }
 
-function retrieveInitialScale(){
+function retrieveInitialGraphScale(){
   if(scaleOfPersistance < 10){
     return scaleOfPersistance;
   }
@@ -371,8 +371,8 @@ app.get('/',function(req,res){
   res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1CurrentAverage, 'team2AverageSentiment':team2CurrentAverage}});
 });
 
-app.get('/persistedData/:scale',function(req,res){
-  let clientScale = req.params.scale;
+app.get('/persistedData/:graphScale',function(req,res){
+  let clientScale = req.params.graphScale;
   let rateOfArrayIndexJump;
   //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
   //for seconds too!
@@ -417,11 +417,11 @@ app.get('/getPersistedData20Fields', function(req,res){
 });
 
 //potential functionality
-app.get('/getInitialScale', function(req, res){
-  res.send(retrieveInitialScale());
+app.get('/getInitialGraphScale', function(req, res){
+  res.send(retrieveInitialGraphScale());
 })
-app.get('/getAvailableScales', function(req, res){
-  res.send(retrieveAvailableScales());
+app.get('/getAvailableGraphScales', function(req, res){
+  res.send(retrieveAvailableGraphScales());
 });
 
 app.get('/getRetrievalRate', function(req, res){
