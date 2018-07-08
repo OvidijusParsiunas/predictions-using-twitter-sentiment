@@ -41,6 +41,15 @@ function retrieveAvailableScales(){
   }
 }
 
+function retrieveInitialScale(){
+  if(scaleOfPersistance < 10){
+    return scaleOfPersistance;
+  }
+  else{
+    return 10;
+  }
+}
+
 let apiCallntervalSeconds = 10;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
@@ -408,7 +417,10 @@ app.get('/getPersistedData20Fields', function(req,res){
 });
 
 //potential functionality
-app.get('/getGraphScale', function(req, res){
+app.get('/getInitialScale', function(req, res){
+  res.send(retrieveInitialScale());
+})
+app.get('/getAvailableScales', function(req, res){
   res.send(retrieveAvailableScales());
 });
 
