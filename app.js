@@ -4,10 +4,10 @@ var app = express();
 var TwitterStreamChannels = require('twitter-stream-channels');
 
 var client2 = {
-    consumer_key: process.env.CONSUMER_KEY,
-    consumer_secret: process.env.CONSUMER_SECRET,
-    access_token: process.env.ACCESS_TOKEN,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
+      consumer_key: process.env.CONSUMER_KEY,
+      consumer_secret: process.env.CONSUMER_SECRET,
+      access_token: process.env.ACCESS_TOKEN,
+      access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -22,7 +22,11 @@ var stream = client.streamChannels({track:channels});
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'seconds';
-let scaleOfPersistance = 5;
+let scaleOfPersistance = 60;
+
+// function retrieveAvailableGraphTimeScales(){
+//   if(precision )
+// }
 
 function retrieveAvailableGraphScales(){
   if(scaleOfPersistance < 10){
@@ -46,7 +50,7 @@ function retrieveInitialGraphScale(){
     return scaleOfPersistance;
   }
   else{
-    return 10;
+    return "10";
   }
 }
 
