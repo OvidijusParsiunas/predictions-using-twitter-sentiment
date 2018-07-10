@@ -4,10 +4,10 @@ var app = express();
 var TwitterStreamChannels = require('twitter-stream-channels');
 
 var client2 = {
-      consumer_key: process.env.CONSUMER_KEY,
-      consumer_secret: process.env.CONSUMER_SECRET,
-      access_token: process.env.ACCESS_TOKEN,
-      access_token_secret: process.env.ACCESS_TOKEN_SECRET
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -19,42 +19,20 @@ var channels = {
 
 var stream = client.streamChannels({track:channels});
 
+
+/*/////// AGREED TERMINOLOGY //////////
+
+timespan - interim for the analysed sentiment data
+graphscale - number of points on the graph x axis
+*/
+
+
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'seconds';
 let scaleOfPersistance = 60;
 
-// function retrieveAvailableGraphTimeScales(){
-//   if(precision )
-// }
-
-function retrieveAvailableGraphScales(){
-  if(scaleOfPersistance < 10){
-    return [scaleOfPersistance];
-  }
-  else{
-  var numberOfScales = Math.floor(scaleOfPersistance/10);
-  let availableScales = new Array(numberOfScales);
-  var availableScaleArrayIndex = 0;
-  var initialScale = 10;
-  for(var i = 0; i < numberOfScales; i++){
-      availableScales[availableScaleArrayIndex++] = initialScale;
-      initialScale = initialScale + 10;
-  }
-  return availableScales;
-  }
-}
-
-function retrieveInitialGraphScale(){
-  if(scaleOfPersistance < 10){
-    return scaleOfPersistance;
-  }
-  else{
-    return "10";
-  }
-}
-
-let apiCallntervalSeconds = 10;
+let apiCallIntervalSeconds = 10;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -63,12 +41,12 @@ if(precision != 'seconds' && precision != 'minutes' && precision!= 'hours'){
   console.log('ERROR - precision variable unidentified, please set the precision variable to one of the following values: seconds, minutes, hours');
 }
 if(precision === 'seconds'){
-  if(scaleOfPersistance<apiCallntervalSeconds)
+  if(scaleOfPersistance<apiCallIntervalSeconds)
   {
     console.log('ERROR - The scale of precision needs to be equal to or higher than the frequency at which text sentiment is retrieved.');
     process.exit();
   }
-  secondsTrueScale = Math.floor(scaleOfPersistance/apiCallntervalSeconds);
+  secondsTrueScale = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
   team1AverageSentimentArray = [secondsTrueScale];
   team2AverageSentimentArray = [secondsTrueScale];
 }
@@ -85,6 +63,74 @@ else{
   team2AverageSentimentArray = [scaleOfPersistance];
 }
 
+//double check all possibilities
+//store averages
+function retrieveAvailableTimeSpans(){
+  if(precision === 'seconds'){
+    //the increase rate is decided by the call interval time to the sentiment api
+    let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
+    let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
+    for(let i = 0; i < numberOfAvailableTimeSpans; i++){
+      availableTimeSpans[i] = (i+1)*apiCallIntervalSeconds;
+    }
+    return availableTimeSpans;
+  }
+  else{
+    let timeIncreaseRate = 10;
+    let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/timeIncreaseRate);
+    let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
+    for(let i = 0; i < numberOfAvailableTimeSpans; i++){
+      availableTimeSpans[i] = (i+1)*timeIncreaseRate;
+    }
+    return availableTimeSpans;
+  }
+}
+
+function retrieveAvailableGraphScalesForSetTimeSpan(timeSpan){
+  //if the graph scale is below 10 - it is not broken up any further
+  if(precision === 'seconds'){
+    let availableLargestScaleForSeconds = Math.floor(timeSpan/apiCallIntervalSeconds);
+    if(availableLargestScaleForSeconds < 10){
+      return [availableLargestScaleForSeconds];
+    }
+    else{
+      let availableScales = new Array(availableLargestScaleForSeconds);
+      let availableScalesIndex = 0;
+      for(var i = 10; i <= availableLargestScaleForSeconds; i++){
+        if(availableLargestScaleForSeconds%i === 0){
+          availableScales[availableScalesIndex++] = i;
+        }
+      }
+      availableScales.splice(availableScalesIndex, availableLargestScaleForSeconds-availableScalesIndex);
+      return availableScales;
+    }
+  }
+  else{
+    if(timeSpan < 10){
+      return [timeSpan];
+    }
+    else{
+      let availableScales = new Array(timeSpan);
+      let availableScalesIndex = 0;
+      for(var i = 10; i <= timeSpan; i++){
+        if(timeSpan%i === 0){
+          availableScales[availableScalesIndex++] = i;
+        }
+      }
+      availableScales.splice(availableScalesIndex, timeSpan-availableScalesIndex);
+      return availableScales;
+    }
+  }
+}
+
+function retrieveInitialGraphScale(){
+  if(scaleOfPersistance < 10){
+    return scaleOfPersistance;
+  }
+  else{
+    return "10";
+  }
+}
 
 startStreamWithFilters();
 
@@ -151,20 +197,20 @@ var apiCallInterval;
 // if one of the variables is not a full number; such as 7.5, change the interval to match interval
 // 7.5 -> use floor, and lower the interval by 25%;
 if(precision === 'seconds'){
-  apiCallInterval = apiCallntervalSeconds * 1000;
+  apiCallInterval = apiCallIntervalSeconds * 1000;
 }
 if(precision === 'minutes'){
-  numberOfIterationsForMinutes = Math.floor(60/apiCallntervalSeconds);
+  numberOfIterationsForMinutes = Math.floor(60/apiCallIntervalSeconds);
   if(numberOfIterationsForMinutes % 1 !== 0){
     iterationChangeRatio = numberOfIterationsForMinutes / Math.floor(numberOfIterationsForMinutes);
-    apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
+    apiCallInterval = apiCallIntervalSeconds * (1000*iterationChangeRatio);
   }
 }
 if(precision === 'hours'){
-  numberOfIterationsForHours = Math.roof(3600/apiCallntervalSeconds);
+  numberOfIterationsForHours = Math.roof(3600/apiCallIntervalSeconds);
   if(numberOfIterationsForMinutes % 1 !== 0){
     iterationChangeRatio = numberOfIterationsForHours / Math.floor(numberOfIterationsForHours);
-    apiCallInterval = apiCallntervalSeconds * (1000*iterationChangeRatio);
+    apiCallInterval = apiCallIntervalSeconds * (1000*iterationChangeRatio);
   }
 }
 
@@ -381,7 +427,7 @@ app.get('/persistedData/:graphScale',function(req,res){
   //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
   //for seconds too!
   if(precision === 'seconds'){
-   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallntervalSeconds/clientScale);
+   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallIntervalSeconds/clientScale);
  }
  else{
    rateOfArrayIndexJump = Math.floor(scaleOfPersistance/clientScale);
@@ -424,8 +470,13 @@ app.get('/getPersistedData20Fields', function(req,res){
 app.get('/getInitialGraphScale', function(req, res){
   res.send(retrieveInitialGraphScale());
 })
-app.get('/getAvailableGraphScales', function(req, res){
-  res.send(retrieveAvailableGraphScales());
+app.get('/getAvailableGraphScales/:timeSpan', function(req, res){
+  let timeSpan = req.params.timeSpan;
+  res.send(retrieveAvailableGraphScalesForSetTimeSpan(timeSpan));
+});
+
+app.get('/getAvailableTimeSpans', function(req, res){
+  res.send(retrieveAvailableTimeSpans());
 });
 
 app.get('/getRetrievalRate', function(req, res){
