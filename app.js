@@ -30,15 +30,25 @@ graphscale - number of points on the graph x axis
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'seconds';
-let scaleOfPersistance = 60;
+let scaleOfPersistance = 70;
 
 let apiCallIntervalSeconds = 10;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
+
+if(apiCallIntervalSeconds === undefined || apiCallIntervalSeconds === 0){
+  console.log('ERROR - please set the apiCallIntervalSeconds variable (used for calling sentiment analysis API) to 1 or higher');
+  process.exit();
+}
+if(scaleOfPersistance === undefined || scaleOfPersistance === 0){
+  console.log('ERROR - please set the scaleOfPersistance variable (used for defining the amount of stored sentiment data) to 1 or higher');
+  process.exit();
+}
 if(precision != 'seconds' && precision != 'minutes' && precision!= 'hours'){
   //have an enum to spit out the array and use a loop instead of an if statement
   console.log('ERROR - precision variable unidentified, please set the precision variable to one of the following values: seconds, minutes, hours');
+  process.exit();
 }
 if(precision === 'seconds'){
   if(scaleOfPersistance<apiCallIntervalSeconds)
@@ -63,11 +73,35 @@ else{
   team2AverageSentimentArray = [scaleOfPersistance];
 }
 
-//double check all possibilities
+//call function at the start and build up an array of what is valid
 //store averages
+//can potentially be exported to the frontend
+
+/*
+test cases
+Seconds:
+scaleOfPersistance  interval
+2                   1
+5                   2
+7                   5
+10                  5
+60                  10
+60                  25
+70                  15
+Minutes:
+scaleOfPersistance timeIncreaseRate
+2                  1
+5                  3
+7                  5
+10                 10
+29                 30
+60                 30
+70                 15
+*/
+
 function retrieveAvailableTimeSpans(){
-  if(precision === 'seconds'){
-    //the increase rate is decided by the call interval time to the sentiment api
+  if(precision != 'seconds'){
+    //the increase rate is decided by the call interval time for the sentiment api
     let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
     let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
@@ -77,6 +111,10 @@ function retrieveAvailableTimeSpans(){
   }
   else{
     let timeIncreaseRate = 10;
+    if(timeIncreaseRate === undefined || timeIncreaseRate === 0){
+      console.log('ERROR - please set the timeIncrease variable (used for defining the size of multiple time spans) to 1 or higher');
+      process.exit();
+    }
     let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/timeIncreaseRate);
     let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
