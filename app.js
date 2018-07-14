@@ -23,16 +23,16 @@ var stream = client.streamChannels({track:channels});
 /*/////// AGREED TERMINOLOGY //////////
 
 timespan - interim for the analysed sentiment data
-graphscale - number of points on the graph x axis
+XAxisRange - number of points on the graph x axis
 */
 
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'seconds';
-let scaleOfPersistance = 70;
+let scaleOfPersistance = 300;
 
-let apiCallIntervalSeconds = 10;
+let apiCallIntervalSeconds = 5;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -57,8 +57,8 @@ if(precision === 'seconds'){
     process.exit();
   }
   secondsTrueScale = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
-  team1AverageSentimentArray = [secondsTrueScale];
-  team2AverageSentimentArray = [secondsTrueScale];
+  team1AverageSentimentArray = new Array(secondsTrueScale);
+  team2AverageSentimentArray = new Array(secondsTrueScale);
 }
 else{
   if(precision === 'minutes' && apiCallInterval > 60){
@@ -69,13 +69,16 @@ else{
     console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment in hours precision');
     process.exit();
   }
-  team1AverageSentimentArray = [scaleOfPersistance];
-  team2AverageSentimentArray = [scaleOfPersistance];
+  team1AverageSentimentArray = new Array(scaleOfPersistance);
+  team2AverageSentimentArray = new Array(scaleOfPersistance);
+}
+function retrieveAvailableGraphDimensions(){
+  var availableGraphDataScales = new Object();
+  retrieveAvailableTimeSpans().forEach((timeSpan) => {availableGraphDataScales[timeSpan] = retrieveAvailableXAxisRangesForTimeSpan(timeSpan)});
+  return availableGraphDataScales;
 }
 
-//call function at the start and build up an array of what is valid
 //store averages
-//can potentially be exported to the frontend
 
 /*
 test cases
@@ -100,7 +103,7 @@ scaleOfPersistance timeIncreaseRate
 */
 
 function retrieveAvailableTimeSpans(){
-  if(precision != 'seconds'){
+  if(precision === 'seconds'){
     //the increase rate is decided by the call interval time for the sentiment api
     let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
     let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
@@ -124,7 +127,7 @@ function retrieveAvailableTimeSpans(){
   }
 }
 
-function retrieveAvailableGraphScalesForSetTimeSpan(timeSpan){
+function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
   //if the graph scale is below 10 - it is not broken up any further
   if(precision === 'seconds'){
     let availableLargestScaleForSeconds = Math.floor(timeSpan/apiCallIntervalSeconds);
@@ -132,15 +135,15 @@ function retrieveAvailableGraphScalesForSetTimeSpan(timeSpan){
       return [availableLargestScaleForSeconds];
     }
     else{
-      let availableScales = new Array(availableLargestScaleForSeconds);
-      let availableScalesIndex = 0;
+      let availableXAxis = new Array(availableLargestScaleForSeconds);
+      let availableXAxisIndex = 0;
       for(var i = 10; i <= availableLargestScaleForSeconds; i++){
         if(availableLargestScaleForSeconds%i === 0){
-          availableScales[availableScalesIndex++] = i;
+          availableXAxis[availableXAxisIndex++] = i;
         }
       }
-      availableScales.splice(availableScalesIndex, availableLargestScaleForSeconds-availableScalesIndex);
-      return availableScales;
+      availableXAxis.splice(availableXAxisIndex, availableLargestScaleForSeconds-availableXAxisIndex);
+      return availableXAxis;
     }
   }
   else{
@@ -148,19 +151,20 @@ function retrieveAvailableGraphScalesForSetTimeSpan(timeSpan){
       return [timeSpan];
     }
     else{
-      let availableScales = new Array(timeSpan);
-      let availableScalesIndex = 0;
+      let availableXAxis = new Array(timeSpan);
+      let availableXAxisIndex = 0;
       for(var i = 10; i <= timeSpan; i++){
         if(timeSpan%i === 0){
-          availableScales[availableScalesIndex++] = i;
+          availableXAxis[availableXAxis++] = i;
         }
       }
-      availableScales.splice(availableScalesIndex, timeSpan-availableScalesIndex);
-      return availableScales;
+      availableXAxis.splice(availableXAxisIndex, timeSpan-availableXAxisIndex);
+      return availableXAxis;
     }
   }
 }
 
+//this logic will be in the frontend
 function retrieveInitialGraphScale(){
   if(scaleOfPersistance < 10){
     return scaleOfPersistance;
@@ -507,14 +511,10 @@ app.get('/getPersistedData20Fields', function(req,res){
 //potential functionality
 app.get('/getInitialGraphScale', function(req, res){
   res.send(retrieveInitialGraphScale());
-})
-app.get('/getAvailableGraphScales/:timeSpan', function(req, res){
-  let timeSpan = req.params.timeSpan;
-  res.send(retrieveAvailableGraphScalesForSetTimeSpan(timeSpan));
 });
 
-app.get('/getAvailableTimeSpans', function(req, res){
-  res.send(retrieveAvailableTimeSpans());
+app.get('/getAvailableGraphGraphDimensions', function(req, res){
+  res.send(retrieveAvailableGraphDimensions());
 });
 
 app.get('/getRetrievalRate', function(req, res){
