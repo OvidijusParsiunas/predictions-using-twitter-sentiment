@@ -34,7 +34,7 @@ let precision = 'hours';
 let scaleOfPersistance = 7;
 
 let apiCallIntervalSeconds = 5;
-let timeIncreaseRate = 6;
+let availableTimesIncreaseRate = 6;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -63,8 +63,8 @@ if(precision === 'seconds'){
   team2AverageSentimentArray = [];
 }
 else{
-  if(timeIncreaseRate === undefined || timeIncreaseRate === 0 || timeIncreaseRate > scaleOfPersistance){
-    console.log('ERROR - please set the timeIncreaseRate variable (used for defining the available time spans for the graph) between 1 and ' + scaleOfPersistance);
+  if(availableTimesIncreaseRate === undefined || availableTimesIncreaseRate === 0 || availableTimesIncreaseRate > scaleOfPersistance){
+    console.log('ERROR - please set the availableTimesIncreaseRate variable (used for defining the available time spans for the graph) between 1 and ' + scaleOfPersistance);
     process.exit();
   }
   if(precision === 'minutes' && apiCallInterval > 60){
@@ -95,7 +95,7 @@ scaleOfPersistance  interval
 60                  25
 70                  15
 Minutes:
-scaleOfPersistance timeIncreaseRate
+scaleOfPersistance availableTimesIncreaseRate
 2                  1
 5                  3
 7                  5
@@ -116,10 +116,10 @@ function retrieveAvailableTimeSpans(){
     return availableTimeSpans;
   }
   else{
-    let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/timeIncreaseRate);
+    let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/availableTimesIncreaseRate);
     let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
-      availableTimeSpans[i] = (i+1)*timeIncreaseRate;
+      availableTimeSpans[i] = (i+1)*availableTimesIncreaseRate;
     }
     return availableTimeSpans;
   }
