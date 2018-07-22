@@ -30,8 +30,8 @@ XAxisRange - number of points on the graph x axis
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'minutes';
-let scaleOfPersistance = 8;
+let precision = 'seconds';
+let scaleOfPersistance = 300;
 
 let apiCallIntervalSeconds = 5;
 let team1AverageSentimentArray;
@@ -78,8 +78,6 @@ function retrieveAvailableGraphDimensions(){
   retrieveAvailableTimeSpans().forEach((timeSpan) => {availableGraphDataScales[timeSpan] = retrieveAvailableXAxisRangesForTimeSpan(timeSpan)});
   return availableGraphDataScales;
 }
-
-//store averages
 
 /*
 test cases
@@ -165,6 +163,8 @@ function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
   }
 }
 
+//check that team2 data is returned correctly
+//try hours to see if the returned data is correct
 //find out why the returned data of persistedData has nulls within it
 
 //this logic will be in the frontend
@@ -239,8 +239,6 @@ let team2CurrentAverage = 0;
 let numberOfIterationsForMinutes;
 let numberOfIterationsForHours;
 var apiCallInterval;
-// if one of the variables is not a full number; such as 7.5, change the interval to match interval
-// 7.5 -> use floor, and lower the interval by 25%;
 
 //appropriator that augments api call interval so minute/hour can be identified for a set number of iterations
 //will be changed when a private sentiment analysis algorithm is installed as we will be able to call every minute/hour, completely disregarding the size of the bag of words
@@ -466,6 +464,7 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
     team2Tweets = [400];
     team2Increment = 0;
   }
+
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -496,7 +495,7 @@ app.get('/persistedData/:graphScale',function(req,res){
   let team2ClientArray = [];
   console.log('sentimentArrayIndex ' + sentimentArrayIndex);
   for(var i = 0; i < clientScale; i++){
-    if(team1AverageSentimentArrayIndex <= i || team2AverageSentimentArrayIndex <=i){
+    if(team1AverageSentimentArrayIndex <= sentimentArrayIndex || team2AverageSentimentArrayIndex <= sentimentArrayIndex){
       console.log('break')
       break;
     };
