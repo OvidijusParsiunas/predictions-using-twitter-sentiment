@@ -30,8 +30,8 @@ XAxisRange - number of points on the graph x axis
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'seconds';
-let scaleOfPersistance = 300;
+let precision = 'hours';
+let scaleOfPersistance = 12;
 
 let apiCallIntervalSeconds = 5;
 let team1AverageSentimentArray;
@@ -74,7 +74,7 @@ else{
   team2AverageSentimentArray = [];
 }
 function retrieveAvailableGraphDimensions(){
-  var availableGraphDataScales = new Object();
+  var availableGraphDataScales = {};
   retrieveAvailableTimeSpans().forEach((timeSpan) => {availableGraphDataScales[timeSpan] = retrieveAvailableXAxisRangesForTimeSpan(timeSpan)});
   return availableGraphDataScales;
 }
@@ -134,7 +134,7 @@ function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
       return [availableLargestScaleForSeconds];
     }
     else{
-      let availableXAxis = new Array(availableLargestScaleForSeconds);
+      let availableXAxis = [];
       let availableXAxisIndex = 0;
       for(var i = 10; i <= availableLargestScaleForSeconds; i++){
         if(availableLargestScaleForSeconds%i === 0){
@@ -150,11 +150,11 @@ function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
       return [timeSpan];
     }
     else{
-      let availableXAxis = new Array(timeSpan);
+      let availableXAxis = [];
       let availableXAxisIndex = 0;
       for(var i = 10; i <= timeSpan; i++){
         if(timeSpan%i === 0){
-          availableXAxis[availableXAxis++] = i;
+          availableXAxis[availableXAxisIndex++] = i;
         }
       }
       availableXAxis.splice(availableXAxisIndex, timeSpan-availableXAxisIndex);
@@ -165,7 +165,6 @@ function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
 
 //check that team2 data is returned correctly
 //try hours to see if the returned data is correct
-//find out why the returned data of persistedData has nulls within it
 
 //this logic will be in the frontend
 function retrieveInitialGraphScale(){
@@ -258,7 +257,7 @@ if(precision === 'minutes'){
   }
 }
 if(precision === 'hours'){
-  numberOfIterationsForHours = Math.roof(3600/apiCallIntervalSeconds);
+  numberOfIterationsForHours = Math.floor(3600/apiCallIntervalSeconds);
   if(numberOfIterationsForHours % 1 !== 0){
     apiCallInterval = (60/numberOfIterationsForHours) * 1000;
   }
