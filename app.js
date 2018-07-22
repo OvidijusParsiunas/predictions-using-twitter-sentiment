@@ -31,9 +31,10 @@ XAxisRange - number of points on the graph x axis
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'hours';
-let scaleOfPersistance = 12;
+let scaleOfPersistance = 7;
 
 let apiCallIntervalSeconds = 5;
+let timeIncreaseRate = 6;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -62,11 +63,14 @@ if(precision === 'seconds'){
   team2AverageSentimentArray = [];
 }
 else{
+  if(timeIncreaseRate === undefined || timeIncreaseRate === 0 || timeIncreaseRate > scaleOfPersistance){
+    console.log('ERROR - please set the timeIncreaseRate variable (used for defining the available time spans for the graph) between 1 and ' + scaleOfPersistance);
+    process.exit();
+  }
   if(precision === 'minutes' && apiCallInterval > 60){
       console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment in minutes precision');
       process.exit();
-}
-  else if(precision === 'hours' && apiCallInterval > 3600){
+  } else if(precision === 'hours' && apiCallInterval > 3600){
     console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment in hours precision');
     process.exit();
   }
@@ -112,11 +116,6 @@ function retrieveAvailableTimeSpans(){
     return availableTimeSpans;
   }
   else{
-    let timeIncreaseRate = 10;
-    if(timeIncreaseRate === undefined || timeIncreaseRate === 0){
-      console.log('ERROR - please set the timeIncrease variable (used for defining the size of multiple time spans) to 1 or higher');
-      process.exit();
-    }
     let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/timeIncreaseRate);
     let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
