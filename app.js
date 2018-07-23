@@ -38,6 +38,7 @@ let availableTimesIncreaseRate = 6;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
+let sentimentAverages = {};
 
 if(apiCallIntervalSeconds === undefined || apiCallIntervalSeconds === 0){
   console.log('ERROR - please set the apiCallIntervalSeconds variable (used for calling sentiment analysis API) to 1 or higher');
@@ -77,11 +78,6 @@ else{
   team1AverageSentimentArray = [];
   team2AverageSentimentArray = [];
 }
-function retrieveAvailableGraphDimensions(){
-  var availableGraphDataScales = {};
-  retrieveAvailableTimeSpans().forEach((timeSpan) => {availableGraphDataScales[timeSpan] = retrieveAvailableXAxisRangesForTimeSpan(timeSpan)});
-  return availableGraphDataScales;
-}
 
 /*
 test cases
@@ -104,12 +100,19 @@ scaleOfPersistance availableTimesIncreaseRate
 60                 30
 70                 15
 */
+let availableTimeSpans = [];
+let availableGraphDataScales = {};
+setUpAvailableGraphDimensions();
 
-function retrieveAvailableTimeSpans(){
+function setUpAvailableGraphDimensions(){
+  setUpAvailableTimeSpans();
+  setUpAvailableGraphXAxisScales();
+}
+
+function setUpAvailableTimeSpans(){
   if(precision === 'seconds'){
     //the increase rate is decided by the call interval time for the sentiment api
     let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
-    let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
       availableTimeSpans[i] = (i+1)*apiCallIntervalSeconds;
     }
@@ -117,12 +120,35 @@ function retrieveAvailableTimeSpans(){
   }
   else{
     let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/availableTimesIncreaseRate);
-    let availableTimeSpans = new Array(numberOfAvailableTimeSpans);
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
       availableTimeSpans[i] = (i+1)*availableTimesIncreaseRate;
     }
     return availableTimeSpans;
   }
+}
+
+function setUpAvailableGraphXAxisScales(){
+  retrieveAvailableTimeSpans().forEach((timeSpan) => {availableGraphDataScales[timeSpan] = retrieveAvailableXAxisRangesForTimeSpan(timeSpan)});
+}
+
+function retrieveAvailableTimeSpans(){
+  return availableTimeSpans;
+}
+
+function retrieveAvailableGraphDimensions(){
+  return availableGraphDataScales;
+}
+
+
+function calculateSentimentAverages(){
+  //iterate through all of the variables
+
+  //if number of seconds/minutes/hours is less than the property
+    //add to total
+    //divide by number of seconds/minutes/hours
+  //else
+    //total = total + new average - old average
+    //divide by number of seconds/minutes/hours
 }
 
 function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
