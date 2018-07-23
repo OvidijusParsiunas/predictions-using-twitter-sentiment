@@ -38,7 +38,6 @@ let availableTimesIncreaseRate = 6;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
-let sentimentAverages = {};
 
 if(apiCallIntervalSeconds === undefined || apiCallIntervalSeconds === 0){
   console.log('ERROR - please set the apiCallIntervalSeconds variable (used for calling sentiment analysis API) to 1 or higher');
@@ -102,11 +101,14 @@ scaleOfPersistance availableTimesIncreaseRate
 */
 let availableTimeSpans = [];
 let availableGraphDataScales = {};
+let sentimentAveragesForTeam1 = {};
+let sentimentAveragesForTeam2 = {};
 setUpAvailableGraphDimensions();
 
 function setUpAvailableGraphDimensions(){
   setUpAvailableTimeSpans();
   setUpAvailableGraphXAxisScales();
+  setUpSentimentAveragesObject();
 }
 
 function setUpAvailableTimeSpans(){
@@ -139,16 +141,38 @@ function retrieveAvailableGraphDimensions(){
   return availableGraphDataScales;
 }
 
+function setUpSentimentAveragesObject(){
+  //structure of sentimentAverages object properties: {[total, average]}
+  availableTimeSpans.forEach((timeSpan) => {sentimentAveragesForTeam1[timeSpan] = [0,0];
+                                            sentimentAveragesForTeam2[timeSpan] = [0,0];});
+}
+var sentimentAveragesForTeam1ElapsedTime = 1;
+calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
+calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
+calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
+calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
+calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
+calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
+calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2, 1);
 
-function calculateSentimentAverages(){
+function calculateSentimentAverages(sentimentAverages, elapsedTime, newAverageSentiment, oldAverageSentiment){
   //iterate through all of the variables
-
-  //if number of seconds/minutes/hours is less than the property
-    //add to total
-    //divide by number of seconds/minutes/hours
-  //else
-    //total = total + new average - old average
-    //divide by number of seconds/minutes/hours
+  for(var timeScale in sentimentAverages){
+    //if number of seconds/minutes/hours is less than the timeScale
+    if(elapsedTime <= timeScale){
+      //add to total
+      sentimentAverages[timeScale][0]+=newAverageSentiment;
+      //divide by number of seconds/minutes/hours
+      sentimentAverages[timeScale][1] = sentimentAverages[sentiment][0]/elapsedTime;
+    }
+    else{
+      //total = total + new average - old average
+      var newAverageSentimentForTotal = newAverageSentiment - oldAverageSentiment;
+      sentimentAverages[timeScale][0]+=newAverageSentimentForTotal;
+      //divide by number of seconds/minutes/hours
+      sentimentAverages[timeScale][1] = sentimentAverages[sentiment][0]/elapsedTime;
+    }
+  }
 }
 
 function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
