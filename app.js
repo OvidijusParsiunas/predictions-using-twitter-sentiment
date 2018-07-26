@@ -5,10 +5,10 @@ var TwitterStreamChannels = require('twitter-stream-channels');
 var accurateInterval = require('accurate-interval');
 
 var client2 = {
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token: process.env.ACCESS_TOKEN,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -30,11 +30,11 @@ XAxisRange - number of points on the graph x axis
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'hours';
-let scaleOfPersistance = 7;
+let precision = 'minutes';
+let scaleOfPersistance = 20;
 
 let apiCallIntervalSeconds = 5;
-let availableTimesIncreaseRate = 6;
+let availableTimesIncreaseRate = 2;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -146,33 +146,29 @@ function setUpSentimentAveragesObject(){
   availableTimeSpans.forEach((timeSpan) => {sentimentAveragesForTeam1[timeSpan] = [0,0];
                                             sentimentAveragesForTeam2[timeSpan] = [0,0];});
 }
-var sentimentAveragesForTeam1ElapsedTime = 1;
-calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
-calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
-calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
-calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
-calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
-calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2);
-calculateSentimentAverages(sentimentAveragesForTeam1, sentimentAveragesForTeam1ElapsedTime++, 2, 1);
 
-function calculateSentimentAverages(sentimentAverages, elapsedTime, newAverageSentiment, oldAverageSentiment){
+//figure out what to do with the .shift function
+function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex){
+  console.log(JSON.stringify(sentimentAverages) + ' ' + newAverageSentiment + ' ' + arrayOfSentimentsIndex);
+  var minimumElapsedTime = arrayOfSentimentsIndex + 1;
   //iterate through all of the variables
   for(var timeScale in sentimentAverages){
     //if number of seconds/minutes/hours is less than the timeScale
-    if(elapsedTime <= timeScale){
+    if(minimumElapsedTime <= timeScale){
       //add to total
       sentimentAverages[timeScale][0]+=newAverageSentiment;
       //divide by number of seconds/minutes/hours
-      sentimentAverages[timeScale][1] = sentimentAverages[sentiment][0]/elapsedTime;
+      sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/minimumElapsedTime;
     }
     else{
       //total = total + new average - old average
-      var newAverageSentimentForTotal = newAverageSentiment - oldAverageSentiment;
+      var newAverageSentimentForTotal = newAverageSentiment - team1AverageSentimentArray[arrayOfSentimentsIndex-timeScale];
       sentimentAverages[timeScale][0]+=newAverageSentimentForTotal;
       //divide by number of seconds/minutes/hours
-      sentimentAverages[timeScale][1] = sentimentAverages[sentiment][0]/elapsedTime;
+      sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/timeScale;
     }
   }
+  console.log('current averages: ' + JSON.stringify(sentimentAverages));
 }
 
 function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
@@ -332,7 +328,6 @@ var options = {
 
 // Start the request
 accurateInterval(function(scheduledTime) {
-console.log('CURRENT DATA: ' + Date.now());
 if(team1Increment > 0){
   options.body = {"data": team1Tweets};
   //console.log(JSON.stringify(options.body));
@@ -400,14 +395,13 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
     console.log(team1Sentiment);
     if(team1NoOfSentiments === numberOfIterationsForMinutes){
       if(team1AverageSentimentArrayIndex != scaleOfPersistance){
-        team1CurrentTotal = team1CurrentTotal + team1AverageSentiment;
-        team1CurrentAverage = team1CurrentTotal/(team1AverageSentimentArrayIndex+1);
-        team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1AverageSentiment;
+        team1AverageSentimentArray[team1AverageSentimentArrayIndex] = team1AverageSentiment;
+        calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
       }
       else{
-        team1CurrentTotal = team1CurrentTotal - team1AverageSentimentArray[0] + team1AverageSentiment;
+        console.log('the team average first element is: ' + team1AverageSentimentArray[0]);
+        calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex);
         team1AverageSentimentArray.shift();
-        team1CurrentAverage = team1CurrentTotal/team1AverageSentimentArrayIndex;
         team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
         team1NoOfSentiments = 0;
         console.log('second if statement executed now');
@@ -522,9 +516,9 @@ app.use(function(req, res, next) {
 app.listen(9000,()=>{
     console.log('live on port '+ 9000);
 });
-app.get('/',function(req,res){
+app.get('/:timeSpan',function(req,res){
   //depending on the number of fields in the graph, send back an indicator to how many columns should be skipped
-  res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1CurrentAverage, 'team2AverageSentiment':team2CurrentAverage}});
+  res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':sentimentAveragesForTeam1[timeSpan], 'team2AverageSentiment':team2CurrentAverage}});
 });
 
 app.get('/persistedData/:graphScale',function(req,res){
