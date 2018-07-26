@@ -31,7 +31,7 @@ XAxisRange - number of points on the graph x axis
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'minutes';
-let scaleOfPersistance = 20;
+let scaleOfPersistance = 3;
 
 let apiCallIntervalSeconds = 5;
 let availableTimesIncreaseRate = 2;
@@ -399,10 +399,9 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
         calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
       }
       else{
-        console.log('the team average first element is: ' + team1AverageSentimentArray[0]);
-        calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex);
         team1AverageSentimentArray.shift();
         team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
+        calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex-1);
         team1NoOfSentiments = 0;
         console.log('second if statement executed now');
       }
