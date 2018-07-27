@@ -5,10 +5,10 @@ var TwitterStreamChannels = require('twitter-stream-channels');
 var accurateInterval = require('accurate-interval');
 
 var client2 = {
-    consumer_key: process.env.CONSUMER_KEY,
-    consumer_secret: process.env.CONSUMER_SECRET,
-    access_token: process.env.ACCESS_TOKEN,
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
 var client = new TwitterStreamChannels(client2);
@@ -30,11 +30,11 @@ XAxisRange - number of points on the graph x axis
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'minutes';
-let scaleOfPersistance = 3;
+let precision = 'seconds';
+let scaleOfPersistance = 30;
 
 let apiCallIntervalSeconds = 5;
-let availableTimesIncreaseRate = 2;
+let availableTimesIncreaseRate = 10;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -150,7 +150,13 @@ function setUpSentimentAveragesObject(){
 //figure out what to do with the .shift function
 function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex){
   console.log(JSON.stringify(sentimentAverages) + ' ' + newAverageSentiment + ' ' + arrayOfSentimentsIndex);
-  var minimumElapsedTime = arrayOfSentimentsIndex + 1;
+  var minimumElapsedTime;
+  if(precision === 'seconds'){
+    minimumElapsedTime = (arrayOfSentimentsIndex + 1) * apiCallIntervalSeconds;
+  }
+  else{
+    minimumElapsedTime = arrayOfSentimentsIndex + 1;
+  }
   //iterate through all of the variables
   for(var timeScale in sentimentAverages){
     //if number of seconds/minutes/hours is less than the timeScale
@@ -158,14 +164,31 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       //add to total
       sentimentAverages[timeScale][0]+=newAverageSentiment;
       //divide by number of seconds/minutes/hours
-      sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/minimumElapsedTime;
+      if(precision === 'seconds'){
+        sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/(arrayOfSentimentsIndex + 1);
+      }
+      else{
+        sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/minimumElapsedTime;
+      }
     }
     else{
       //total = total + new average - old average
-      var newAverageSentimentForTotal = newAverageSentiment - team1AverageSentimentArray[arrayOfSentimentsIndex-timeScale];
+      var newAverageSentimentForTotal;
+      if(precision === 'seconds'){
+        var numberOfIndexesToSubtract = timeScale/apiCallIntervalSeconds;
+        newAverageSentimentForTotal = newAverageSentiment - team1AverageSentimentArray[arrayOfSentimentsIndex-numberOfIndexesToSubtract];
+      }
+      else{
+        newAverageSentimentForTotal = newAverageSentiment - team1AverageSentimentArray[arrayOfSentimentsIndex-timeScale];
+      }
       sentimentAverages[timeScale][0]+=newAverageSentimentForTotal;
       //divide by number of seconds/minutes/hours
-      sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/timeScale;
+      if(precision === 'seconds'){
+        sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/(timeScale/apiCallIntervalSeconds);
+      }
+      else{
+        sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/timeScale;
+      }
     }
   }
   console.log('current averages: ' + JSON.stringify(sentimentAverages));
@@ -372,22 +395,17 @@ else{
 function processReturnedSentimentDataForTeam1(team1Sentiment){
   if(precision === 'seconds'){
     console.log(secondsTrueScale);
-    team1TotalSentiment = team1TotalSentiment + team1Sentiment;
     if(team1AverageSentimentArrayIndex != secondsTrueScale){
-      team1CurrentAverage = team1TotalSentiment/++team1NoOfSentiments;
-      team1AverageSentimentArray[team1AverageSentimentArrayIndex++] = team1Sentiment;
-      console.log('team1AverageSentimentArrayIndex ' + team1AverageSentimentArrayIndex);
-      console.log('average sentiment array: ' + team1AverageSentimentArray);
-      console.log('current average: ' + team1CurrentAverage);
+      team1AverageSentimentArray[team1AverageSentimentArrayIndex] = team1Sentiment;
+      calculateSentimentAverages(sentimentAveragesForTeam1, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
     }
     else{
-      team1TotalSentiment = team1TotalSentiment - team1AverageSentimentArray[0];
       team1AverageSentimentArray.shift();
-      team1CurrentAverage = team1TotalSentiment/team1NoOfSentiments;
       team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1Sentiment;
+      calculateSentimentAverages(sentimentAveragesForTeam1, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex-1);
       console.log('average sentiment array: ' + team1AverageSentimentArray);
-      console.log('current average: ' + team1CurrentAverage);
     }
+    console.log('resultant array for sentiment average in seconds: ' + team1AverageSentimentArray);
   }
   if(precision === 'minutes'){
     team1TotalSentiment = team1TotalSentiment + team1Sentiment;
@@ -446,16 +464,12 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
       if(team2AverageSentimentArrayIndex != secondsTrueScale){
         team2CurrentAverage = team2TotalSentiment/++team2NoOfSentiments;
         team2AverageSentimentArray[team2AverageSentimentArrayIndex++] = team2Sentiment;
-        console.log('average sentiment array: ' + team2AverageSentimentArray);
-        console.log('current average: ' + team2CurrentAverage);
       }
       else{
         team2TotalSentiment = team2TotalSentiment - team2AverageSentimentArray[0];
         team2AverageSentimentArray.shift();
         team2CurrentAverage = team2TotalSentiment/team2NoOfSentiments;
         team2AverageSentimentArray[team2AverageSentimentArrayIndex-1] = team2Sentiment;
-        console.log('average sentiment array: ' + team2AverageSentimentArray);
-        console.log('current average: ' + team2CurrentAverage);
       }
     }
     if(precision === 'minutes'){
