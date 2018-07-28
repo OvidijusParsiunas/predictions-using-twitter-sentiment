@@ -31,10 +31,10 @@ XAxisRange - number of points on the graph x axis
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let precision = 'seconds';
-let scaleOfPersistance = 30;
+let scaleOfPersistance = 20;
 
 let apiCallIntervalSeconds = 5;
-let availableTimesIncreaseRate = 10;
+let availableTimesIncreaseRate = 3;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -148,19 +148,21 @@ function setUpSentimentAveragesObject(){
 }
 
 //figure out what to do with the .shift function
-function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex){
+function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex, arrayOfSentimentsIsFull){
   console.log(JSON.stringify(sentimentAverages) + ' ' + newAverageSentiment + ' ' + arrayOfSentimentsIndex);
   var minimumElapsedTime;
   if(precision === 'seconds'){
     minimumElapsedTime = (arrayOfSentimentsIndex + 1) * apiCallIntervalSeconds;
   }
   else{
-    minimumElapsedTime = arrayOfSentimentsIndex + 1;
+    if(!arrayOfSentimentsIsFull){
+      minimumElapsedTime = arrayOfSentimentsIndex + 1;
+    }
   }
   //iterate through all of the variables
   for(var timeScale in sentimentAverages){
     //if number of seconds/minutes/hours is less than the timeScale
-    if(minimumElapsedTime <= timeScale){
+    if(minimumElapsedTime <= timeScale && !arrayOfSentimentsIsFull){
       //add to total
       sentimentAverages[timeScale][0]+=newAverageSentiment;
       //divide by number of seconds/minutes/hours
@@ -175,11 +177,11 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       //total = total + new average - old average
       var newAverageSentimentForTotal;
       if(precision === 'seconds'){
-        var numberOfIndexesToSubtract = timeScale/apiCallIntervalSeconds;
-        newAverageSentimentForTotal = newAverageSentiment - team1AverageSentimentArray[arrayOfSentimentsIndex-numberOfIndexesToSubtract];
+        var numberOfIndexesToSubtract = (timeScale/apiCallIntervalSeconds);
+        newAverageSentimentForTotal = newAverageSentiment - arrayOfSentiments[arrayOfSentimentsIndex-numberOfIndexesToSubtract];
       }
       else{
-        newAverageSentimentForTotal = newAverageSentiment - team1AverageSentimentArray[arrayOfSentimentsIndex-timeScale];
+        newAverageSentimentForTotal = newAverageSentiment - arrayOfSentiments[arrayOfSentimentsIndex-timeScale];
       }
       sentimentAverages[timeScale][0]+=newAverageSentimentForTotal;
       //divide by number of seconds/minutes/hours
@@ -400,9 +402,9 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
       calculateSentimentAverages(sentimentAveragesForTeam1, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
     }
     else{
+      calculateSentimentAverages(sentimentAveragesForTeam1, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex, 1);
       team1AverageSentimentArray.shift();
       team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1Sentiment;
-      calculateSentimentAverages(sentimentAveragesForTeam1, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex-1);
       console.log('average sentiment array: ' + team1AverageSentimentArray);
     }
     console.log('resultant array for sentiment average in seconds: ' + team1AverageSentimentArray);
@@ -417,9 +419,9 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
         calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
       }
       else{
+        calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex, 1);
         team1AverageSentimentArray.shift();
         team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
-        calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex-1);
         team1NoOfSentiments = 0;
         console.log('second if statement executed now');
       }
