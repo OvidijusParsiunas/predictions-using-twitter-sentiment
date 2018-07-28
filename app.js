@@ -30,8 +30,8 @@ XAxisRange - number of points on the graph x axis
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'seconds';
-let scaleOfPersistance = 20;
+let precision = 'minutes';
+let scaleOfPersistance = 9;
 
 let apiCallIntervalSeconds = 5;
 let availableTimesIncreaseRate = 3;
@@ -147,15 +147,14 @@ function setUpSentimentAveragesObject(){
                                             sentimentAveragesForTeam2[timeSpan] = [0,0];});
 }
 
-//figure out what to do with the .shift function
 function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex, arrayOfSentimentsIsFull){
   console.log(JSON.stringify(sentimentAverages) + ' ' + newAverageSentiment + ' ' + arrayOfSentimentsIndex);
   var minimumElapsedTime;
-  if(precision === 'seconds'){
-    minimumElapsedTime = (arrayOfSentimentsIndex + 1) * apiCallIntervalSeconds;
-  }
-  else{
-    if(!arrayOfSentimentsIsFull){
+  if(!arrayOfSentimentsIsFull){
+    if(precision === 'seconds'){
+      minimumElapsedTime = (arrayOfSentimentsIndex + 1) * apiCallIntervalSeconds;
+    }
+    else{
       minimumElapsedTime = arrayOfSentimentsIndex + 1;
     }
   }
