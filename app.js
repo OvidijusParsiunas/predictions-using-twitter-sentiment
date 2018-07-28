@@ -30,8 +30,10 @@ XAxisRange - number of points on the graph x axis
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'minutes';
-let scaleOfPersistance = 9;
+let precision = 'seconds';
+let scaleOfPersistance = 20;
+
+let scaleOfPersistanceAsOnlyScale = true;
 
 let apiCallIntervalSeconds = 5;
 let availableTimesIncreaseRate = 3;
@@ -100,14 +102,19 @@ scaleOfPersistance availableTimesIncreaseRate
 70                 15
 */
 let availableTimeSpans = [];
-let availableGraphDataScales = {};
+let availableGraphScales = {};
 let sentimentAveragesForTeam1 = {};
 let sentimentAveragesForTeam2 = {};
 setUpAvailableGraphDimensions();
 
 function setUpAvailableGraphDimensions(){
-  setUpAvailableTimeSpans();
-  setUpAvailableGraphXAxisScales();
+  if(!scaleOfPersistanceAsOnlyScale){
+    setUpAvailableTimeSpans();
+    setUpAvailableGraphXAxisScales();
+  }
+  else{
+    setUpAvaibleGraphDimensionsOnlyForScaleOfPersistance();
+  }
   setUpSentimentAveragesObject();
 }
 
@@ -118,19 +125,24 @@ function setUpAvailableTimeSpans(){
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
       availableTimeSpans[i] = (i+1)*apiCallIntervalSeconds;
     }
-    return availableTimeSpans;
   }
   else{
     let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/availableTimesIncreaseRate);
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
       availableTimeSpans[i] = (i+1)*availableTimesIncreaseRate;
     }
-    return availableTimeSpans;
   }
+  return availableTimeSpans;
 }
 
 function setUpAvailableGraphXAxisScales(){
-  retrieveAvailableTimeSpans().forEach((timeSpan) => {availableGraphDataScales[timeSpan] = retrieveAvailableXAxisRangesForTimeSpan(timeSpan)});
+  retrieveAvailableTimeSpans().forEach((timeSpan) => {
+    availableGraphScales[timeSpan] = retrieveAvailableXAxisRangesForTimeSpan(timeSpan)});
+}
+
+function setUpAvaibleGraphDimensionsOnlyForScaleOfPersistance(){
+  availableTimeSpans[0] = scaleOfPersistance;
+  availableGraphScales[scaleOfPersistance] = [scaleOfPersistance];
 }
 
 function retrieveAvailableTimeSpans(){
@@ -138,7 +150,7 @@ function retrieveAvailableTimeSpans(){
 }
 
 function retrieveAvailableGraphDimensions(){
-  return availableGraphDataScales;
+  return availableGraphScales;
 }
 
 function setUpSentimentAveragesObject(){
@@ -209,6 +221,7 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       else{
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/minimumElapsedTime;
       }
+      console.log('/////////////////// ' + JSON.stringify(sentimentAverages));
     }
     else{
       //total = total + new average - old average
@@ -228,6 +241,7 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       else{
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/timeScale;
       }
+      console.log('/////////////////// ' + JSON.stringify(sentimentAverages));
     }
   }
   console.log('current averages: ' + JSON.stringify(sentimentAverages));
@@ -275,8 +289,8 @@ function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
 
 //this logic will be in the frontend
 function retrieveInitialGraphScale(){
-  if(scaleOfPersistance < 10){
-    return scaleOfPersistance;
+  if(scaleOfPersistance < 10 || scaleOfPersistanceAsOnlyScale){
+    return scaleOfPersistance.toString();
   }
   else{
     return "10";
@@ -560,8 +574,8 @@ app.use(function(req, res, next) {
 app.listen(9000,()=>{
     console.log('live on port '+ 9000);
 });
-app.get('/:timeSpan',function(req,res){
-  //depending on the number of fields in the graph, send back an indicator to how many columns should be skipped
+app.get('/newSentimentData/:timeSpan',function(req,res){
+  let timeSpan = req.params.timeSpan;
   res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':sentimentAveragesForTeam1[timeSpan], 'team2AverageSentiment':team2CurrentAverage}});
 });
 
