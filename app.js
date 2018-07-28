@@ -147,8 +147,46 @@ function setUpSentimentAveragesObject(){
                                             sentimentAveragesForTeam2[timeSpan] = [0,0];});
 }
 
+/*  Simple description of the operations performed in calculateSentimentAverages:
+
+  The function iterations through all of the timespans that the averages are being tracked for.
+  The algorithm first checks if the array of sentiments is full, if it is not
+  the algorithm checks the elapsed time that has passed.
+
+  If the array is full, it immediately skips to the second if statement in the for loop
+  The first if statement checks if the current elapsed time is below or equal to the
+  timescale, if it is, the algorithm adds to the timescale's total and divided accordingly
+  to obtain its average.
+  The second if statement can be triggered when the elapsed time exceeds the timescale
+  but the arrayOfSentiments is still not full or when the arrayOfSentiments is unidentified
+  to be full. When this happens the algorithm subtracts the new sentiment value from the old
+  value that the timescale used to caclulate its total. The difference is then added to the
+  total value. e.g. if new value is 3 and old is 2, all we do is add 1 to the total, or if
+  new value is 3 and the old value is 4, we add -1 to the total, hence resulting in the
+  correct total value. The averge is then obtained by dividing accordingly.
+
+  Please note that the arrayOfSentimentsIndex is passed in as the real index when the
+  arrayOfSentiments is still growing (used in the first if statement), hence the
+  minimumElapsedTime and the calculation of the average for seconds require it to be
+  incremented by 1, but the second if statement uses the original value to get the
+  old average value as follows:
+  [2,[4],6,8,[10]] new value 10
+  If a timescale requires 3 values, the old one would be 4, and that would be subtracted
+  from the new value of 10. So if the passed in index is 4, and the timescale requires
+  3 values, we perform the following 4-3=1, which would identify old value as 4
+  When the arrayOfSentiments is full, the parent function passes arrayOfSentimentsIndex
+  that is incremented by 1. The reason for that is explained in the following example:
+  [[2],4,6,8] new value [10]
+  If a timescale requires 4 values the old value would be 2, however because the
+  array has not been shifted yet (as the old value is still required), the latest index
+  is pointing towards 8, at the entry numbered 3 and not the index of the new value to be inserted.
+  Therefore the following is performed: 4-4 = 0, which points towards the old value, please note
+  that if the index would not have been incremented by 1, it would have resulted in the
+  following: 3-4 = -1, which would point at an invalid array index. Hence the algorithm is now
+  able to point at the correct array index of the old sentiment value.
+*/
+
 function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex, arrayOfSentimentsIsFull){
-  console.log(JSON.stringify(sentimentAverages) + ' ' + newAverageSentiment + ' ' + arrayOfSentimentsIndex);
   var minimumElapsedTime;
   if(!arrayOfSentimentsIsFull){
     if(precision === 'seconds'){
@@ -161,7 +199,7 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
   //iterate through all of the variables
   for(var timeScale in sentimentAverages){
     //if number of seconds/minutes/hours is less than the timeScale
-    if(minimumElapsedTime <= timeScale && !arrayOfSentimentsIsFull){
+    if(!arrayOfSentimentsIsFull && minimumElapsedTime <= timeScale){
       //add to total
       sentimentAverages[timeScale][0]+=newAverageSentiment;
       //divide by number of seconds/minutes/hours
