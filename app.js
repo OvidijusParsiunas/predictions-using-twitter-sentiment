@@ -30,14 +30,16 @@ XAxisRange - number of points on the graph x axis
 
 //select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'minutes';
-let scaleOfPersistance = 12;
+let precision = 'seconds';
+let scaleOfPersistance = 30;
 
 let apiCallIntervalSeconds = 5;
 let availableTimesIncreaseRate = 3;
 let scaleOfPersistanceAsOnlyScale = false;
 //can be removed if the user is allowed to pick their scale
 let calculateAverages = true;
+let minimumGraphScale = 5;
+let maximumGraphScale = 20;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -61,7 +63,14 @@ if(precision === 'seconds'){
     console.log('ERROR - The scale of precision needs to be equal to or higher than the frequency at which text sentiment is retrieved.');
     process.exit();
   }
+
   secondsTrueScale = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
+  if(secondsTrueScale > maximumGraphScale || secondsTrueScale < minimumGraphScale){
+    console.log('ERROR - The scale of precision will result in a graph of ' + secondsTrueScale +
+    ' x axis points as it is calculated using the frequency of API calls to retrieve sentiment data as per the following formula: (floor)(scaleOfPrecision/apiCallIntervalSeconds), currently the set boundaries allow the seconds precision scale to be at a minimum of ' + minimumGraphScale*apiCallIntervalSeconds +
+    ' and a maximum of ' + maximumGraphScale*apiCallIntervalSeconds + ', please update the scaleOfPrecision variable accordingly.');
+    process.exit();
+  }
   team1AverageSentimentArray = [];
   team2AverageSentimentArray = [];
 }
@@ -112,6 +121,7 @@ function setUpAvailableGraphDimensions(){
   if(!scaleOfPersistanceAsOnlyScale){
     setUpAvailableTimeSpans();
     setUpAvailableGraphXAxisScales();
+    cleanUpTimeSpansWithOutOfBoundsGraphXAxisScales();
   }
   else{
     setUpAvaibleGraphDimensionsOnlyForScaleOfPersistance();
@@ -146,6 +156,20 @@ function setUpAvaibleGraphDimensionsOnlyForScaleOfPersistance(){
   availableGraphScales[scaleOfPersistance] = [scaleOfPersistance];
 }
 
+function cleanUpTimeSpansWithOutOfBoundsGraphXAxisScales(){
+  for(var key in availableGraphScales){
+    availableGraphScales[key] = availableGraphScales[key].filter(scale => {
+                                if(scale >= minimumGraphScale && scale <= maximumGraphScale){
+                                  return true;
+                                }
+                                  return false;})
+
+     if(availableGraphScales[key].length === 0){
+       delete availableGraphScales[key];
+       availableTimeSpans.splice(availableTimeSpans.indexOf(parseInt(key)), 1);
+     }
+  }
+}
 function retrieveAvailableTimeSpans(){
   return availableTimeSpans;
 }
@@ -222,7 +246,6 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       else{
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/minimumElapsedTime;
       }
-      console.log('/////////////////// ' + JSON.stringify(sentimentAverages));
     }
     else{
       //total = total + new average - old average
@@ -242,7 +265,6 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       else{
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/timeScale;
       }
-      console.log('/////////////////// ' + JSON.stringify(sentimentAverages));
     }
   }
   console.log('current averages: ' + JSON.stringify(sentimentAverages));
