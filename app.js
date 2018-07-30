@@ -28,13 +28,13 @@ XAxisRange - number of points on the graph x axis
 */
 
 
-//select the precision and scale at which you will be storing sentiment averages and displaying them on the UI
+//select the time unit and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let precision = 'seconds';
-let scaleOfPersistance = 30;
+let timeUnit = 'minutes';
+let scaleOfPersistance = 20;
 
 let apiCallIntervalSeconds = 5;
-let availableTimesIncreaseRate = 3;
+let availableTimesIncreaseRate = 10;
 let scaleOfPersistanceAsOnlyScale = false;
 //can be removed if the user is allowed to pick their scale
 let calculateAverages = true;
@@ -52,22 +52,22 @@ if(scaleOfPersistance === undefined || scaleOfPersistance === 0){
   console.log('ERROR - please set the scaleOfPersistance variable (used for defining the amount of stored sentiment data) to 1 or higher');
   process.exit();
 }
-if(precision != 'seconds' && precision != 'minutes' && precision!= 'hours'){
+if(timeUnit != 'seconds' && timeUnit != 'minutes' && timeUnit!= 'hours'){
   //have an enum to spit out the array and use a loop instead of an if statement
-  console.log('ERROR - precision variable unidentified, please set the precision variable to one of the following values: seconds, minutes, hours');
+  console.log('ERROR - timeUnit variable unidentified, please set the timeUnit variable to one of the following values: seconds, minutes, hours');
   process.exit();
 }
-if(precision === 'seconds'){
+if(timeUnit === 'seconds'){
   if(scaleOfPersistance<apiCallIntervalSeconds)
   {
-    console.log('ERROR - The scale of precision needs to be equal to or higher than the frequency at which text sentiment is retrieved.');
+    console.log('ERROR - The scaleOfPersistance variable needs to be equal to or higher than ' + apiCallIntervalSeconds + ' seconds, which is the frequency at which sentiment results are retrieved.');
     process.exit();
   }
 
   secondsTrueScale = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
   if(secondsTrueScale > maximumGraphScale || secondsTrueScale < minimumGraphScale){
-    console.log('ERROR - The scale of precision will result in a graph of ' + secondsTrueScale +
-    ' x axis points as it is calculated using the frequency of API calls to retrieve sentiment data as per the following formula: (floor)(scaleOfPrecision/apiCallIntervalSeconds), currently the set boundaries allow the seconds precision scale to be at a minimum of ' + minimumGraphScale*apiCallIntervalSeconds +
+    console.log('ERROR - The current scaleOfPersistance value will result in a graph of ' + secondsTrueScale +
+    ' x axis points as it is calculated using the frequency of API calls to retrieve sentiment data as per the following formula: (floor)(scaleOfPrecision/apiCallIntervalSeconds), currently the set boundaries allow the persistance scale of seconds to be at a minimum of ' + minimumGraphScale*apiCallIntervalSeconds +
     ' and a maximum of ' + maximumGraphScale*apiCallIntervalSeconds + ', please update the scaleOfPrecision variable accordingly.');
     process.exit();
   }
@@ -79,11 +79,11 @@ else{
     console.log('ERROR - please set the availableTimesIncreaseRate variable (used for defining the available time spans for the graph) between 1 and ' + scaleOfPersistance);
     process.exit();
   }
-  if(precision === 'minutes' && apiCallInterval > 60){
-      console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment in minutes precision');
+  if(timeUnit === 'minutes' && apiCallInterval > 60){
+      console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment when using a time unit of minutes');
       process.exit();
-  } else if(precision === 'hours' && apiCallInterval > 3600){
-    console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment in hours precision');
+  } else if(timeUnit === 'hours' && apiCallInterval > 3600){
+    console.log('ERROR - Interval for calling sentiment api cannot be above 60 seconds for tracking average sentiment when using a time unit of hours');
     process.exit();
   }
   team1AverageSentimentArray = [];
@@ -130,7 +130,7 @@ function setUpAvailableGraphDimensions(){
 }
 
 function setUpAvailableTimeSpans(){
-  if(precision === 'seconds'){
+  if(timeUnit === 'seconds'){
     //the increase rate is decided by the call interval time for the sentiment api
     let numberOfAvailableTimeSpans = Math.floor(scaleOfPersistance/apiCallIntervalSeconds);
     for(let i = 0; i < numberOfAvailableTimeSpans; i++){
@@ -226,7 +226,7 @@ function setUpSentimentAveragesObject(){
 function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex, arrayOfSentimentsIsFull){
   var minimumElapsedTime;
   if(!arrayOfSentimentsIsFull){
-    if(precision === 'seconds'){
+    if(timeUnit === 'seconds'){
       minimumElapsedTime = (arrayOfSentimentsIndex + 1) * apiCallIntervalSeconds;
     }
     else{
@@ -240,7 +240,7 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       //add to total
       sentimentAverages[timeScale][0]+=newAverageSentiment;
       //divide by number of seconds/minutes/hours
-      if(precision === 'seconds'){
+      if(timeUnit === 'seconds'){
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/(arrayOfSentimentsIndex + 1);
       }
       else{
@@ -250,7 +250,7 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
     else{
       //total = total + new average - old average
       var newAverageSentimentForTotal;
-      if(precision === 'seconds'){
+      if(timeUnit === 'seconds'){
         var numberOfIndexesToSubtract = (timeScale/apiCallIntervalSeconds);
         newAverageSentimentForTotal = newAverageSentiment - arrayOfSentiments[arrayOfSentimentsIndex-numberOfIndexesToSubtract];
       }
@@ -259,7 +259,7 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       }
       sentimentAverages[timeScale][0]+=newAverageSentimentForTotal;
       //divide by number of seconds/minutes/hours
-      if(precision === 'seconds'){
+      if(timeUnit === 'seconds'){
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/(timeScale/apiCallIntervalSeconds);
       }
       else{
@@ -272,7 +272,7 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
 
 function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
   //if the graph scale is below 10 - it is not broken up any further
-  if(precision === 'seconds'){
+  if(timeUnit === 'seconds'){
     let availableLargestScaleForSeconds = Math.floor(timeSpan/apiCallIntervalSeconds);
     if(availableLargestScaleForSeconds < 10){
       return [availableLargestScaleForSeconds];
@@ -385,10 +385,10 @@ var apiCallInterval;
 
 //appropriator that augments api call interval so minute/hour can be identified for a set number of iterations
 //will be changed when a private sentiment analysis algorithm is installed as we will be able to call every minute/hour, completely disregarding the size of the bag of words
-if(precision === 'seconds'){
+if(timeUnit === 'seconds'){
   apiCallInterval = apiCallIntervalSeconds * 1000;
 }
-if(precision === 'minutes'){
+if(timeUnit === 'minutes'){
   numberOfIterationsForMinutes = Math.floor(60/apiCallIntervalSeconds);
   //not a whole number
   if(numberOfIterationsForMinutes % 1 !== 0){
@@ -400,7 +400,7 @@ if(precision === 'minutes'){
     console.log('The api call interval is 2: ' + apiCallInterval);
   }
 }
-if(precision === 'hours'){
+if(timeUnit === 'hours'){
   numberOfIterationsForHours = Math.floor(3600/apiCallIntervalSeconds);
   if(numberOfIterationsForHours % 1 !== 0){
     apiCallInterval = (60/numberOfIterationsForHours) * 1000;
@@ -469,7 +469,7 @@ else{
 }, apiCallInterval, {aligned: true, immediate: true});
 
 function processReturnedSentimentDataForTeam1(team1Sentiment){
-  if(precision === 'seconds'){
+  if(timeUnit === 'seconds'){
     console.log(secondsTrueScale);
     if(team1AverageSentimentArrayIndex != secondsTrueScale){
       team1AverageSentimentArray[team1AverageSentimentArrayIndex] = team1Sentiment;
@@ -487,7 +487,7 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
     }
     console.log('resultant array for sentiment average in seconds: ' + team1AverageSentimentArray);
   }
-  if(precision === 'minutes'){
+  if(timeUnit === 'minutes'){
     team1TotalSentiment = team1TotalSentiment + team1Sentiment;
     team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
     console.log(team1Sentiment);
@@ -513,7 +513,7 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
       console.log('the resultant average for the minute sentiment: ' + team1CurrentAverage);
     }
   }
-  if(precision === 'hours'){
+  if(timeUnit === 'hours'){
     team1TotalSentiment = team1TotalSentiment + team1Sentiment;
     team1AverageSentiment = team1TotalSentiment/++team1NoOfSentiments;
     console.log(team1Sentiment);
@@ -544,7 +544,7 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
 }
 
   function processReturnedSentimentDataForTeam2(team2sentiment){
-    if(precision === 'seconds'){
+    if(timeUnit === 'seconds'){
       console.log(secondsTrueScale);
       if(team2AverageSentimentArrayIndex != secondsTrueScale){
         team2AverageSentimentArray[team2AverageSentimentArrayIndex] = team2Sentiment;
@@ -560,7 +560,7 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
         team2AverageSentimentArray[team2AverageSentimentArrayIndex-1] = team2Sentiment;
       }
     }
-    if(precision === 'minutes'){
+    if(timeUnit === 'minutes'){
       team2TotalSentiment = team2TotalSentiment + team2Sentiment;
       team2AverageSentiment = team2TotalSentiment/++team2NoOfSentiments;
       if(team2NoOfSentiments === numberOfIterationsForMinutes){
@@ -582,7 +582,7 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
         team2NoOfSentiments = 0;
       }
     }
-    if(precision === 'hours'){
+    if(timeUnit === 'hours'){
       team2TotalSentiment = team2TotalSentiment + team2Sentiment;
       team2AverageSentiment = team2TotalSentiment/++team2NoOfSentiments;
       console.log(team2Sentiment);
@@ -631,7 +631,7 @@ app.get('/persistedData/:graphScale',function(req,res){
   let rateOfArrayIndexJump;
   //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
   //for seconds too!
-  if(precision === 'seconds'){
+  if(timeUnit === 'seconds'){
    rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallIntervalSeconds/clientScale);
  }
  else{
