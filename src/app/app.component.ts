@@ -42,13 +42,17 @@ export class AppComponent {
   timeScaleTitle = "For Past 30 Minutes"
   initialLabel = new Date().getMinutes() + ':' + new Date().getSeconds();
   labels = [this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel,
-  this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel]
+  this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel];
+  timeUnit = 'seconds';
+  columnNum = 10;
+  timeScale = 10;
+
 @ViewChild('chart')
     htmlRef: ElementRef;
 
-
 @ViewChild('chart2')
     htmlRef2: ElementRef;
+
   ngOnInit(){
         this.chart = new Chart(this.htmlRef.nativeElement, {
           type: 'line',
@@ -135,6 +139,14 @@ export class AppComponent {
         }
       }
 });
+    //interval = (time/scale)*minute
+
+    var sentimentAPICallInterval = this.timeScale/this.columnNum;
+    if(this.timeUnit === 'seconds'){
+      sentimentAPICallInterval = sentimentAPICallInterval*1000;
+    } else if(this.timeUnit === 'minutes'){
+      sentimentAPICallInterval = sentimentAPICallInterval*60000;
+    }
     this.http.get('http://localhost:9000/teamNames')
     .subscribe(response => {
       var data = response as teamNames;
@@ -142,7 +154,7 @@ export class AppComponent {
       this.team2Name = data.teams.team2;
     });
     setInterval(() => {
-    this.http.get('http://localhost:9000')
+    this.http.get('http://localhost:9000/newSentimentData/10')
     .subscribe(response => {
       var data = response as responseData;
       for(let index = 0; index < this.team1Sentiment.length-1; index++){
@@ -190,7 +202,7 @@ export class AppComponent {
         this.chart.update();
         this.chart2.update();
       });
-  }, 7000);
+  }, sentimentAPICallInterval);
   }
 
   public setTimeScale(){
