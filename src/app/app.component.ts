@@ -141,18 +141,15 @@ export class AppComponent {
 });
     //interval = (time/scale)*minute
 
-    var sentimentAPICallInterval = this.timeScale/this.columnNum;
-    if(this.timeUnit === 'seconds'){
-      sentimentAPICallInterval = sentimentAPICallInterval*1000;
-    } else if(this.timeUnit === 'minutes'){
-      sentimentAPICallInterval = sentimentAPICallInterval*60000;
-    }
+    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval();
+
     this.http.get('http://localhost:9000/teamNames')
     .subscribe(response => {
       var data = response as teamNames;
       this.team1Name = data.teams.team1;
       this.team2Name = data.teams.team2;
     });
+    
     setInterval(() => {
     this.http.get('http://localhost:9000/newSentimentData/10')
     .subscribe(response => {
@@ -203,6 +200,16 @@ export class AppComponent {
         this.chart2.update();
       });
   }, sentimentAPICallInterval);
+  }
+
+  public calculateNewSentimentFetchInterval(){
+    var interval = this.timeScale/this.columnNum;
+    if(this.timeUnit === 'seconds'){
+      interval = interval*1000;
+    } else if(this.timeUnit === 'minutes'){
+      interval = interval*60000;
+    }
+    return interval;
   }
 
   public setTimeScale(){
