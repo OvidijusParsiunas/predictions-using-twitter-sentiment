@@ -14,8 +14,8 @@ var client2 = {
 var client = new TwitterStreamChannels(client2);
 
 var channels = {
-	"team1" : 'Brazil',
-	"team2" : 'Costa,Rica,CostaRica'
+	"competitor1" : 'Brazil',
+	"competitor2" : 'Costa,Rica,CostaRica'
 };
 
 var stream = client.streamChannels({track:channels});
@@ -323,7 +323,7 @@ function retrieveInitialGraphScale(){
 startStreamWithFilters();
 
 function startStreamWithFilters(){
-  stream.on('channels/team1',function(tweet){
+  stream.on('channels/competitor1',function(tweet){
       // if(checkKeyWords(tweet.text)){
       //   console.log('executed');
       team1Tweets[team1Increment++] = {'text': tweet.text};
@@ -333,7 +333,7 @@ function startStreamWithFilters(){
     //}
   });
 
-  stream.on('channels/team2',function(tweet){
+  stream.on('channels/comptitor2',function(tweet){
     // if(checkKeyWords(tweet.text)){
     //console.log('executed');
       team2Tweets[team2Increment++] = {'text': tweet.text};
@@ -627,21 +627,26 @@ app.get('/newSentimentData/:timeSpan',function(req,res){
 });
 
 app.get('/persistedData/:graphScale',function(req,res){
-  let clientScale = req.params.graphScale;
+
+  res.send(intialData(req.params.graphScale));
+});
+
+function intialData(graphScale){
+  let initialData = {};
   let rateOfArrayIndexJump;
   //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
   //for seconds too!
   if(timeUnit === 'seconds'){
-   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallIntervalSeconds/clientScale);
+   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallIntervalSeconds/graphScale);
  }
  else{
-   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/clientScale);
+   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/graphScale);
  }
   let sentimentArrayIndex = rateOfArrayIndexJump;
   let team1ClientArray = [];
   let team2ClientArray = [];
   console.log('sentimentArrayIndex ' + sentimentArrayIndex);
-  for(var i = 0; i < clientScale; i++){
+  for(var i = 0; i < graphScale; i++){
     if(team1AverageSentimentArrayIndex <= sentimentArrayIndex || team2AverageSentimentArrayIndex <= sentimentArrayIndex){
       console.log('break')
       break;
@@ -652,12 +657,52 @@ app.get('/persistedData/:graphScale',function(req,res){
     team2ClientArray[i] = team2AverageSentimentArray[sentimentArrayIndex-1];
     sentimentArrayIndex = sentimentArrayIndex + rateOfArrayIndexJump;
   }
-  res.send({'data':{'team1Sentiment':team1ClientArray,'team2ClientArray':team2ClientArray, 'team1CurrentAverage': team1CurrentAverage, 'team2CurrentAverage':team2CurrentAverage}});
-});
+
+  return buildInitialDataCargo();
+}
 
 app.get('/teamNames',function(req,res){
-  res.send({'teams':{'team1':channels['team1'], 'team2':channels['team2']}});
+  res.send({'teams':{'team1':channels['competitor1'], 'team2':channels['competitor2']}});
 });
+
+app.get('/UISetUp', function(req,res){
+  res.send(buildUISetUpCargo());
+})
+
+app.get('/lastAPICallTimeStamp', function(req, res){
+  res.send(timeOfLastAPICall());
+})
+
+function buildUISetUpCargo(){
+  let teamNames = {};
+  let cargo = {};
+  teamNames['team1'] = channels['competitor1'];
+  teamNames['team2'] = channels['competitor2'];
+  cargo['teamNames'] = teamNames;
+  cargo['timeUnit'] = timeUnit;
+  cargo['availableGraphScales'] = availableGraphScales;
+  cargo['intialGraphScales'] = initialGraphScales();
+  cargo['timeOfLastAPICall'] = timeOfLastAPICall();
+  cargo['initialData'] = intialData(cargo['intialGraphScales'].graphScale);
+}
+
+function buildInitialDataCargo(team1Sentiment, team2Sentiment, team1CurrentAverage, team2CurrentAverage){
+  let initialData = {};
+  initialData['team1Sentiment'] = team1ClientArray;
+  initialData['team2Sentiment'] = team2ClientArray;
+  initialData['team1CurrentAverage'] = team1CurrentAverage;
+  initialData['team2CurrentAverage'] = team2CurrentAverage;
+  return initialData;
+}
+
+function timeOfLastAPICall(){
+  //get the last api call time in order to calculate the offset
+  //include api call interval in seconds incase data arrives too late so it can retry to calculate the offset successfully
+}
+
+function initialGraphScales(){
+  //obtainInitialGraphScales
+}
 
 app.get('/stopStream', function(req,res){
   stream.stop();
