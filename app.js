@@ -30,8 +30,8 @@ XAxisRange - number of points on the graph x axis
 
 //select the time unit and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
-let timeUnit = 'minutes';
-let scaleOfPersistance = 20;
+let timeUnit = 'seconds';
+let scaleOfPersistance = 300;
 
 let apiCallIntervalSeconds = 5;
 let availableTimesIncreaseRate = 10;
@@ -39,7 +39,8 @@ let scaleOfPersistanceAsOnlyScale = false;
 //can be removed if the user is allowed to pick their scale
 let calculateAverages = true;
 let minimumGraphScale = 5;
-let maximumGraphScale = 20;
+let maximumGraphScale = 80;
+let preferredInitialGraphScale = 14;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
 let secondsTrueScale;
@@ -115,7 +116,42 @@ let availableTimeSpans = [];
 let availableGraphScales = {};
 let sentimentAveragesForTeam1 = {};
 let sentimentAveragesForTeam2 = {};
+let startingTimeSpan;
+let startingXAxisScale;
 setUpAvailableGraphDimensions();
+identifyStartingTimespanPerPreferredXAxisScale();
+
+function identifyStartingTimespanPerPreferredXAxisScale(){
+  var foundPreferredScale = 0;
+  var lowestDifferenceToPreferredScale;
+  var closestIdentifiedScale;
+  var timeSpanForClosestIdentifiedScale;
+  timeSpanLoop:
+  for(var timeSpan in availableGraphScales){
+    var xAxisScales = availableGraphScales[timeSpan];
+    xAxisScalesLoop:
+    for(var i = 0; i < xAxisScales.length; i++){
+      var differenceToPreferredScale = Math.abs(preferredInitialGraphScale - xAxisScales[i]);
+      if(differenceToPreferredScale === 0){
+        startingTimeSpan = timeSpan;
+        startingXAxisScale = xAxisScales[i];
+        foundPreferredScale = 1;
+        break timeSpanLoop;
+      }
+      else{
+        if(lowestDifferenceToPreferredScale > differenceToPreferredScale || lowestDifferenceToPreferredScale === undefined){
+          lowestDifferenceToPreferredScale = differenceToPreferredScale;
+          closestIdentifiedScale = xAxisScales[i];
+          timeSpanForClosestIdentifiedScale = timeSpan;
+        }
+      }
+    }
+  }
+  if(!foundPreferredScale){
+    startingXAxisScale = closestIdentifiedScale;
+    startingTimeSpan = timeSpanForClosestIdentifiedScale;
+  }
+}
 
 function setUpAvailableGraphDimensions(){
   if(!scaleOfPersistanceAsOnlyScale){
@@ -670,7 +706,7 @@ app.get('/UISetUp', function(req,res){
 })
 
 app.get('/lastAPICallTimeStamp', function(req, res){
-  res.send(timeOfLastAPICall());
+  res.send(getTimeOfLastAPICall());
 })
 
 function buildUISetUpCargo(){
@@ -681,8 +717,8 @@ function buildUISetUpCargo(){
   cargo['teamNames'] = teamNames;
   cargo['timeUnit'] = timeUnit;
   cargo['availableGraphScales'] = availableGraphScales;
-  cargo['intialGraphScales'] = initialGraphScales();
-  cargo['timeOfLastAPICall'] = timeOfLastAPICall();
+  cargo['intialGraphScales'] = calculateInitialGraphScales();
+  cargo['timeOfLastAPICall'] = getTimeOfLastAPICall();
   cargo['initialData'] = intialData(cargo['intialGraphScales'].graphScale);
 }
 
@@ -695,13 +731,14 @@ function buildInitialDataCargo(team1Sentiment, team2Sentiment, team1CurrentAvera
   return initialData;
 }
 
-function timeOfLastAPICall(){
+function getTimeOfLastAPICall(){
   //get the last api call time in order to calculate the offset
   //include api call interval in seconds incase data arrives too late so it can retry to calculate the offset successfully
 }
 
-function initialGraphScales(){
+function calculateInitialGraphScales(){
   //obtainInitialGraphScales
+  //do this when generating the xaxis scale
 }
 
 app.get('/stopStream', function(req,res){
