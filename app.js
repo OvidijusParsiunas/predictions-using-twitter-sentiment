@@ -116,42 +116,12 @@ let availableTimeSpans = [];
 let availableGraphScales = {};
 let sentimentAveragesForTeam1 = {};
 let sentimentAveragesForTeam2 = {};
+
+let startingGraphScales = {};
 let startingTimeSpan;
 let startingXAxisScale;
 setUpAvailableGraphDimensions();
 identifyStartingTimespanPerPreferredXAxisScale();
-
-function identifyStartingTimespanPerPreferredXAxisScale(){
-  var foundPreferredScale = 0;
-  var lowestDifferenceToPreferredScale;
-  var closestIdentifiedScale;
-  var timeSpanForClosestIdentifiedScale;
-  timeSpanLoop:
-  for(var timeSpan in availableGraphScales){
-    var xAxisScales = availableGraphScales[timeSpan];
-    xAxisScalesLoop:
-    for(var i = 0; i < xAxisScales.length; i++){
-      var differenceToPreferredScale = Math.abs(preferredInitialGraphScale - xAxisScales[i]);
-      if(differenceToPreferredScale === 0){
-        startingTimeSpan = timeSpan;
-        startingXAxisScale = xAxisScales[i];
-        foundPreferredScale = 1;
-        break timeSpanLoop;
-      }
-      else{
-        if(lowestDifferenceToPreferredScale > differenceToPreferredScale || lowestDifferenceToPreferredScale === undefined){
-          lowestDifferenceToPreferredScale = differenceToPreferredScale;
-          closestIdentifiedScale = xAxisScales[i];
-          timeSpanForClosestIdentifiedScale = timeSpan;
-        }
-      }
-    }
-  }
-  if(!foundPreferredScale){
-    startingXAxisScale = closestIdentifiedScale;
-    startingTimeSpan = timeSpanForClosestIdentifiedScale;
-  }
-}
 
 function setUpAvailableGraphDimensions(){
   if(!scaleOfPersistanceAsOnlyScale){
@@ -218,6 +188,38 @@ function setUpSentimentAveragesObject(){
   //structure of sentimentAverages object properties: {[total, average]}
   availableTimeSpans.forEach((timeSpan) => {sentimentAveragesForTeam1[timeSpan] = [0,0];
                                             sentimentAveragesForTeam2[timeSpan] = [0,0];});
+}
+
+function identifyStartingTimespanPerPreferredXAxisScale(){
+  var foundPreferredScale = 0;
+  var lowestDifferenceToPreferredScale = scaleOfPersistance;
+  var closestIdentifiedScale;
+  var timeSpanForClosestIdentifiedScale;
+  timeSpanLoop:
+  for(var timeSpan in availableGraphScales){
+    var xAxisScales = availableGraphScales[timeSpan];
+    xAxisScalesLoop:
+    for(var i = 0; i < xAxisScales.length; i++){
+      var differenceToPreferredScale = Math.abs(preferredInitialGraphScale - xAxisScales[i]);
+      if(differenceToPreferredScale === 0){
+        startingGraphScales['timeSpan'] = timeSpan;
+        startingGraphScales['xAxisScale'] = xAxisScales[i];
+        foundPreferredScale = 1;
+        break timeSpanLoop;
+      }
+      else{
+        if(lowestDifferenceToPreferredScale > differenceToPreferredScale){
+          lowestDifferenceToPreferredScale = differenceToPreferredScale;
+          closestIdentifiedScale = xAxisScales[i];
+          timeSpanForClosestIdentifiedScale = timeSpan;
+        }
+      }
+    }
+  }
+  if(!foundPreferredScale){
+    startingGraphScales['startingXAxisScale'] = closestIdentifiedScale;
+    startingGraphScales['xAxisScale'] = timeSpanForClosestIdentifiedScale;
+  }
 }
 
 /*  Simple description of the operations performed in calculateSentimentAverages:
@@ -369,7 +371,7 @@ function startStreamWithFilters(){
     //}
   });
 
-  stream.on('channels/comptitor2',function(tweet){
+  stream.on('channels/competitor2',function(tweet){
     // if(checkKeyWords(tweet.text)){
     //console.log('executed');
       team2Tweets[team2Increment++] = {'text': tweet.text};
@@ -469,7 +471,7 @@ if(team1Increment > 0){
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
     team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
-    processReturnedSentimentDataForTeam1(team1Sentiment);
+    processReturnedSentimentDataForTeam1();
     }
   else{
       console.log(error);
@@ -479,7 +481,8 @@ if(team1Increment > 0){
   })
 }
 else{
-  processReturnedSentimentDataForTeam1(2);
+  team1Sentiment = 2;
+  processReturnedSentimentDataForTeam1();
 }
 if(team2Increment > 0){
   options.body = {"data": team2Tweets};
@@ -489,7 +492,7 @@ if(team2Increment > 0){
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
       team2Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
-      processReturnedSentimentDataForTeam2(team2Sentiment);
+      processReturnedSentimentDataForTeam2();
     }
   else{
       console.log(error);
@@ -500,11 +503,12 @@ if(team2Increment > 0){
   , 2000);
 }
 else{
-  processReturnedSentimentDataForTeam2(2)
+  team2Sentiment = 2;
+  processReturnedSentimentDataForTeam2();
 }
 }, apiCallInterval, {aligned: true, immediate: true});
 
-function processReturnedSentimentDataForTeam1(team1Sentiment){
+function processReturnedSentimentDataForTeam1(){
   if(timeUnit === 'seconds'){
     console.log(secondsTrueScale);
     if(team1AverageSentimentArrayIndex != secondsTrueScale){
@@ -579,7 +583,7 @@ function processReturnedSentimentDataForTeam1(team1Sentiment){
   team1Increment = 0;
 }
 
-  function processReturnedSentimentDataForTeam2(team2sentiment){
+  function processReturnedSentimentDataForTeam2(){
     if(timeUnit === 'seconds'){
       console.log(secondsTrueScale);
       if(team2AverageSentimentArrayIndex != secondsTrueScale){
@@ -674,10 +678,10 @@ function intialData(graphScale){
   //for seconds too!
   if(timeUnit === 'seconds'){
    rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallIntervalSeconds/graphScale);
- }
- else{
+  }
+  else{
    rateOfArrayIndexJump = Math.floor(scaleOfPersistance/graphScale);
- }
+  }
   let sentimentArrayIndex = rateOfArrayIndexJump;
   let team1ClientArray = [];
   let team2ClientArray = [];
@@ -693,7 +697,6 @@ function intialData(graphScale){
     team2ClientArray[i] = team2AverageSentimentArray[sentimentArrayIndex-1];
     sentimentArrayIndex = sentimentArrayIndex + rateOfArrayIndexJump;
   }
-
   return buildInitialDataCargo();
 }
 
@@ -717,28 +720,25 @@ function buildUISetUpCargo(){
   cargo['teamNames'] = teamNames;
   cargo['timeUnit'] = timeUnit;
   cargo['availableGraphScales'] = availableGraphScales;
-  cargo['intialGraphScales'] = calculateInitialGraphScales();
+  cargo['startingGraphScales'] = startingGraphScales;
   cargo['timeOfLastAPICall'] = getTimeOfLastAPICall();
-  cargo['initialData'] = intialData(cargo['intialGraphScales'].graphScale);
+  cargo['startingData'] = intialData(startingGraphScales['xAxisScale']);
+  return cargo;
 }
 
-function buildInitialDataCargo(team1Sentiment, team2Sentiment, team1CurrentAverage, team2CurrentAverage){
+function buildInitialDataCargo(){
   let initialData = {};
-  initialData['team1Sentiment'] = team1ClientArray;
-  initialData['team2Sentiment'] = team2ClientArray;
+  initialData['team1Sentiment'] = team1Sentiment;
+  initialData['team2Sentiment'] = team2Sentiment;
   initialData['team1CurrentAverage'] = team1CurrentAverage;
   initialData['team2CurrentAverage'] = team2CurrentAverage;
+  console.log('///////////////////////// ' + team1Sentiment + ' ' + team2Sentiment + ' ' + team1CurrentAverage + ' ' + team2CurrentAverage + ' ' + JSON.stringify(initialData));
   return initialData;
 }
 
 function getTimeOfLastAPICall(){
   //get the last api call time in order to calculate the offset
   //include api call interval in seconds incase data arrives too late so it can retry to calculate the offset successfully
-}
-
-function calculateInitialGraphScales(){
-  //obtainInitialGraphScales
-  //do this when generating the xaxis scale
 }
 
 app.get('/stopStream', function(req,res){
