@@ -668,10 +668,10 @@ app.get('/newSentimentData/:timeSpan',function(req,res){
 
 app.get('/persistedData/:graphScale',function(req,res){
 
-  res.send(parseInitialData(req.params.graphScale));
+  res.send(getPersistedSentimentData(req.params.graphScale));
 });
 
-function parseInitialData(graphScale){
+function getPersistedSentimentData(graphScale){
   let initialData = {};
   let rateOfArrayIndexJump;
   //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
@@ -722,7 +722,7 @@ function buildUISetUpCargo(){
   cargo['availableGraphScales'] = availableGraphScales;
   cargo['startingGraphScales'] = startingGraphScales;
   cargo['timeOfLastAPICall'] = getTimeOfLastAPICall();
-  cargo['startingData'] = parseInitialData(startingGraphScales['xAxisScale']);
+  cargo['startingData'] = getPersistedSentimentData(startingGraphScales['xAxisScale']);
   return cargo;
 }
 
