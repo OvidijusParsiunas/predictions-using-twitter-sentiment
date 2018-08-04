@@ -31,7 +31,7 @@ XAxisRange - number of points on the graph x axis
 //select the time unit and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let timeUnit = 'seconds';
-let scaleOfPersistance = 300;
+let scaleOfPersistance = 120;
 
 let apiCallIntervalSeconds = 5;
 let availableTimesIncreaseRate = 10;
@@ -431,11 +431,9 @@ if(timeUnit === 'minutes'){
   //not a whole number
   if(numberOfIterationsForMinutes % 1 !== 0){
     apiCallInterval = (60/numberOfIterationsForMinutes) * 1000;
-    console.log('The api call interval is 1: ' + apiCallInterval);
   }
   else{
     apiCallInterval = apiCallIntervalSeconds * 1000;
-    console.log('The api call interval is 2: ' + apiCallInterval);
   }
 }
 if(timeUnit === 'hours'){
@@ -666,28 +664,27 @@ app.get('/newSentimentData/:timeSpan',function(req,res){
   res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':sentimentAveragesForTeam1[timeSpan], 'team2AverageSentiment':team2CurrentAverage}});
 });
 
-app.get('/persistedData/:graphScale',function(req,res){
+app.get('/persistedData/:timeSpan/:graphScale',function(req,res){
 
-  res.send(getPersistedSentimentData(req.params.graphScale));
+  res.send(getPersistedSentimentData(req.params.timeSpan, req.params.graphScale));
 });
 
-function getPersistedSentimentData(graphScale){
-  let initialData = {};
+function getPersistedSentimentData(timeSpan, graphScale){
   let rateOfArrayIndexJump;
   //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
   //for seconds too!
   if(timeUnit === 'seconds'){
-   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/apiCallIntervalSeconds/graphScale);
+   rateOfArrayIndexJump = Math.floor(timeSpan/apiCallIntervalSeconds/graphScale);
   }
   else{
-   rateOfArrayIndexJump = Math.floor(scaleOfPersistance/graphScale);
+   rateOfArrayIndexJump = Math.floor(timeSpan/graphScale);
   }
   let sentimentArrayIndex = rateOfArrayIndexJump;
   let team1ClientArray = [];
   let team2ClientArray = [];
   console.log('sentimentArrayIndex ' + sentimentArrayIndex);
   for(var i = 0; i < graphScale; i++){
-    if(team1AverageSentimentArrayIndex <= sentimentArrayIndex || team2AverageSentimentArrayIndex <= sentimentArrayIndex){
+    if(team1AverageSentimentArrayIndex < sentimentArrayIndex || team2AverageSentimentArrayIndex < sentimentArrayIndex){
       console.log('break')
       break;
     };
@@ -697,7 +694,16 @@ function getPersistedSentimentData(graphScale){
     team2ClientArray[i] = team2AverageSentimentArray[sentimentArrayIndex-1];
     sentimentArrayIndex = sentimentArrayIndex + rateOfArrayIndexJump;
   }
-  return buildInitialDataCargo();
+  return buildStartingDataCargo(team1ClientArray, team2ClientArray, timeSpan);
+}
+
+function buildStartingDataCargo(team1ClientArray, team2ClientArray, timeSpan){
+  let initialData = {};
+  initialData['team1Sentiment'] = team1ClientArray;
+  initialData['team2Sentiment'] = team2ClientArray;
+  initialData['team1CurrentAverage'] = sentimentAveragesForTeam1[timeSpan][1];
+  initialData['team2CurrentAverage'] = sentimentAveragesForTeam2[timeSpan][1];
+  return initialData;
 }
 
 app.get('/teamNames',function(req,res){
@@ -722,18 +728,8 @@ function buildUISetUpCargo(){
   cargo['availableGraphScales'] = availableGraphScales;
   cargo['startingGraphScales'] = startingGraphScales;
   cargo['timeOfLastAPICall'] = getTimeOfLastAPICall();
-  cargo['startingData'] = getPersistedSentimentData(startingGraphScales['xAxisScale']);
+  cargo['startingData'] = getPersistedSentimentData(startingGraphScales['timeSpan'], startingGraphScales['xAxisScale']);
   return cargo;
-}
-
-function buildInitialDataCargo(){
-  let initialData = {};
-  initialData['team1Sentiment'] = team1Sentiment;
-  initialData['team2Sentiment'] = team2Sentiment;
-  initialData['team1CurrentAverage'] = team1CurrentAverage;
-  initialData['team2CurrentAverage'] = team2CurrentAverage;
-  console.log('///////////////////////// ' + team1Sentiment + ' ' + team2Sentiment + ' ' + team1CurrentAverage + ' ' + team2CurrentAverage + ' ' + JSON.stringify(initialData));
-  return initialData;
 }
 
 function getTimeOfLastAPICall(){
