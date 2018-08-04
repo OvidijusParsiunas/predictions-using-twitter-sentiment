@@ -202,7 +202,7 @@ function identifyStartingTimespanPerPreferredXAxisScale(){
     for(var i = 0; i < xAxisScales.length; i++){
       var differenceToPreferredScale = Math.abs(preferredInitialGraphScale - xAxisScales[i]);
       if(differenceToPreferredScale === 0){
-        startingGraphScales['timeSpan'] = timeSpan;
+        startingGraphScales['timeSpan'] = parseInt(timeSpan);
         startingGraphScales['xAxisScale'] = xAxisScales[i];
         foundPreferredScale = 1;
         break timeSpanLoop;
@@ -348,16 +348,6 @@ function retrieveAvailableXAxisRangesForTimeSpan(timeSpan){
 //check that team2 data is returned correctly
 //try hours to see if the returned data is correct
 
-//this logic will be in the frontend
-function retrieveInitialGraphScale(){
-  if(scaleOfPersistance < 10 || scaleOfPersistanceAsOnlyScale){
-    return scaleOfPersistance.toString();
-  }
-  else{
-    return "10";
-  }
-}
-
 startStreamWithFilters();
 
 function startStreamWithFilters(){
@@ -419,7 +409,9 @@ let team2CurrentTotal = 0;
 let team2CurrentAverage = 0;
 let numberOfIterationsForMinutes;
 let numberOfIterationsForHours;
-var apiCallInterval;
+let apiCallInterval;
+let secondsBeforeApiCallForNextTeam = 2000;
+let lastAPICallTimeStamp = 0;
 
 //appropriator that augments api call interval so minute/hour can be identified for a set number of iterations
 //will be changed when a private sentiment analysis algorithm is installed as we will be able to call every minute/hour, completely disregarding the size of the bag of words
@@ -466,6 +458,7 @@ accurateInterval(function(scheduledTime) {
 if(team1Increment > 0){
   options.body = {"data": team1Tweets};
   //console.log(JSON.stringify(options.body));
+  lastAPICallTimeStamp = Date.now();
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
     team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
@@ -498,7 +491,7 @@ if(team2Increment > 0){
       team2Increment = 0;
     }
   })}
-  , 2000);
+  , secondsBeforeApiCallForNextTeam);
 }
 else{
   team2Sentiment = 2;
@@ -665,7 +658,6 @@ app.get('/newSentimentData/:timeSpan',function(req,res){
 });
 
 app.get('/persistedData/:timeSpan/:graphScale',function(req,res){
-
   res.send(getPersistedSentimentData(req.params.timeSpan, req.params.graphScale));
 });
 
@@ -706,16 +698,12 @@ function buildStartingDataCargo(team1ClientArray, team2ClientArray, timeSpan){
   return initialData;
 }
 
-app.get('/teamNames',function(req,res){
-  res.send({'teams':{'team1':channels['competitor1'], 'team2':channels['competitor2']}});
-});
-
 app.get('/UISetUp', function(req,res){
   res.send(buildUISetUpCargo());
 })
 
-app.get('/lastAPICallTimeStamp', function(req, res){
-  res.send(getTimeOfLastAPICall());
+app.get('/lastSentimentAPICallTimeStamp', function(req, res){
+  res.send(buildLastSentimentAPICallUICargo());
 })
 
 function buildUISetUpCargo(){
@@ -727,14 +715,19 @@ function buildUISetUpCargo(){
   cargo['timeUnit'] = timeUnit;
   cargo['availableGraphScales'] = availableGraphScales;
   cargo['startingGraphScales'] = startingGraphScales;
-  cargo['timeOfLastAPICall'] = getTimeOfLastAPICall();
+  cargo['timeOfLastAPICall'] = buildLastSentimentAPICallUICargo();
   cargo['startingData'] = getPersistedSentimentData(startingGraphScales['timeSpan'], startingGraphScales['xAxisScale']);
   return cargo;
 }
 
-function getTimeOfLastAPICall(){
+function buildLastSentimentAPICallUICargo(){
   //get the last api call time in order to calculate the offset
   //include api call interval in seconds incase data arrives too late so it can retry to calculate the offset successfully
+  var lastAPICallCargo = {};
+  lastAPICallCargo['lastAPICallTimeStamp'] = lastAPICallTimeStamp;
+  lastAPICallCargo['secondsBeforeApiCallForNextTeam'] = secondsBeforeApiCallForNextTeam;
+  lastAPICallCargo['apiCallInterval'] = apiCallInterval;
+  return lastAPICallCargo;
 }
 
 app.get('/stopStream', function(req,res){
@@ -747,11 +740,6 @@ app.get('/getPersistedData10Fields', function(req,res){
 });
 
 app.get('/getPersistedData20Fields', function(req,res){
-});
-
-//potential functionality
-app.get('/getInitialGraphScale', function(req, res){
-  res.send(retrieveInitialGraphScale());
 });
 
 app.get('/getAvailableGraphGraphDimensions', function(req, res){
