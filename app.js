@@ -702,10 +702,6 @@ app.get('/UISetUp', function(req,res){
   res.send(buildUISetUpCargo());
 })
 
-app.get('/lastSentimentAPICallTimeStamp', function(req, res){
-  res.send(buildLastSentimentAPICallUICargo());
-})
-
 function buildUISetUpCargo(){
   let teamNames = {};
   let cargo = {};
@@ -719,6 +715,10 @@ function buildUISetUpCargo(){
   cargo['startingData'] = getPersistedSentimentData(startingGraphScales['timeSpan'], startingGraphScales['xAxisScale']);
   return cargo;
 }
+
+app.get('/lastSentimentAPICallTimeStamp', function(req, res){
+  res.send(buildLastSentimentAPICallUICargo());
+})
 
 function buildLastSentimentAPICallUICargo(){
   //get the last api call time in order to calculate the offset
@@ -735,20 +735,8 @@ app.get('/stopStream', function(req,res){
   res.send('Stream has been stopped');
 });
 
-//send the amount of fields as a parameter
-app.get('/getPersistedData10Fields', function(req,res){
-});
-
-app.get('/getPersistedData20Fields', function(req,res){
-});
-
 app.get('/getAvailableGraphGraphDimensions', function(req, res){
   res.send(retrieveAvailableGraphDimensions());
-});
-
-app.get('/getRetrievalRate', function(req, res){
-  //get parameter, the rate will be different for a different scale
-  //scaleOfPersistance/graphScale
 });
 
 app.post('/startWithDifferentTeams', function(req, res){
