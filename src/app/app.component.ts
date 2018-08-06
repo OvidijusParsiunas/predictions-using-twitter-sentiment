@@ -43,7 +43,7 @@ export class AppComponent {
   initialLabel = new Date().getMinutes() + ':' + new Date().getSeconds();
   labels = [this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel,
   this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel];
-  timeUnit = 'seconds';
+  timeUnit = 'minutes';
   columnNum = 10;
   timeScale = 10;
 
@@ -149,7 +149,7 @@ export class AppComponent {
       this.team1Name = data.teams.team1;
       this.team2Name = data.teams.team2;
     });
-    
+
     setInterval(() => {
     this.http.get('http://localhost:9000/newSentimentData/10')
     .subscribe(response => {

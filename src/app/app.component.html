@@ -1,9 +1,17 @@
-<div class="modal-body row" style="margin-left: 0; margin-right:0">
+<div style="text-align:center">
+  <!-- simple name only that assumes the 'fas' prefix -->
+  <fa-icon icon="coffee"></fa-icon>
+  <!-- ['fas', 'coffee'] is an array that indicates the [prefix, iconName] -->
+  <fa-icon [icon]="['fas', 'coffee']"></fa-icon>
+</div>
+<button type="button" class="btn btn-default" aria-label="Left Align" style="background-color: #ffeb99">
+  <fa name="cog" size="2x" ></fa>
+  <span class="glyphicon glyphicon-cog"></span>
+</button><div class="modal-body row" style="margin-left: 0; margin-right:0">
   <div class="col-md-6">
+
     <div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" style="position:absolute" aria-haspopup="true" aria-expanded="false">
-      Customisation
-    </button>
+
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
       <a class="dropdown-item" (click)="combinedView()">Combined View</a>
       <a class="dropdown-item" (click)="setOneMinute()">1 minute time scale</a>

@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^6.0.3",
     "@angular/platform-browser-dynamic": "^6.0.3",
     "@angular/router": "^6.0.3",
+    "@fortawesome/fontawesome-free": "^5.2.0",
     "@ng-bootstrap/ng-bootstrap": "^2.1.2",
     "accurate-interval": "^1.0.9",
     "bootstrap": "^4.1.1",
