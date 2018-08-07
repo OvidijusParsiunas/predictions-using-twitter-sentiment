@@ -1,24 +1,15 @@
-<div style="text-align:center">
-  <!-- simple name only that assumes the 'fas' prefix -->
-  <fa-icon icon="coffee"></fa-icon>
-  <!-- ['fas', 'coffee'] is an array that indicates the [prefix, iconName] -->
-  <fa-icon [icon]="['fas', 'coffee']"></fa-icon>
-</div>
-<button type="button" class="btn btn-default" aria-label="Left Align" style="background-color: #ffeb99">
-  <fa name="cog" size="2x" ></fa>
-  <span class="glyphicon glyphicon-cog"></span>
-</button><div class="modal-body row" style="margin-left: 0; margin-right:0">
+<div class="modal-body row" style="margin-left: 0; margin-right:0">
   <div class="col-md-6">
 
     <div class="dropdown">
+      <button type="button dropdown-toggle" type="button" data-toggle="dropdown" id="dropdownMenuButton" class="btn btn-default" aria-label="Left Align" style="border-width: 2px; background-color: #D60E10; border-color: #ffeb99;">
 
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <fa name="cog" size="2x" style="color: #ffeb99"></fa>
+      </button>
+    <div class="dropdown-menu" style="background-color:  #fff5cc
+" aria-labelledby="dropdownMenuButton">
       <a class="dropdown-item" (click)="combinedView()">Combined View</a>
       <a class="dropdown-item" (click)="setOneMinute()">1 minute time scale</a>
-      <a class="dropdown-item" (click)="setThirtyMinutes()">30 minute time scale</a>
-      <a class="dropdown-item" (click)="setOneHour()">1 hour time scale</a>
-      <a class="dropdown-item" (click)="setTwoHours()">2 hour time scale</a>
-      <a class="dropdown-item" (click)="setFourHours()">4 hour time scale</a>
 </div>
   </div>
     <div class="centered1" id="teamCards1">
