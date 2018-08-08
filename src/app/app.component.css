@@ -27,6 +27,7 @@
   }
   #dropdownMenuButton {
     position: static;
+    margin-left: 1rem;
   }
 }
 
