@@ -15,6 +15,7 @@
 .right {
     right: 0;
 }
+
 @media (max-width:768px) {
   .centered1 {
     margin: 1rem;
@@ -24,13 +25,9 @@
     margin: 1rem;
     text-align: center;
   }
-  .btn {
+  #dropdownMenuButton {
     position: static;
-    background-color: green;
   }
-}
-.dropdown-menu >a:active {
-    background-color: white;
 }
 
 @media (min-width:768px) {
@@ -40,20 +37,42 @@
     left: 10%;
     width: 62%;
     text-align: center;
-}
-.centered2 {
+  }
+  .centered2 {
     margin-top: 20vh;
     position: absolute;
     right: 10%;
     width: 62%;
     text-align: center;
-}
-  .btn {
+  }
+  #dropdownMenuButton {
     position: absolute;
   }
 }
 
-#titleCard{
+.dropdown-menu {
+  background-color: #fffdf4;
+}
+
+.dropdown-menu >a:active {
+    background-color: white;
+}
+
+.dropdown-menu >a:hover {
+    background-color: #fff0b3;
+}
+
+.settings-button {
+    color: #fff0b3;
+}
+
+#dropdownMenuButton {
+  border-width: 2px;
+  background-color: #cc0000;
+  border-color: #fff0b3;
+}
+
+#titleCard {
   background-color: #ffeb99;
 }
 
@@ -97,7 +116,7 @@
   transition-timing-function: ease;
 }
 
-.team1Sparkle{
+.team1Sparkle {
 width:20px;
 height:20px;
 background-color:red;
@@ -110,7 +129,7 @@ background:url(http://i.imgur.com/2T5M8.png?1);
  	moveleft 20s infinite steps(1)
 }
 
-.team2Sparkle{
+.team2Sparkle {
 width:20px;
 height:20px;
 background-color:red;

@@ -1,31 +1,28 @@
 <div class="modal-body row" style="margin-left: 0; margin-right:0">
   <div class="col-md-6">
-
     <div class="dropdown">
-      <button type="button dropdown-toggle" type="button" data-toggle="dropdown" id="dropdownMenuButton" class="btn btn-default" aria-label="Left Align" style="border-width: 2px; background-color: #D60E10; border-color: #ffeb99;">
-
-      <fa name="cog" size="2x" style="color: #ffeb99"></fa>
+      <button type="button dropdown-toggle" type="button" data-toggle="dropdown" id="dropdownMenuButton" class="btn btn-default" aria-label="Left Align">
+        <fa name="cog" size="2x" class="settings-button"></fa>
       </button>
-    <div class="dropdown-menu" style="background-color:  #fff5cc
-" aria-labelledby="dropdownMenuButton">
-      <a class="dropdown-item" (click)="combinedView()">Combined View</a>
-      <a class="dropdown-item" (click)="setOneMinute()">1 minute time scale</a>
-</div>
-  </div>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" (click)="combinedView()">Combined View</a>
+        <a class="dropdown-item" (click)="setOneMinute()">Diagram Settings</a>
+      </div>
+    </div>
     <div class="centered1" id="teamCards1">
       <div class="card">
         <div [hidden]="team1Sparkles" class="team1Sparkle"></div>
         <div #team1TitleCard class="card-body" id="titleCard">
-        <h2 class="card-title">Brazil</h2>
-      </div>
+          <h2 class="card-title">Brazil</h2>
+        </div>
       </div>
       <div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Average Sentiment Score: {{team1AverageSentiment}}</h5>
-    <canvas #chart></canvas>
-  </div>
-</div>
-</div>
+        <div class="card-body">
+          <h5 class="card-title">Average Sentiment Score: {{team1AverageSentiment}}</h5>
+          <canvas #chart></canvas>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="col-md-6">
     <div class="centered2" id="teamCards2">
@@ -35,12 +32,12 @@
       <h2 class="card-title">Costa Rica</h2>
       </div>
       </div>
-    <div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Average Sentiment Score: {{team2AverageSentiment}}</h5>
-    <canvas #chart2></canvas>
-  </div>
-</div>
-</div>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Average Sentiment Score: {{team2AverageSentiment}}</h5>
+          <canvas #chart2></canvas>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
