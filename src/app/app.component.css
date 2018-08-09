@@ -1,3 +1,7 @@
+#canvas {
+  margin-left: 0; margin-right:0; padding: 10px;
+}
+
 .split {
     height: 100%;
     width: 50%;
@@ -27,7 +31,8 @@
   }
   #dropdownMenuButton {
     position: static;
-    margin-left: 1rem;
+    margin-top: 12px;
+    margin-left: 20px;
   }
 }
 
@@ -48,7 +53,13 @@
   }
   #dropdownMenuButton {
     position: absolute;
+    margin-top: 10px;
+    margin-left: 10px;
   }
+}
+
+.dropdown {
+  z-index: 1;
 }
 
 .dropdown-menu {
