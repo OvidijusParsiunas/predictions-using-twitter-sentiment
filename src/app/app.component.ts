@@ -46,6 +46,7 @@ export class AppComponent {
   timeUnit = 'minutes';
   columnNum = 10;
   timeScale = 10;
+  hideCombinedView: boolean = true;
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -68,7 +69,12 @@ export class AppComponent {
             pointBorderColor: ["Red"],
             labels: this.labels
           },
-          options: {legend: { display: false },
+          options: {
+            legend: { display: false },
+            if(hideCombinedView){
+              responsive: true,
+              maintainAspectRatio: false
+            }
             scaleFontColor: 'White',
             scales: {
                 yAxes : [{

@@ -7,6 +7,7 @@
     <a class="dropdown-item" (click)="setOneMinute()">Diagram Settings</a>
   </div>
 </div>
+<div [hidden]="!hideCombinedView">
 <div class="modal-body row" id="canvas">
   <div class="col-md-6">
     <div class="centered1" id="teamCards1">
@@ -41,3 +42,24 @@
     </div>
   </div>
 </div>
+</div>
+<div [hidden]="hideCombinedView">
+  <div class="modal-body row" id="canvas">
+      <div class="combinedViewCenter">
+        <div class="card">
+          <div [hidden]="team1Sparkles" class="team1Sparkle"></div>
+          <div #team1TitleCard class="card-body" id="combinedViewTitleCard">
+            <h2 class="card-title">Brazil</h2>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" >
+            <h5 class="card-title">Average Sentiment Score: {{team1AverageSentiment}}</h5>
+            <div class="chart-container" style="position: relative; height:40vh;">
+              <canvas #chart ></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
