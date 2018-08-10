@@ -2,14 +2,6 @@
   margin-left: 0; margin-right:0; padding: 10px;
 }
 
-.left {
-    left: 0;
-}
-
-.right {
-    right: 0;
-}
-
 @media (max-width:768px) {
   .centered1 {
     margin: 1rem;
