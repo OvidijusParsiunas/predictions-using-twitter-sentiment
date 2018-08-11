@@ -11,10 +11,22 @@
     margin: 1rem;
     text-align: center;
   }
+  .combinedViewCenter {
+    margin-top: 2vh;
+    position: relative;
+    left: 5%;
+    width: 90%;
+    text-align: center;
+  }
+  #combinedViewTitleCard {
+    height: 10vh;
+    padding-top: 1vh;
+  }
   #dropdownMenuButton {
     position: static;
-    margin-top: 12px;
-    margin-left: 20px;
+    margin-top: 2px;
+    margin-left: 2px;
+    padding: 2px;
   }
   #titleCard:hover:after {
     left: 120%;
@@ -42,6 +54,8 @@
     left: 5%;
     width: 90%;
     text-align: center;
+  }
+  #combinedViewTitleCard {
   }
   #dropdownMenuButton {
     position: absolute;
@@ -85,8 +99,6 @@
 
 #combinedViewTitleCard {
   background-color: #ffeb99;
-  height: 15vh;
-  padding-top: 1vh;
 }
 
 #titleCard {

@@ -31,6 +31,7 @@ export class AppComponent {
   constructor(@Inject(DOCUMENT) private document: any, private http: HttpClient){}
   chart: Chart;
   chart2: Chart;
+  chart3: Chart;
   team1Name = 'Team 1 Name';
   team2Name = 'Team 2 Name';
   team1Sentiment  = [0,0,0,0,0,0,0,0,0,0];
@@ -46,13 +47,16 @@ export class AppComponent {
   timeUnit = 'minutes';
   columnNum = 10;
   timeScale = 10;
-  hideCombinedView: boolean = true;
+  hideCombinedView: boolean = false;
 
 @ViewChild('chart')
     htmlRef: ElementRef;
 
 @ViewChild('chart2')
     htmlRef2: ElementRef;
+
+@ViewChild('chart3')
+    htmlRef3: ElementRef;
 
   ngOnInit(){
         this.chart = new Chart(this.htmlRef.nativeElement, {
@@ -70,12 +74,10 @@ export class AppComponent {
             labels: this.labels
           },
           options: {
-            legend: { display: false },
-            if(hideCombinedView){
+              legend: { display: false },
               responsive: true,
-              maintainAspectRatio: false
-            }
-            scaleFontColor: 'White',
+              maintainAspectRatio: this.hideCombinedView ? true : false,
+              scaleFontColor: 'White',
             scales: {
                 yAxes : [{
                     ticks : {
@@ -144,6 +146,52 @@ export class AppComponent {
             }]
         }
       }
+});
+
+this.chart3 = new Chart(this.htmlRef3.nativeElement, {
+  type: 'line',
+  data: {
+    datasets: [{
+        data: this.team1Sentiment,
+        borderColor: "Red",
+
+        fill: true
+      }
+    ],
+    backgroundColor: ["Red"],
+    pointBorderColor: ["Red"],
+    labels: this.labels
+  },
+  options: {
+      legend: { display: false },
+      responsive: true,
+      maintainAspectRatio: this.hideCombinedView ? true : false,
+      scaleFontColor: 'White',
+    scales: {
+        yAxes : [{
+            ticks : {
+              min : 0,
+              max : 4,
+              fontColor: "Red" // this here#
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Positive Sentiment Score',
+              fontColor: "Red"
+           }
+        }],
+        xAxes : [{
+            ticks : {
+              fontColor: "Red" // this here
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Time m/s',
+              fontColor: "Red"
+           }
+        }]
+    }
+  }
 });
     //interval = (time/scale)*minute
 
