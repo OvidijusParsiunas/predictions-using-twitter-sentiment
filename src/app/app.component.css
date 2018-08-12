@@ -18,6 +18,10 @@
     width: 90%;
     text-align: center;
   }
+  #combinedViewTitleCard{
+    padding-top: 15px;
+    height: 70px;
+  }
   #dropdownMenuButton {
     position: static;
     margin-top: 12px;
@@ -25,6 +29,9 @@
   }
   #titleCard:hover:after {
     left: 120%;
+  }
+  .combined-view-container{
+    height: 46vh;
   }
 }
 
@@ -58,15 +65,17 @@
   #titleCard:hover:after {
     left: 95%;
   }
+  .combined-view-container{
+    height: 60vh;
+  }
 }
 
-@media(max-height:320px){
+@media(max-height:450px){
   #dropdownMenuButton {
     padding: 2px;
   }
   #combinedViewTitleCard {
-    padding-top:1vh;
-    padding-top: 10px;
+    padding-top: 7px;
     height:50px;
   }
   #combinedViewGraphCard{
