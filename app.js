@@ -43,6 +43,8 @@ let maximumGraphScale = 80;
 let preferredInitialGraphScale = 14;
 let team1AverageSentimentArray;
 let team2AverageSentimentArray;
+let team1CurrentAverages = {};
+let team2CurrentAverages = {};
 let secondsTrueScale;
 
 if(apiCallIntervalSeconds === undefined || apiCallIntervalSeconds === 0){
@@ -261,7 +263,7 @@ function identifyStartingTimespanPerPreferredXAxisScale(){
   able to point at the correct array index of the old sentiment value.
 */
 
-function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex, arrayOfSentimentsIsFull){
+function calculateSentimentAverages(sentimentAverages, currentAverages, newAverageSentiment, arrayOfSentiments, arrayOfSentimentsIndex, arrayOfSentimentsIsFull){
   var minimumElapsedTime;
   if(!arrayOfSentimentsIsFull){
     if(timeUnit === 'seconds'){
@@ -280,9 +282,11 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       //divide by number of seconds/minutes/hours
       if(timeUnit === 'seconds'){
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/(arrayOfSentimentsIndex + 1);
+        currentAverages[timeScale] = sentimentAverages[timeScale][0]/(arrayOfSentimentsIndex + 1);
       }
       else{
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/minimumElapsedTime;
+        currentAverages[timeScale] = sentimentAverages[timeScale][0]/minimumElapsedTime;
       }
     }
     else{
@@ -299,9 +303,11 @@ function calculateSentimentAverages(sentimentAverages, newAverageSentiment, arra
       //divide by number of seconds/minutes/hours
       if(timeUnit === 'seconds'){
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/(timeScale/apiCallIntervalSeconds);
+        currentAverages[timeScale] = sentimentAverages[timeScale][0]/(timeScale/apiCallIntervalSeconds);
       }
       else{
         sentimentAverages[timeScale][1] = sentimentAverages[timeScale][0]/timeScale;
+        currentAverages[timeScale] = sentimentAverages[timeScale][0]/timeScale;
       }
     }
   }
@@ -403,10 +409,6 @@ let team2AverageSentiment = 0;
 let team1AverageSentimentArrayIndex = 0;
 let team2AverageSentimentArrayIndex = 0;
 let currentTotal = 0;
-let team1CurrentTotal = 0;
-let team1CurrentAverage = 0;
-let team2CurrentTotal = 0;
-let team2CurrentAverage = 0;
 let numberOfIterationsForMinutes;
 let numberOfIterationsForHours;
 let apiCallInterval;
@@ -505,12 +507,12 @@ function processReturnedSentimentDataForTeam1(){
     if(team1AverageSentimentArrayIndex != secondsTrueScale){
       team1AverageSentimentArray[team1AverageSentimentArrayIndex] = team1Sentiment;
       if(calculateAverages){
-        calculateSentimentAverages(sentimentAveragesForTeam1, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
+        calculateSentimentAverages(sentimentAveragesForTeam1, team1CurrentAverages, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
       }
     }
     else{
       if(calculateAverages){
-        calculateSentimentAverages(sentimentAveragesForTeam1, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex, 1);
+        calculateSentimentAverages(sentimentAveragesForTeam1, team1CurrentAverages, team1Sentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex, 1);
       }
       team1AverageSentimentArray.shift();
       team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1Sentiment;
@@ -526,12 +528,12 @@ function processReturnedSentimentDataForTeam1(){
       if(team1AverageSentimentArrayIndex != scaleOfPersistance){
         team1AverageSentimentArray[team1AverageSentimentArrayIndex] = team1AverageSentiment;
         if(calculateAverages){
-          calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
+          calculateSentimentAverages(sentimentAveragesForTeam1, team1CurrentAverages, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
         }
       }
       else{
         if(calculateAverages){
-          calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex, 1);
+          calculateSentimentAverages(sentimentAveragesForTeam1, team1CurrentAverages, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex, 1);
         }
         team1AverageSentimentArray.shift();
         team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
@@ -541,7 +543,6 @@ function processReturnedSentimentDataForTeam1(){
       team1TotalSentiment = 0;
       team1NoOfSentiments = 0;
       console.log('resultant array for sentiment average in minutes: ' + team1AverageSentimentArray);
-      console.log('the resultant average for the minute sentiment: ' + team1CurrentAverage);
     }
   }
   if(timeUnit === 'hours'){
@@ -552,12 +553,12 @@ function processReturnedSentimentDataForTeam1(){
       if(team1AverageSentimentArrayIndex != scaleOfPersistance){
         team1AverageSentimentArray[team1AverageSentimentArrayIndex] = team1AverageSentiment;
         if(calculateAverages){
-          calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
+          calculateSentimentAverages(sentimentAveragesForTeam1, team1CurrentAverages, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex++);
         }
       }
       else{
         if(calculateAverages){
-          calculateSentimentAverages(sentimentAveragesForTeam1, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex, 1);
+          calculateSentimentAverages(sentimentAveragesForTeam1, team1CurrentAverages, team1AverageSentiment, team1AverageSentimentArray, team1AverageSentimentArrayIndex, 1);
         }
         team1AverageSentimentArray.shift();
         team1AverageSentimentArray[team1AverageSentimentArrayIndex-1] = team1AverageSentiment;
@@ -567,7 +568,6 @@ function processReturnedSentimentDataForTeam1(){
       team1TotalSentiment = 0;
       team1NoOfSentiments = 0;
       console.log('resultant array for sentiment average in minutes: ' + team1AverageSentimentArray);
-      console.log('the resultant average for the minute sentiment: ' + team1CurrentAverage);
     }
   }
   team1Tweets = [400];
@@ -580,12 +580,12 @@ function processReturnedSentimentDataForTeam1(){
       if(team2AverageSentimentArrayIndex != secondsTrueScale){
         team2AverageSentimentArray[team2AverageSentimentArrayIndex] = team2Sentiment;
         if(calculateAverages){
-          calculateSentimentAverages(sentimentAveragesForTeam2, team2Sentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex++);
+          calculateSentimentAverages(sentimentAveragesForTeam2, team2CurrentAverages, team2Sentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex++);
         }
       }
       else{
         if(calculateAverages){
-          calculateSentimentAverages(sentimentAveragesForTeam2, team2Sentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex, 1);
+          calculateSentimentAverages(sentimentAveragesForTeam2, team2CurrentAverages, team2Sentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex, 1);
         }
         team2AverageSentimentArray.shift();
         team2AverageSentimentArray[team2AverageSentimentArrayIndex-1] = team2Sentiment;
@@ -598,12 +598,12 @@ function processReturnedSentimentDataForTeam1(){
         if(team2AverageSentimentArrayIndex != scaleOfPersistance){
           team2AverageSentimentArray[team2AverageSentimentArrayIndex] = team2AverageSentiment;
           if(calculateAverages){
-            calculateSentimentAverages(sentimentAveragesForTeam2, team2AverageSentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex++);
+            calculateSentimentAverages(sentimentAveragesForTeam2, team2CurrentAverages, team2AverageSentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex++);
           }
         }
         else{
           if(calculateAverages){
-            calculateSentimentAverages(sentimentAveragesForTeam2, team2AverageSentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex, 1);
+            calculateSentimentAverages(sentimentAveragesForTeam2, team2CurrentAverages, team2AverageSentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex, 1);
           }
           team2AverageSentimentArray.shift();
           team2AverageSentimentArray[team2AverageSentimentArrayIndex-1] = team2AverageSentiment;
@@ -621,12 +621,12 @@ function processReturnedSentimentDataForTeam1(){
         if(team2AverageSentimentArrayIndex != scaleOfPersistance){
           team2AverageSentimentArray[team2AverageSentimentArrayIndex] = team2AverageSentiment;
           if(calculateAverages){
-            calculateSentimentAverages(sentimentAveragesForTeam2, team2AverageSentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex++);
+            calculateSentimentAverages(sentimentAveragesForTeam2, team2CurrentAverages, team2AverageSentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex++);
           }
         }
         else{
           if(calculateAverages){
-            calculateSentimentAverages(sentimentAveragesForTeam2, team2AverageSentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex, 1);
+            calculateSentimentAverages(sentimentAveragesForTeam2, team2CurrentAverages, team2AverageSentiment, team2AverageSentimentArray, team2AverageSentimentArrayIndex, 1);
           }
           team2AverageSentimentArray.shift();
           team2AverageSentimentArray[team2AverageSentimentArrayIndex-1] = team2AverageSentiment;
@@ -636,7 +636,6 @@ function processReturnedSentimentDataForTeam1(){
         team2TotalSentiment = 0;
         team2NoOfSentiments = 0;
         console.log('resultant array for sentiment average in minutes: ' + team2AverageSentimentArray);
-        console.log('the resultant average for the minute sentiment: ' + team2CurrentAverage);
       }
     }
     team2Tweets = [400];
@@ -654,7 +653,7 @@ app.listen(9000,()=>{
 });
 app.get('/newSentimentData/:timeSpan',function(req,res){
   let timeSpan = req.params.timeSpan;
-  res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':sentimentAveragesForTeam1[timeSpan], 'team2AverageSentiment':team2CurrentAverage}});
+  res.send({'data':{'team1Sentiment': team1Sentiment, 'team2Sentiment':team2Sentiment, 'team1AverageSentiment':team1CurrentAverages[timeSpan], 'team2AverageSentiment':team2CurrentAverages[timeSpan]}});
 });
 
 app.get('/persistedData/:timeSpan/:graphScale',function(req,res){
@@ -735,8 +734,20 @@ app.get('/stopStream', function(req,res){
   res.send('Stream has been stopped');
 });
 
+//send the amount of fields as a parameter
+app.get('/getPersistedData10Fields', function(req,res){
+});
+
+app.get('/getPersistedData20Fields', function(req,res){
+});
+
 app.get('/getAvailableGraphGraphDimensions', function(req, res){
   res.send(retrieveAvailableGraphDimensions());
+});
+
+app.get('/getRetrievalRate', function(req, res){
+  //get parameter, the rate will be different for a different scale
+  //scaleOfPersistance/graphScale
 });
 
 app.post('/startWithDifferentTeams', function(req, res){

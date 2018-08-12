@@ -74,10 +74,8 @@ export class AppComponent {
             labels: this.labels
           },
           options: {
-              legend: { display: false },
-              responsive: true,
-              maintainAspectRatio: this.hideCombinedView ? true : false,
-              scaleFontColor: 'White',
+            legend: { display: false },
+            scaleFontColor: 'White',
             scales: {
                 yAxes : [{
                     ticks : {
@@ -154,9 +152,13 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     datasets: [{
         data: this.team1Sentiment,
         borderColor: "Red",
-
         fill: true
-      }
+      },
+      {
+        data: this.team2Sentiment,
+        borderColor: "Blue",
+        fill: true
+        }
     ],
     backgroundColor: ["Red"],
     pointBorderColor: ["Red"],
@@ -205,7 +207,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     });
 
     setInterval(() => {
-    this.http.get('http://localhost:9000/newSentimentData/10')
+    this.http.get('http://localhost:9000/newSentimentData/45')
     .subscribe(response => {
       var data = response as responseData;
       for(let index = 0; index < this.team1Sentiment.length-1; index++){
@@ -252,8 +254,10 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
         this.chart.update();
         this.chart2.update();
+        this.chart3.update();
       });
-  }, sentimentAPICallInterval);
+    }, 2000);
+  //}, sentimentAPICallInterval);
   }
 
   public calculateNewSentimentFetchInterval(){
