@@ -149,13 +149,17 @@ export class AppComponent {
 this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   type: 'line',
   data: {
+    type: 'line',
     datasets: [{
         data: this.team1Sentiment,
+        label: 'Brazil',
         borderColor: "Red",
-        fill: true
+        fill: true,
+        legendMarkerType: "circle",
       },
       {
         data: this.team2Sentiment,
+        label: 'Afghanistan',
         borderColor: "Blue",
         fill: true
         }

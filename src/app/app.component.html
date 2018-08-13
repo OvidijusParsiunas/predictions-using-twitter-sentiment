@@ -49,12 +49,13 @@
         <div class="card">
           <div [hidden]="team1Sparkles" class="team1Sparkle"></div>
           <div #team1TitleCard class="card-body" id="combinedViewTitleCard">
-            <h2 class="card-title">Brazil</h2>
+            <div class="card-title"><h4 style="display: inline; margin-right: 0.2em">Average Sentiment:</h4><h4 style="display: inline"> Brazil - </h4><h2 style="display: inline; color: red">{{team1AverageSentiment}} <h4 style="display:inline; color: black">vs</h4> 2 </h2><h4 style="display: inline"> - Afghanistan</h4></div>
           </div>
         </div>
         <div class="card">
           <div class="card-body" id="combinedViewGraphCard">
-            <h5 class="card-title">Average Sentiment Score: {{team1AverageSentiment}}</h5>
+            <div class="card-title">
+
             <div class="combined-view-container" style="position: relative;">
               <canvas #chart3></canvas>
             </div>
