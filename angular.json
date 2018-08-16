@@ -24,6 +24,7 @@
               "src/image.jpg"
             ],
             "styles": [      "./node_modules/font-awesome/css/font-awesome.css",
+              "src/bootstrap.css",
               "src/styles.css"
             ],
             "scripts": []
