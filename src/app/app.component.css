@@ -19,8 +19,8 @@
     text-align: center;
   }
   #combinedViewTitleCard{
-    padding-top: 10px;
-    height: 70px;
+    padding-top: 5px;
+    height: 65px;
   }
   #dropdownMenuButton {
     position: static;
@@ -92,7 +92,7 @@
   }
   #combinedViewTitleCard {
     padding-top: 5px;
-    height:60px;
+    height:65px;
   }
   #combinedViewGraphCard{
     padding-bottom: 0;
