@@ -49,12 +49,12 @@
         <div class="card">
           <div [hidden]="team1Sparkles" class="team1Sparkle"></div>
           <div #team1TitleCard class="card-body" id="combinedViewTitleCard">
-            <div class="card-title"><h4 style="display: inline; margin-right: 0.2em; font-size: 1.5rem">Average Sentiment:</h4>
-              <h4 style="display: inline; font-size: 1.5rem"> {{team1Name}} - </h4>
-              <h2 style="display: inline; color: red; font-size: 2rem">{{team1AverageSentiment}} </h2>
-              <h4 style="display:inline; color: black; font-size: 1.5rem">vs</h4>
-              <h2 style="display: inline; color: red; font-size: 2rem"> {{team2AverageSentiment}}</h2>
-              <h4 style="display: inline; font-size: 1.5rem"> - {{team2Name}}</h4>
+            <div class="card-title">
+              <h4 style="margin-right: 0.2em;">Average Sentiment: {{team1Name}} - </h4>
+              <h2>{{team1AverageSentiment}} </h2>
+              <h4>vs</h4>
+              <h2> {{team2AverageSentiment}}</h2>
+              <h4> - {{team2Name}}</h4>
              </div>
           </div>
         </div>

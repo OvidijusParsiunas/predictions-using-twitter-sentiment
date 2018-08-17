@@ -19,7 +19,7 @@
     text-align: center;
   }
   #combinedViewTitleCard{
-    padding-top: 15px;
+    padding-top: 10px;
     height: 70px;
   }
   #dropdownMenuButton {
@@ -29,6 +29,12 @@
   }
   #titleCard:hover:after {
     left: 120%;
+  }
+  h2 {
+    font-size: 1.4rem;
+  }
+  h4{
+    font-size: 1rem;
   }
   .combined-view-container{
     height: 46vh;
@@ -69,6 +75,12 @@
   #titleCard:hover:after {
     left: 95%;
   }
+  h2 {
+    font-size: 2rem;
+  }
+  h4 {
+    font-size: 1.5rem;
+  }
   .combined-view-container{
     height: 65vh;
   }
@@ -79,8 +91,8 @@
     padding: 2px;
   }
   #combinedViewTitleCard {
-    padding-top: 7px;
-    height:50px;
+    padding-top: 5px;
+    height:60px;
   }
   #combinedViewGraphCard{
     padding-bottom: 0;
@@ -158,6 +170,15 @@
   transition-property: left, top, opacity;
   transition-duration: 1s, 1s, 0.8s;
   transition-timing-function: ease;
+}
+
+h4 {
+  display: inline;
+}
+
+h2 {
+  display: inline;
+  color: red;
 }
 
 .team1Sparkle {
