@@ -278,28 +278,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     console.log('Timescale');
   }
 
-  public combinedView(){
-
-  }
-
-  public setOneMinute(){
-
-    //get one minute average sentiment
-  }
-
-  public setThirtyMinutes(){
-    //get thirty minute average sentiment
-  }
-
-  public setOneHour(){
-
-  }
-
-  public setTwoHours(){
-
-  }
-
-  public setFourHours(){
-
+  public setXAxisScale() {
+    console.log('X Axis scale');
   }
 }
