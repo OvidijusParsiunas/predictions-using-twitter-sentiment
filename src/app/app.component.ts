@@ -59,6 +59,8 @@ export class AppComponent {
     htmlRef3: ElementRef;
 
   ngOnInit(){
+    this.setTimeScale(20, 'minute');
+
         this.chart = new Chart(this.htmlRef.nativeElement, {
           type: 'line',
           data: {
@@ -264,6 +266,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   //}, sentimentAPICallInterval);
   }
 
+
   public calculateNewSentimentFetchInterval(){
     var interval = this.timeScale/this.columnNum;
     if(this.timeUnit === 'seconds'){
@@ -274,8 +277,9 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     return interval;
   }
 
-  public setTimeScale(){
-    console.log('Timescale');
+  public setTimeScale(scale, unit){
+    let title = "Past " + scale + " ";
+    title += scale > 1 ? unit + "s" : unit;
   }
 
   public setXAxisScale() {
