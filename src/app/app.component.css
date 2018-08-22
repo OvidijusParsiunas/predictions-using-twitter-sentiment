@@ -181,6 +181,10 @@ h2 {
   color: red;
 }
 
+.line1 { width:100%; border-bottom: 1px solid #000; line-height:0.1em; margin:10px 40px 5px;  display:inline-block;
+}
+.line1 span { background:#fff; display:inline-block;}
+
 .team1Sparkle {
 width:20px;
 height:20px;
