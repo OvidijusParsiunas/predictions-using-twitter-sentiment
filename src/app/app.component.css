@@ -177,9 +177,19 @@ h2 {
   color: red;
 }
 
-.line1 { width:100%; border-bottom: 3px solid; line-height:0.1em; margin:1px 12px 3px 20px;  display:inline-block;
+.legend-line {
+  width:100%;
+  border-bottom: 3px solid;
+  line-height:0.1em;
+  margin:1px 12px 3px 20px;
+  display:inline-block;
+  width: 50px}
+
+.legend-text {
+  background:#fff; 
+  display:inline-block;
+  font-size: 14px;
 }
-.line1 span { background:#fff; display:inline-block;}
 
 .team1Sparkle {
 width:20px;
