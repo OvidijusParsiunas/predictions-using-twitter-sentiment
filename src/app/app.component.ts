@@ -162,7 +162,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       {
         data: this.team2Sentiment,
         label: 'Afghanistan',
-        borderColor: "#5293d3",
+        borderColor: "#4596e8",
         fill: true,
         backgroundColor: "rgba(237, 237, 237, 0.4)",
         }
