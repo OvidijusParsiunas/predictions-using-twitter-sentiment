@@ -103,10 +103,6 @@
   z-index: 1;
 }
 
-.dropdown-menu {
-  background-color: #fffdf4;
-}
-
 .dropdown-menu >a:active {
     background-color: white;
 }

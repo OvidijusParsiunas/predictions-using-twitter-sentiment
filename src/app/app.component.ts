@@ -157,14 +157,14 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
         borderColor: "Red",
         fill: true,
         legendMarkerType: "circle",
-        backgroundColor: "rgba(32, 162, 219, 0.1)", // <-- supposed to be light blue
+        backgroundColor: "rgba(237, 237, 237, 0.4)", // <-- supposed to be light blue
       },
       {
         data: this.team2Sentiment,
         label: 'Afghanistan',
         borderColor: "#5293d3",
         fill: true,
-        backgroundColor: "rgba(196, 93, 105, 0.1)",
+        backgroundColor: "rgba(237, 237, 237, 0.4)",
         }
     ],
     backgroundColor: ["Red"],
