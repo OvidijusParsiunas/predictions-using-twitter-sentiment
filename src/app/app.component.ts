@@ -47,7 +47,8 @@ export class AppComponent {
   timeUnit = 'minutes';
   columnNum = 10;
   timeScale = 10;
-  hideCombinedView: boolean = false;
+  hideCombinedView: boolean = true;
+  dropDownChangeViewText = "Combined View";
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -174,7 +175,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   options: {
       legend: { display: false },
       responsive: true,
-      maintainAspectRatio: this.hideCombinedView ? true : false,
+      maintainAspectRatio: false,
     scales: {
         yAxes : [{
             ticks : {
@@ -292,5 +293,16 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   public setXAxisScale() {
     console.log('X Axis scale');
+  }
+
+  public changeView(){
+    if(this.hideCombinedView){
+      this.hideCombinedView = false;
+      this.dropDownChangeViewText = "Double View";
+    }
+    else{
+      this.hideCombinedView = true;
+      this.dropDownChangeViewText = "Combined View";
+    }
   }
 }
