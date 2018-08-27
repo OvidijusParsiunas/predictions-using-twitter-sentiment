@@ -110,13 +110,13 @@ export class AppComponent {
       data: {
         datasets: [{
             data: this.team2Sentiment,
-            borderColor: "Red",
+            borderColor: "#4596e8",
 
             fill: true
           }
         ],
-        backgroundColor: ["Red"],
-        pointBorderColor: ["Red"],
+        backgroundColor: ["#4596e8"],
+        pointBorderColor: ["#4596e8"],
         labels: this.labels
       },
       options: {legend: { display: false },
@@ -126,22 +126,22 @@ export class AppComponent {
                 ticks : {
                   min : 0,
                   max : 4,
-                  fontColor: "Red" // this here
+                  fontColor: "#408ad6" // this here
                 },
                 scaleLabel: {
                   display: true,
                   labelString: 'Positive Sentiment Score',
-                  fontColor: "Red"
+                  fontColor: "#408ad6"
                }
             }],
             xAxes : [{
                 ticks : {
-                  fontColor: "Red" // this here
+                  fontColor: "#408ad6" // this here
                 },
                 scaleLabel: {
                   display: true,
                   labelString: 'Time m/s',
-                  fontColor: "Red"
+                  fontColor: "#408ad6"
                }
             }]
         }
