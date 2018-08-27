@@ -110,13 +110,13 @@ export class AppComponent {
       data: {
         datasets: [{
             data: this.team2Sentiment,
-            borderColor: "#4596e8",
+            borderColor: "#407cd6",
 
             fill: true
           }
         ],
-        backgroundColor: ["#4596e8"],
-        pointBorderColor: ["#4596e8"],
+        backgroundColor: ["#317fce"],
+        pointBorderColor: ["#317fce"],
         labels: this.labels
       },
       options: {legend: { display: false },
@@ -126,22 +126,22 @@ export class AppComponent {
                 ticks : {
                   min : 0,
                   max : 4,
-                  fontColor: "#408ad6" // this here
+                  fontColor: "#407cd6" // this here
                 },
                 scaleLabel: {
                   display: true,
                   labelString: 'Positive Sentiment Score',
-                  fontColor: "#408ad6"
+                  fontColor: "#407cd6"
                }
             }],
             xAxes : [{
                 ticks : {
-                  fontColor: "#408ad6" // this here
+                  fontColor: "#407cd6" // this here
                 },
                 scaleLabel: {
                   display: true,
                   labelString: 'Time m/s',
-                  fontColor: "#408ad6"
+                  fontColor: "#407cd6"
                }
             }]
         }
@@ -158,12 +158,12 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
         borderColor: "Red",
         fill: true,
         legendMarkerType: "circle",
-        backgroundColor: "rgba(237, 237, 237, 0.4)", // <-- supposed to be light blue
+        backgroundColor: "rgba(237, 237, 237, 0.2)", // <-- supposed to be light blue
       },
       {
         data: this.team2Sentiment,
         label: 'Afghanistan',
-        borderColor: "#4596e8",
+        borderColor: "#407cd6",
         fill: true,
         backgroundColor: "rgba(237, 237, 237, 0.4)",
         }
