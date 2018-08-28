@@ -291,8 +291,37 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.timeScaleTitle = tempTitle;
   }
 
-  public setXAxisScale() {
-    console.log('X Axis scale');
+  public generateLabelArray(){
+    var arrayLength = 10;
+    var time = 50;
+    var lastAPICallTimeStamp = new Date();
+    var timeDecrementer = time/arrayLength;
+    var timeUnit = 'seconds';
+    if(timeUnit === 'seconds'){
+      this.populateLabelsArrayElements(lastAPICallTimeStamp.getMinutes(), lastAPICallTimeStamp.getSeconds(), timeDecrementer);
+    }
+    else if(timeUnit === 'minutes'){
+      this.populateLabelsArrayElements(lastAPICallTimeStamp.getHours(), lastAPICallTimeStamp.getMinutes(), timeDecrementer);
+    }
+    else if(timeUnit === 'hours'){
+      this.populateLabelsArrayElements(lastAPICallTimeStamp.getDate(), lastAPICallTimeStamp.getHours(), timeDecrementer);
+    }
+    console.log(this.labels);
+  }
+
+  private populateLabelsArrayElements(timeUnit1, timeUnit2, decrementer){
+    var graphScale = 10;
+    for(let i = graphScale; i > 0; i--){
+      timeUnit2 = timeUnit2 - decrementer;
+      this.labels[i] = timeUnit1 + ":" + timeUnit2;
+    }
+  }
+
+  public setXAxisScale(length) {
+    var actualArrayLength = 10;
+    var lengthToCut = actualArrayLength - length;
+    this.labels.splice(0,lengthToCut);
+    this.chart.update();
   }
 
   public changeView(){
