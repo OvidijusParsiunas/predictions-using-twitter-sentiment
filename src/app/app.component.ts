@@ -292,6 +292,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   }
 
   //fix the issue in the backend
+  //link up with the backend
   //on retrieval, generate all time stamps into an array
   public generateLabelArray(){
     var arrayLength = 10;
