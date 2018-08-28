@@ -291,32 +291,48 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.timeScaleTitle = tempTitle;
   }
 
+  //fix the issue in the backend
+  //on retrieval, generate all time stamps into an array
   public generateLabelArray(){
     var arrayLength = 10;
     var time = 50;
     var lastAPICallTimeStamp = new Date();
     var timeDecrementer = time/arrayLength;
     var timeUnit = 'seconds';
+
     if(timeUnit === 'seconds'){
-      this.populateLabelsArrayElements(lastAPICallTimeStamp.getMinutes(), lastAPICallTimeStamp.getSeconds(), timeDecrementer);
+      this.populateLabelsArrayElements(decrementSeconds, arrayLength);
     }
     else if(timeUnit === 'minutes'){
-      this.populateLabelsArrayElements(lastAPICallTimeStamp.getHours(), lastAPICallTimeStamp.getMinutes(), timeDecrementer);
+      this.populateLabelsArrayElements(decrementMinutes, arrayLength);
     }
     else if(timeUnit === 'hours'){
-      this.populateLabelsArrayElements(lastAPICallTimeStamp.getDate(), lastAPICallTimeStamp.getHours(), timeDecrementer);
+      this.populateLabelsArrayElements(decrementHours, arrayLength);
     }
-    console.log(this.labels);
+
+    function decrementSeconds(){
+      lastAPICallTimeStamp.setSeconds(lastAPICallTimeStamp.getSeconds() - timeDecrementer);
+      return lastAPICallTimeStamp.getMinutes() + ":" + lastAPICallTimeStamp.getSeconds();
+    }
+
+    function decrementMinutes(){
+      lastAPICallTimeStamp.setMinutes(lastAPICallTimeStamp.getMinutes() - timeDecrementer);
+      return lastAPICallTimeStamp.getHours() + ":" + lastAPICallTimeStamp.getMinutes();
+    }
+
+    function decrementHours(){
+      lastAPICallTimeStamp.setHours(lastAPICallTimeStamp.getHours() - timeDecrementer);
+      return lastAPICallTimeStamp.getDate() + ":" + lastAPICallTimeStamp.getHours();
+    }
   }
 
-  private populateLabelsArrayElements(timeUnit1, timeUnit2, decrementer){
-    var graphScale = 10;
+  private populateLabelsArrayElements(decrementer, graphScale){
     for(let i = graphScale; i > 0; i--){
-      timeUnit2 = timeUnit2 - decrementer;
-      this.labels[i] = timeUnit1 + ":" + timeUnit2;
+      this.labels[i] = decrementer();
     }
   }
 
+  //regenerate the labels on a new scale as their intervals are different
   public setXAxisScale(length) {
     var actualArrayLength = 10;
     var lengthToCut = actualArrayLength - length;
