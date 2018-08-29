@@ -460,7 +460,7 @@ accurateInterval(function(scheduledTime) {
 if(team1Increment > 0){
   options.body = {"data": team1Tweets};
   //console.log(JSON.stringify(options.body));
-  lastAPICallTimeStamp = Date.now();
+  lastAPICallTimeStamp = new Date();
   request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
     team1Sentiment = body.data.map(a => a.polarity).reduce((a, b) => a + b, 0)/body.data.length;
@@ -670,20 +670,21 @@ function getPersistedSentimentData(timeSpan, graphScale){
   else{
    rateOfArrayIndexJump = Math.floor(timeSpan/graphScale);
   }
-  let sentimentArrayIndex = rateOfArrayIndexJump;
+  let startingIndex = (team2AverageSentimentArrayIndex - (rateOfArrayIndexJump*graphScale))-1 + rateOfArrayIndexJump;
+  if(startingIndex < 0){
+    startingIndex = 0;
+  }
   let team1ClientArray = [];
   let team2ClientArray = [];
-  console.log('sentimentArrayIndex ' + sentimentArrayIndex);
+  let clientArrayIndex = 0;
   for(var i = 0; i < graphScale; i++){
-    if(team1AverageSentimentArrayIndex < sentimentArrayIndex || team2AverageSentimentArrayIndex < sentimentArrayIndex){
-      console.log('break')
+    if(team2AverageSentimentArrayIndex-1 < startingIndex){
       break;
     };
-    console.log('sentimentArrayIndex ' + sentimentArrayIndex);
     console.log('team1AverageSentimentArray ' + team1AverageSentimentArray);
-    team1ClientArray[i] = team1AverageSentimentArray[sentimentArrayIndex-1];
-    team2ClientArray[i] = team2AverageSentimentArray[sentimentArrayIndex-1];
-    sentimentArrayIndex = sentimentArrayIndex + rateOfArrayIndexJump;
+    team1ClientArray[i] = team1AverageSentimentArray[startingIndex];
+    team2ClientArray[i] = team2AverageSentimentArray[startingIndex];
+    startingIndex = startingIndex + rateOfArrayIndexJump;
   }
   return buildStartingDataCargo(team1ClientArray, team2ClientArray, timeSpan);
 }
@@ -724,7 +725,7 @@ function buildLastSentimentAPICallUICargo(){
   //include api call interval in seconds incase data arrives too late so it can retry to calculate the offset successfully
   var lastAPICallCargo = {};
   lastAPICallCargo['lastAPICallTimeStamp'] = lastAPICallTimeStamp;
-  lastAPICallCargo['secondsBeforeApiCallForNextTeam'] = secondsBeforeApiCallForNextTeam;
+  lastAPICallCargo['millisecondsBeforeApiCallForNextTeam'] = secondsBeforeApiCallForNextTeam;
   lastAPICallCargo['apiCallInterval'] = apiCallInterval;
   return lastAPICallCargo;
 }
