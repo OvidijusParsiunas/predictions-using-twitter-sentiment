@@ -660,6 +660,7 @@ app.get('/persistedData/:timeSpan/:graphScale',function(req,res){
   res.send(getPersistedSentimentData(req.params.timeSpan, req.params.graphScale));
 });
 
+//refactor clientArrayIndex calculation and flip the array
 function getPersistedSentimentData(timeSpan, graphScale){
   let rateOfArrayIndexJump;
   //try to set the scale to be 10, but if the server has its persisted data set to lower than that, accordingly lower it on the client
@@ -670,21 +671,22 @@ function getPersistedSentimentData(timeSpan, graphScale){
   else{
    rateOfArrayIndexJump = Math.floor(timeSpan/graphScale);
   }
-  let startingIndex = (team2AverageSentimentArrayIndex - (rateOfArrayIndexJump*graphScale))-1 + rateOfArrayIndexJump;
-  if(startingIndex < 0){
-    startingIndex = 0;
-  }
+  let lowestArrayIndex = team2AverageSentimentArrayIndex - (rateOfArrayIndexJump*graphScale);
+  let sentimentArrayIndex = rateOfArrayIndexJump;
   let team1ClientArray = [];
   let team2ClientArray = [];
   let clientArrayIndex = 0;
-  for(var i = 0; i < graphScale; i++){
-    if(team2AverageSentimentArrayIndex-1 < startingIndex){
+  console.log('Let us look at the math: ' + (team2AverageSentimentArrayIndex -1) + ' and ' + rateOfArrayIndexJump);
+  console.log('INDEXX!!!!! ' + Math.floor(team2AverageSentimentArrayIndex/rateOfArrayIndexJump));
+  console.log('team1AverageSentimentArray ' + team1AverageSentimentArray);
+  for(var i = team2AverageSentimentArrayIndex-1; i > -1; i=i-sentimentArrayIndex){
+    console.log(i);
+    if(i < lowestArrayIndex){
       break;
-    };
-    console.log('team1AverageSentimentArray ' + team1AverageSentimentArray);
-    team1ClientArray[i] = team1AverageSentimentArray[startingIndex];
-    team2ClientArray[i] = team2AverageSentimentArray[startingIndex];
-    startingIndex = startingIndex + rateOfArrayIndexJump;
+    }
+    team1ClientArray[clientArrayIndex] = team1AverageSentimentArray[i];
+    team2ClientArray[clientArrayIndex] = team2AverageSentimentArray[i];
+    clientArrayIndex++;
   }
   return buildStartingDataCargo(team1ClientArray, team2ClientArray, timeSpan);
 }
@@ -733,13 +735,6 @@ function buildLastSentimentAPICallUICargo(){
 app.get('/stopStream', function(req,res){
   stream.stop();
   res.send('Stream has been stopped');
-});
-
-//send the amount of fields as a parameter
-app.get('/getPersistedData10Fields', function(req,res){
-});
-
-app.get('/getPersistedData20Fields', function(req,res){
 });
 
 app.get('/getAvailableGraphGraphDimensions', function(req, res){
