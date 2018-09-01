@@ -213,57 +213,54 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       this.team2Name = data.teams.team2;
     });
 
-    // setInterval(() => {
-    // this.http.get('http://localhost:9000/newSentimentData/45')
-    // .subscribe(response => {
-    //   var data = response as responseData;
-    //   for(let index = 0; index < this.team1Sentiment.length-1; index++){
-    //     this.team1Sentiment[index] = this.team1Sentiment[index+1];
-    //   }
-    //   this.team1Sentiment[this.team1Sentiment.length-1] = data.data.team1Sentiment;
-    //   this.team1AverageSentiment = Math.round(data.data.team1AverageSentiment * 100) / 100;
-    //   for(let index = 0; index < this.labels.length-1; index++){
-    //     this.labels[index] = this.labels[index+1];
-    //   }
-    //   this.labels[this.labels.length-1] = new Date().getMinutes() + ':' + new Date().getSeconds();
-    //   for(let index = 0; index < this.team2Sentiment.length-1; index++){
-    //     this.team2Sentiment[index] = this.team2Sentiment[index+1];
-    //   }
-    //
-    //   this.team2Sentiment[this.team2Sentiment.length-1] = data.data.team2Sentiment;
-    //   this.team2AverageSentiment = Math.round(data.data.team2AverageSentiment * 100) / 100;
-    //     // this.team1Sentiment.push(data.data.team1team1Sentiment);
-    //     // this.team1Sentiment = this.team1Sentiment.splice(-1);
-    //     //
-    //     // this.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
-    //     // this.team1Sentiment = this.team1Sentiment.splice(-1);
-    //         // this.chart.data.datasets[0].data.push(data.data.team1team1Sentiment);
-    //         // this.chart.data.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
-    //     console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
-    //     if(this.team1AverageSentiment > this.team2AverageSentiment){
-    //       document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
-    //       document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
-    //       this.team1Sparkles = false;
-    //       this.team2Sparkles = true;
-    //     }
-    //     else if(this.team1AverageSentiment < this.team2AverageSentiment){
-    //       document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
-    //       document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
-    //       this.team1Sparkles = true;
-    //       this.team2Sparkles = false;
-    //     }
-    //     else if(this.team1AverageSentiment < this.team2AverageSentiment){
-    //       document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
-    //       document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
-    //       this.team1Sparkles = false;
-    //       this.team2Sparkles = false;
-    //     }
-    //
-    //     this.chart.update();
-    //     this.chart2.update();
-    //     this.chart3.update();
-    //   });
-    // }, 2000);
+    setInterval(() => {
+    this.http.get('http://localhost:9000/newSentimentData/45')
+    .subscribe(response => {
+      var data = response as responseData;
+      for(let index = 0; index < this.team1Sentiment.length-1; index++){
+        this.team1Sentiment[index] = this.team1Sentiment[index+1];
+      }
+      this.team1Sentiment[this.team1Sentiment.length-1] = data.data.team1Sentiment;
+      this.team1AverageSentiment = Math.round(data.data.team1AverageSentiment * 100) / 100;
+      for(let index = 0; index < this.labels.length-1; index++){
+        this.labels[index] = this.labels[index+1];
+      }
+      this.labels[this.labels.length-1] = this.generateCurrentTimeSpan();
+      for(let index = 0; index < this.team2Sentiment.length-1; index++){
+        this.team2Sentiment[index] = this.team2Sentiment[index+1];
+      }
+
+      this.team2Sentiment[this.team2Sentiment.length-1] = data.data.team2Sentiment;
+      this.team2AverageSentiment = Math.round(data.data.team2AverageSentiment * 100) / 100;
+        // this.team1Sentiment.push(data.data.team1team1Sentiment);
+        // this.team1Sentiment = this.team1Sentiment.splice(-1);
+        //
+        // this.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
+        // this.team1Sentiment = this.team1Sentiment.splice(-1);
+            // this.chart.data.datasets[0].data.push(data.data.team1team1Sentiment);
+            // this.chart.data.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
+        console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
+        if(this.team1AverageSentiment > this.team2AverageSentiment){
+          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
+          this.team1Sparkles = false;
+          this.team2Sparkles = true;
+        }
+        else if(this.team1AverageSentiment < this.team2AverageSentiment){
+          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
+          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+          this.team1Sparkles = true;
+          this.team2Sparkles = false;
+        }
+        else if(this.team1AverageSentiment < this.team2AverageSentiment){
+          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
+          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
+          this.team1Sparkles = false;
+          this.team2Sparkles = false;
+        }
+        this.updateCharts();
+      });
+    }, 2000);
   //}, sentimentAPICallInterval);
   }
 
@@ -296,12 +293,11 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   //+ reverse the two arrays
 
 
-  //add the time for this call
-  public generateLabelArray(arrayLength){
-    var time = 50;
+  public generateLabelArray(timeSpan, arrayLength){
     var lastAPICallTimeStamp = new Date();
-    var timeDecrementer = time/arrayLength;
+    var timeDecrementer = timeSpan/arrayLength;
     var timeUnit = 'seconds';
+    var dateLabelGenerator = this.dateLabelGenerator;
 
     if(timeUnit === 'seconds'){
       this.populateLabelsArrayElements(decrementSeconds, arrayLength);
@@ -315,41 +311,36 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
     function decrementSeconds(){
       lastAPICallTimeStamp.setSeconds(lastAPICallTimeStamp.getSeconds() - timeDecrementer);
-      return lastAPICallTimeStamp.getMinutes() + ":" + ('0' + lastAPICallTimeStamp.getSeconds()).slice(-2);
+      return dateLabelGenerator(lastAPICallTimeStamp.getMinutes(), lastAPICallTimeStamp.getSeconds());
+
     }
 
     function decrementMinutes(){
       lastAPICallTimeStamp.setMinutes(lastAPICallTimeStamp.getMinutes() - timeDecrementer);
-      return lastAPICallTimeStamp.getHours() + ":" + ('0' + lastAPICallTimeStamp.getMinutes()).slice(-2);
+      return dateLabelGenerator(lastAPICallTimeStamp.getHours(), lastAPICallTimeStamp.getMinutes());
     }
 
     function decrementHours(){
       lastAPICallTimeStamp.setHours(lastAPICallTimeStamp.getHours() - timeDecrementer);
-      return lastAPICallTimeStamp.getDate() + ":" + ('0' + lastAPICallTimeStamp.getHours()).slice(-2);
+      return dateLabelGenerator(lastAPICallTimeStamp.getDate(), lastAPICallTimeStamp.getHours());
     }
-    console.log(this.labels);
   }
 
   private populateLabelsArrayElements(decrementer, graphScale){
     for(let i = graphScale-1; i > -1; i--){
-      console.log(i);
       this.labels[i] = decrementer();
     }
   }
 
-  //regenerate the labels on a new scale as their intervals are different
-  public setXAxisScale(length) {
+  public setXAxisLabels(timeSpan, length) {
     var actualArrayLength = 10;
     var lengthToCut = actualArrayLength - length;
     this.labels.splice(0,lengthToCut);
     this.team1Sentiment.length = length;
     this.team2Sentiment.length = length;
-    console.log('Update has been called');
-    this.generateLabelArray(length);
-    this.chart.update();
-    this.chart2.update();
-    this.chart3.update();
-    //add the time for this call
+    this.generateLabelArray(timeSpan, length);
+    this.updateCharts();
+    console.log(this.generateCurrentTimeSpan());
   }
 
   public changeView(){
@@ -361,5 +352,38 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       this.hideCombinedView = true;
       this.dropDownChangeViewText = "Combined View";
     }
+  }
+
+  generateCurrentTimeSpan = this.setTimeSpanGenerator('seconds');
+
+  private setTimeSpanGenerator(precision){
+    if(precision === 'seconds'){
+      return function(){
+        var date = new Date();
+        return this.dateLabelGenerator(date.getMinutes(), date.getSeconds());
+      }
+    }
+    else if(precision === 'minutes'){
+      return function(){
+        var date = new Date();
+        return this.dateLabelGenerator(date.getHours(), date.getMinutes());
+      }
+    }
+    else if(precision === 'hours'){
+      return function(){
+        var date = new Date();
+        return this.dateLabelGenerator(date.getDate(), date.getHours());
+      }
+    }
+  }
+
+  private dateLabelGenerator(timeUnit1, timeUnit2){
+    return timeUnit1 + ':' + ('0' + timeUnit2).slice(-2);
+  }
+
+  private updateCharts(){
+    this.chart.update();
+    this.chart2.update();
+    this.chart3.update();
   }
 }
