@@ -20,7 +20,6 @@ var channels = {
 
 var stream = client.streamChannels({track:channels});
 
-
 /*/////// AGREED TERMINOLOGY //////////
 
 timespan - interim for the analysed sentiment data
@@ -36,6 +35,7 @@ let scaleOfPersistance = 120;
 let apiCallIntervalSeconds = 5;
 let availableTimesIncreaseRate = 10;
 let scaleOfPersistanceAsOnlyScale = false;
+let singleGraphScale = 20;
 //can be removed if the user is allowed to pick their scale
 let calculateAverages = true;
 let minimumGraphScale = 5;
@@ -115,7 +115,7 @@ scaleOfPersistance availableTimesIncreaseRate
 70                 15
 */
 let availableTimeSpans = [];
-let availableGraphScales = {};
+let availableGraphScales = [];
 let sentimentAveragesForTeam1 = {};
 let sentimentAveragesForTeam2 = {};
 
@@ -123,14 +123,14 @@ let startingGraphScales = {};
 let startingTimeSpan;
 let startingXAxisScale;
 setUpAvailableGraphDimensions();
-identifyStartingTimespanPerPreferredXAxisScale();
 
 function setUpAvailableGraphDimensions(){
   if(!scaleOfPersistanceAsOnlyScale){
     setUpAvailableTimeSpans();
     setUpAvailableGraphXAxisScales();
     cleanUpTimeSpansWithOutOfBoundsGraphXAxisScales();
-  }
+    identifyStartingTimespanPerPreferredXAxisScale();
+}
   else{
     setUpAvaibleGraphDimensionsOnlyForScaleOfPersistance();
   }
@@ -155,27 +155,39 @@ function setUpAvailableTimeSpans(){
 }
 
 function setUpAvailableGraphXAxisScales(){
-  retrieveAvailableTimeSpans().forEach((timeSpan) => {
-    availableGraphScales[timeSpan] = retrieveAvailableXAxisRangesForTimeSpan(timeSpan)});
+retrieveAvailableTimeSpans().forEach((timeSpan) => {
+    let timespansObj = {
+      timespan: timeSpan,
+      availableXAxisScales: retrieveAvailableXAxisRangesForTimeSpan(timeSpan)
+    }
+    availableGraphScales.push(timespansObj);
+  })
 }
 
 function setUpAvaibleGraphDimensionsOnlyForScaleOfPersistance(){
   availableTimeSpans[0] = scaleOfPersistance;
-  availableGraphScales[scaleOfPersistance] = [scaleOfPersistance];
+  singleGraphScale = scaleOfPersistance / Math.floor(scaleOfPersistance/singleGraphScale);
+  availableGraphScales = {
+    timespan: scaleOfPersistance,
+    availableXAxisScales: singleGraphScale
+  }
+  startingGraphScales['timeSpan'] = scaleOfPersistance;
+  startingGraphScales['xAxisScale'] = singleGraphScale;
 }
 
 function cleanUpTimeSpansWithOutOfBoundsGraphXAxisScales(){
-  for(var key in availableGraphScales){
-    availableGraphScales[key] = availableGraphScales[key].filter(scale => {
-                                if(scale >= minimumGraphScale && scale <= maximumGraphScale){
-                                  return true;
-                                }
-                                  return false;})
-
-     if(availableGraphScales[key].length === 0){
-       delete availableGraphScales[key];
-       availableTimeSpans.splice(availableTimeSpans.indexOf(parseInt(key)), 1);
-     }
+  for(let i = availableGraphScales.length-1; i > -1; i--){
+    let availableXAxisScales = availableGraphScales[i].availableXAxisScales;
+    availableXAxisScales = availableXAxisScales.filter(scale => {
+      if(scale >= minimumGraphScale && scale <= maximumGraphScale){
+        return true;
+      }
+        return false;
+    });
+    if(availableXAxisScales.length === 0){
+      availableGraphScales.splice(i,1);
+      availableTimeSpans.splice(availableTimeSpans.indexOf(availableGraphScales[i].timeSpan), 1);
+    }
   }
 }
 function retrieveAvailableTimeSpans(){
@@ -198,28 +210,28 @@ function identifyStartingTimespanPerPreferredXAxisScale(){
   var closestIdentifiedScale;
   var timeSpanForClosestIdentifiedScale;
   timeSpanLoop:
-  for(var timeSpan in availableGraphScales){
-    var xAxisScales = availableGraphScales[timeSpan];
+  for(let i = 0; i < availableGraphScales.length; i++){
+    var xAxisScales = availableGraphScales[i].availableXAxisScales;
     xAxisScalesLoop:
-    for(var i = 0; i < xAxisScales.length; i++){
-      var differenceToPreferredScale = Math.abs(preferredInitialGraphScale - xAxisScales[i]);
+    for(let a = 0; a < xAxisScales.length; a++){
+      var differenceToPreferredScale = Math.abs(preferredInitialGraphScale - xAxisScales[a]);
       if(differenceToPreferredScale === 0){
-        startingGraphScales['timeSpan'] = parseInt(timeSpan);
-        startingGraphScales['xAxisScale'] = xAxisScales[i];
+        startingGraphScales['timeSpan'] = parseInt(availableGraphScales[i].timespan);
+        startingGraphScales['xAxisScale'] = xAxisScales[a];
         foundPreferredScale = 1;
         break timeSpanLoop;
       }
       else{
         if(lowestDifferenceToPreferredScale > differenceToPreferredScale){
           lowestDifferenceToPreferredScale = differenceToPreferredScale;
-          closestIdentifiedScale = xAxisScales[i];
-          timeSpanForClosestIdentifiedScale = timeSpan;
+          closestIdentifiedScale = xAxisScales[a];
+          timeSpanForClosestIdentifiedScale = parseInt(availableGraphScales[i].timespan);
         }
       }
     }
   }
   if(!foundPreferredScale){
-    startingGraphScales['startingXAxisScale'] = closestIdentifiedScale;
+    startingGraphScales['timeSpan'] = closestIdentifiedScale;
     startingGraphScales['xAxisScale'] = timeSpanForClosestIdentifiedScale;
   }
 }
