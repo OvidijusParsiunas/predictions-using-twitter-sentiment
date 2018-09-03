@@ -4,7 +4,7 @@
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" (click)="changeView()">{{dropDownChangeViewText}}</a>
-    <a class="dropdown-item" (click)="setXAxisLabels(50, 4)">Diagram Settings</a>
+    <a class="dropdown-item" (click)="constructCharts(50, 4)">Diagram Settings</a>
   </div>
 </div>
 <div [hidden]="!hideCombinedView">

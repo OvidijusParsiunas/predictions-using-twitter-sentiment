@@ -10,17 +10,46 @@ interface sentimentDetails{
   team2AverageSentiment: number;
 }
 
-interface responseData{
+interface newSentimentData{
   data: sentimentDetails;
 }
 
-interface teamNames{
-  teams: {
-    team1:string;
-    team2: string
-  };
+interface UISetUpData{
+  teamNames: teamNames;
+  timeUnit: string;
+  availableGraphScales: timespanScales[];
+  startingGraphScales: startingGraphScales;
+  timeOfLastAPICall: timeOfLastAPICall;
+  startingData: startingData;
 }
 
+interface teamNames{
+    team1: string;
+    team2: string;
+}
+
+interface startingGraphScales{
+  timeSpan: number;
+  xAxisScale: number;
+}
+
+interface timeOfLastAPICall{
+  lastAPICallCargo: Date;
+  millisecondsBeforeApiCallForNextTeam: number;
+  apiCallInterval: number;
+}
+
+interface startingData{
+  team1Sentiment: number[];
+  team2Sentiment: number[];
+  team1CurrentAverage: number;
+  team2CurrentAverage: number;
+}
+
+interface timespanScales{
+  timespan: number;
+  availableXAxisScales: number[];
+}
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -50,6 +79,104 @@ export class AppComponent {
   hideCombinedView: boolean = true;
   dropDownChangeViewText = "Combined View";
 
+/*
+{
+    "teamNames": {
+        "team1": "Brazil",
+        "team2": "Costa,Rica,CostaRica"
+    },
+    "timeUnit": "seconds",
+    "availableGraphScales": {
+        "25": [
+            5
+        ],
+        "30": [
+            6
+        ],
+        "35": [
+            7
+        ],
+        "40": [
+            8
+        ],
+        "45": [
+            9
+        ],
+        "50": [
+            10
+        ],
+        "55": [
+            11
+        ],
+        "60": [
+            12
+        ],
+        "65": [
+            13
+        ],
+        "70": [
+            14
+        ],
+        "75": [
+            15
+        ],
+        "80": [
+            16
+        ],
+        "85": [
+            17
+        ],
+        "90": [
+            18
+        ],
+        "95": [
+            19
+        ],
+        "100": [
+            10,
+            20
+        ],
+        "105": [
+            21
+        ],
+        "110": [
+            11,
+            22
+        ],
+        "115": [
+            23
+        ],
+        "120": [
+            12,
+            24
+        ]
+    },
+    "startingGraphScales": {
+        "timeSpan": 70,
+        "xAxisScale": 14
+    },
+    "timeOfLastAPICall": {
+        "lastAPICallTimeStamp": "2018-09-02T14:43:20.000Z",
+        "millisecondsBeforeApiCallForNextTeam": 2000,
+        "apiCallInterval": 5000
+    },
+    "startingData": {
+        "team1Sentiment": [
+            2.3333333333333335,
+            2,
+            2
+        ],
+        "team2Sentiment": [
+            2.3076923076923075,
+            2,
+            2
+        ],
+        "team1CurrentAverage": 2.111111111111111,
+        "team2CurrentAverage": 2.1025641025641026
+    }
+}
+*/
+
 @ViewChild('chart')
     htmlRef: ElementRef;
 
@@ -60,7 +187,6 @@ export class AppComponent {
     htmlRef3: ElementRef;
 
   ngOnInit(){
-        this.retrieveUISetUpData();
         this.chart = new Chart(this.htmlRef.nativeElement, {
           type: 'line',
           data: {
@@ -204,19 +330,18 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 });
     //interval = (time/scale)*minute
 
-    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval();
+    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(50, 10);
 
-    this.http.get('http://localhost:9000/teamNames')
+    this.http.get('http://localhost:9000/UISetUp')
     .subscribe(response => {
-      var data = response as teamNames;
-      this.team1Name = data.teams.team1;
-      this.team2Name = data.teams.team2;
+      var data = response as UISetUpData;
+      console.log('asdasdas');
     });
 
     setInterval(() => {
     this.http.get('http://localhost:9000/newSentimentData/45')
     .subscribe(response => {
-      var data = response as responseData;
+      var data = response as newSentimentData;
       for(let index = 0; index < this.team1Sentiment.length-1; index++){
         this.team1Sentiment[index] = this.team1Sentiment[index+1];
       }
@@ -264,20 +389,14 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   //}, sentimentAPICallInterval);
   }
 
-  public retrieveUISetUpData(){
-    this.http.get('http://localhost:9000/UISetUp')
-    .subscribe(response => {
-      //Define an interface for the retrieved
-      //UICargo object
-    });
-  }
-
-  public calculateNewSentimentFetchInterval(){
-    var interval = this.timeScale/this.columnNum;
+  public calculateNewSentimentFetchInterval(timeScale, columnNum){
+    var interval = timeScale/columnNum;
     if(this.timeUnit === 'seconds'){
       interval = interval*1000;
     } else if(this.timeUnit === 'minutes'){
       interval = interval*60000;
+    } else if(this.timeUnit === 'hours'){
+      interval = interval*3600000;
     }
     return interval;
   }
@@ -297,7 +416,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     var lastAPICallTimeStamp = new Date();
     var timeDecrementer = timeSpan/arrayLength;
     var timeUnit = 'seconds';
-    var dateLabelGenerator = this.dateLabelGenerator;
+    var dateLabelBuilder = this.dateLabelBuilder;
 
     if(timeUnit === 'seconds'){
       this.populateLabelsArrayElements(decrementSeconds, arrayLength);
@@ -311,18 +430,18 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
     function decrementSeconds(){
       lastAPICallTimeStamp.setSeconds(lastAPICallTimeStamp.getSeconds() - timeDecrementer);
-      return dateLabelGenerator(lastAPICallTimeStamp.getMinutes(), lastAPICallTimeStamp.getSeconds());
+      return dateLabelBuilder(lastAPICallTimeStamp.getMinutes(), lastAPICallTimeStamp.getSeconds());
 
     }
 
     function decrementMinutes(){
       lastAPICallTimeStamp.setMinutes(lastAPICallTimeStamp.getMinutes() - timeDecrementer);
-      return dateLabelGenerator(lastAPICallTimeStamp.getHours(), lastAPICallTimeStamp.getMinutes());
+      return dateLabelBuilder(lastAPICallTimeStamp.getHours(), lastAPICallTimeStamp.getMinutes());
     }
 
     function decrementHours(){
       lastAPICallTimeStamp.setHours(lastAPICallTimeStamp.getHours() - timeDecrementer);
-      return dateLabelGenerator(lastAPICallTimeStamp.getDate(), lastAPICallTimeStamp.getHours());
+      return dateLabelBuilder(lastAPICallTimeStamp.getDate(), lastAPICallTimeStamp.getHours());
     }
   }
 
@@ -332,13 +451,13 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     }
   }
 
-  public setXAxisLabels(timeSpan, length) {
+  public constructCharts(timeSpan, columnNum) {
     var actualArrayLength = 10;
-    var lengthToCut = actualArrayLength - length;
+    var lengthToCut = actualArrayLength - columnNum;
     this.labels.splice(0,lengthToCut);
-    this.team1Sentiment.length = length;
-    this.team2Sentiment.length = length;
-    this.generateLabelArray(timeSpan, length);
+    this.team1Sentiment.length = columnNum;
+    this.team2Sentiment.length = columnNum;
+    this.generateLabelArray(timeSpan, columnNum);
     this.updateCharts();
     console.log(this.generateCurrentTimeSpan());
   }
@@ -360,24 +479,24 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     if(precision === 'seconds'){
       return function(){
         var date = new Date();
-        return this.dateLabelGenerator(date.getMinutes(), date.getSeconds());
+        return this.dateLabelBuilder(date.getMinutes(), date.getSeconds());
       }
     }
     else if(precision === 'minutes'){
       return function(){
         var date = new Date();
-        return this.dateLabelGenerator(date.getHours(), date.getMinutes());
+        return this.dateLabelBuilder(date.getHours(), date.getMinutes());
       }
     }
     else if(precision === 'hours'){
       return function(){
         var date = new Date();
-        return this.dateLabelGenerator(date.getDate(), date.getHours());
+        return this.dateLabelBuilder(date.getDate(), date.getHours());
       }
     }
   }
 
-  private dateLabelGenerator(timeUnit1, timeUnit2){
+  private dateLabelBuilder(timeUnit1, timeUnit2){
     return timeUnit1 + ':' + ('0' + timeUnit2).slice(-2);
   }
 
