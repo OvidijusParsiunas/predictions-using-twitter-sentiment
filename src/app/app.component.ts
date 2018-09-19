@@ -335,8 +335,9 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.http.get('http://localhost:9000/UISetUp')
     .subscribe(response => {
       var data = response as UISetUpData;
-      console.log('asdasdas');
-    });
+      this.team1Name = data.teamNames.team1;
+      this.team2Name = data.teamNames.team2;
+  });
 
     setInterval(() => {
     this.http.get('http://localhost:9000/newSentimentData/45')

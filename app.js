@@ -11,11 +11,20 @@ var client2 = {
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 };
 
+let team1Name = 'Brazil';
+let team2Name = 'CostaRica';
+
+//please insert alternate keywords used to help find more tweets for each team
+//this should be done by prepending a comma in front of a keyword as follows:
+//--> let team1SearchKewords = team1Name + ',Cristiano,Ronaldo';
+let team1SearchKeywords = team1Name;
+let team2SearchKeywords = team2Name + ',Costa,Rica';
+
 var client = new TwitterStreamChannels(client2);
 
 var channels = {
-	"competitor1" : 'Brazil',
-	"competitor2" : 'Costa,Rica,CostaRica'
+	"competitor1" : team1SearchKeywords || team1Name,
+	"competitor2" : team2SearchKeywords || team2Name
 };
 
 var stream = client.streamChannels({track:channels});
@@ -719,8 +728,8 @@ app.get('/UISetUp', function(req,res){
 function buildUISetUpCargo(){
   let teamNames = {};
   let cargo = {};
-  teamNames['team1'] = channels['competitor1'];
-  teamNames['team2'] = channels['competitor2'];
+  teamNames['team1'] = team1Name;
+  teamNames['team2'] = team2Name;
   cargo['teamNames'] = teamNames;
   cargo['timeUnit'] = timeUnit;
   cargo['availableGraphScales'] = availableGraphScales;
