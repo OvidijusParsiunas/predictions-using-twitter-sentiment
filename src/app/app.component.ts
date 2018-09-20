@@ -34,7 +34,7 @@ interface startingGraphScales{
 }
 
 interface timeOfLastAPICall{
-  lastAPICallCargo: Date;
+  lastAPICallTimeStamp: Date;
   millisecondsBeforeApiCallForNextTeam: number;
   apiCallInterval: number;
 }
@@ -75,10 +75,12 @@ export class AppComponent {
   this.initialLabel, this.initialLabel, this.initialLabel, this.initialLabel];
   timeUnit = 'minutes';
   columnNum = 10;
-  timeScale = 10;
+  timeSpan = 10;
   hideCombinedView: boolean = true;
   dropDownChangeViewText = "Combined View";
-
+  availableGraphScales = {};
+  lastAPICallTimeStamp = new Date();
+  millisecondsBeforeApiCallForNextTeam = 0;
 /*
 {
     "teamNames": {
@@ -156,7 +158,7 @@ export class AppComponent {
         "xAxisScale": 14
     },
     "timeOfLastAPICall": {
-        "lastAPICallTimeStamp": "2018-09-02T14:43:20.000Z",
+        "this.lastAPICallTimeStamp": "2018-09-02T14:43:20.000Z",
         "millisecondsBeforeApiCallForNextTeam": 2000,
         "apiCallInterval": 5000
     },
@@ -335,9 +337,9 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.http.get('http://localhost:9000/UISetUp')
     .subscribe(response => {
       var data = response as UISetUpData;
-      this.team1Name = data.teamNames.team1;
-      this.team2Name = data.teamNames.team2;
-  });
+      this.mapUISetUpData(data);
+      this.updateWinningChartGlow();
+});
 
     setInterval(() => {
     this.http.get('http://localhost:9000/newSentimentData/45')
@@ -347,6 +349,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
         this.team1Sentiment[index] = this.team1Sentiment[index+1];
       }
       this.team1Sentiment[this.team1Sentiment.length-1] = data.data.team1Sentiment;
+      //Javascript/typescript method for rounding float variables
       this.team1AverageSentiment = Math.round(data.data.team1AverageSentiment * 100) / 100;
       for(let index = 0; index < this.labels.length-1; index++){
         this.labels[index] = this.labels[index+1];
@@ -366,32 +369,36 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
             // this.chart.data.datasets[0].data.push(data.data.team1team1Sentiment);
             // this.chart.data.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
         console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
-        if(this.team1AverageSentiment > this.team2AverageSentiment){
-          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
-          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
-          this.team1Sparkles = false;
-          this.team2Sparkles = true;
-        }
-        else if(this.team1AverageSentiment < this.team2AverageSentiment){
-          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
-          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
-          this.team1Sparkles = true;
-          this.team2Sparkles = false;
-        }
-        else if(this.team1AverageSentiment < this.team2AverageSentiment){
-          document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
-          document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
-          this.team1Sparkles = false;
-          this.team2Sparkles = false;
-        }
-        this.updateCharts();
+        this.updateWinningChartGlow();
       });
     }, 2000);
   //}, sentimentAPICallInterval);
   }
 
-  public calculateNewSentimentFetchInterval(timeScale, columnNum){
-    var interval = timeScale/columnNum;
+  private updateWinningChartGlow(){
+    if(this.team1AverageSentiment > this.team2AverageSentiment){
+      document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+      document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
+      this.team1Sparkles = false;
+      this.team2Sparkles = true;
+    }
+    else if(this.team1AverageSentiment < this.team2AverageSentiment){
+      document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0; -webkit-box-shadow: 0; box-shadow:0');
+      document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
+      this.team1Sparkles = true;
+      this.team2Sparkles = false;
+    }
+    else if(this.team1AverageSentiment === this.team2AverageSentiment){
+      document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
+      document.getElementById('teamCards2').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0')
+      this.team1Sparkles = false;
+      this.team2Sparkles = false;
+    }
+    this.updateCharts();
+  }
+
+  public calculateNewSentimentFetchInterval(timeSpan, columnNum){
+    var interval = timeSpan/columnNum;
     if(this.timeUnit === 'seconds'){
       interval = interval*1000;
     } else if(this.timeUnit === 'minutes'){
@@ -414,7 +421,6 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
 
   public generateLabelArray(timeSpan, arrayLength){
-    var lastAPICallTimeStamp = new Date();
     var timeDecrementer = timeSpan/arrayLength;
     var timeUnit = 'seconds';
     var dateLabelBuilder = this.dateLabelBuilder;
@@ -430,20 +436,46 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     }
 
     function decrementSeconds(){
-      lastAPICallTimeStamp.setSeconds(lastAPICallTimeStamp.getSeconds() - timeDecrementer);
-      return dateLabelBuilder(lastAPICallTimeStamp.getMinutes(), lastAPICallTimeStamp.getSeconds());
+      this.lastAPICallTimeStamp.setSeconds(this.lastAPICallTimeStamp.getSeconds() - timeDecrementer);
+      return dateLabelBuilder(this.lastAPICallTimeStamp.getMinutes(), this.lastAPICallTimeStamp.getSeconds());
 
     }
 
     function decrementMinutes(){
-      lastAPICallTimeStamp.setMinutes(lastAPICallTimeStamp.getMinutes() - timeDecrementer);
-      return dateLabelBuilder(lastAPICallTimeStamp.getHours(), lastAPICallTimeStamp.getMinutes());
+      this.lastAPICallTimeStamp.setMinutes(this.lastAPICallTimeStamp.getMinutes() - timeDecrementer);
+      return dateLabelBuilder(this.lastAPICallTimeStamp.getHours(), this.lastAPICallTimeStamp.getMinutes());
     }
 
     function decrementHours(){
-      lastAPICallTimeStamp.setHours(lastAPICallTimeStamp.getHours() - timeDecrementer);
-      return dateLabelBuilder(lastAPICallTimeStamp.getDate(), lastAPICallTimeStamp.getHours());
+      this.lastAPICallTimeStamp.setHours(this.lastAPICallTimeStamp.getHours() - timeDecrementer);
+      return dateLabelBuilder(this.lastAPICallTimeStamp.getDate(), this.lastAPICallTimeStamp.getHours());
     }
+  }
+
+  private mapUISetUpData(data){
+    this.team1Name = data.teamNames.team1;
+    this.team2Name = data.teamNames.team2;
+    //this.timeUnit = data.timeUnit;
+    this.availableGraphScales = data.availableGraphScales;
+    //this.timeSpan = data.startingGraphScales.timeSpan;
+    //this.columnNum = data.startingGraphScales.xAxisScale;
+    this.lastAPICallTimeStamp = this.parseRetrievedDate(data.timeOfLastAPICall.lastAPICallTimeStamp);
+    this.millisecondsBeforeApiCallForNextTeam = data.timeOfLastAPICall.millisecondsBeforeApiCallForNextTeam;
+    //not using the provided API call interval at the moment as the graph's
+    //rest call interval is different to the server's call to sentiment api
+    this.setUpChart(this.team1Sentiment, data.startingData.team1Sentiment);
+    this.setUpChart(this.team2Sentiment, data.startingData.team2Sentiment);
+    this.team1AverageSentiment = Math.round(data.startingData.team1CurrentAverage * 100) / 100;
+    this.team2AverageSentiment = Math.round(data.startingData.team2CurrentAverage * 100) / 100;
+  }
+
+  private parseRetrievedDate(retrievedDate){
+    let newDate = new Date(retrievedDate);
+    if(!newDate || newDate.toString() === 'Invalid Date' || !newDate.getDate() || !newDate.getHours() || !newDate.getMinutes() || !newDate.getSeconds()){
+      console.log('ERROR parsing the retrieved date');
+      return new Date();
+    }
+    return newDate;
   }
 
   private populateLabelsArrayElements(decrementer, graphScale){
@@ -461,6 +493,12 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.generateLabelArray(timeSpan, columnNum);
     this.updateCharts();
     console.log(this.generateCurrentTimeSpan());
+  }
+
+  public setUpChart(oldSentimentArray, newSentimentArray){
+    for(let i = 0; i < oldSentimentArray.length; i++){
+      oldSentimentArray[i] = newSentimentArray[i];
+    }
   }
 
   public changeView(){
