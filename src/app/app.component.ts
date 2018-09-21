@@ -332,7 +332,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 });
     //interval = (time/scale)*minute
 
-    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(50, 10);
+    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
 
     this.http.get('http://localhost:9000/UISetUp')
     .subscribe(response => {
@@ -397,13 +397,13 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.updateCharts();
   }
 
-  public calculateNewSentimentFetchInterval(timeSpan, columnNum){
+  public calculateNewSentimentFetchInterval(timeSpan, columnNum, timeUnit){
     var interval = timeSpan/columnNum;
-    if(this.timeUnit === 'seconds'){
+    if(timeUnit === 'seconds'){
       interval = interval*1000;
-    } else if(this.timeUnit === 'minutes'){
+    } else if(timeUnit === 'minutes'){
       interval = interval*60000;
-    } else if(this.timeUnit === 'hours'){
+    } else if(timeUnit === 'hours'){
       interval = interval*3600000;
     }
     return interval;
@@ -414,11 +414,6 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     tempTitle += scale > 1 ? unit + "s" : unit;
     this.timeScaleTitle = tempTitle;
   }
-
-  //link up with the backend
-  //on retrieval:
-  //+ reverse the two arrays
-
 
   public generateLabelArray(timeSpan, arrayLength){
     var timeDecrementer = timeSpan/arrayLength;
