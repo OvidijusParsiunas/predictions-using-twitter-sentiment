@@ -63,8 +63,8 @@ export class AppComponent {
   chart3: Chart;
   team1Name = 'Team 1 Name';
   team2Name = 'Team 2 Name';
-  team1Sentiment  = [0,0,0,0,0,0,0,0,0,0];
-  team2Sentiment  = [0,0,0,0,0,0,0,0,0,0];
+  team1Sentiment  = [];
+  team2Sentiment  = [];
   team1AverageSentiment = 0;
   team2AverageSentiment = 0;
   team1Sparkles = true;
@@ -430,18 +430,17 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       this.populateLabelsArrayElements(decrementHours, arrayLength);
     }
 
-    function decrementSeconds(){
-      this.lastAPICallTimeStamp.setSeconds(this.lastAPICallTimeStamp.getSeconds() - timeDecrementer);
-      return dateLabelBuilder(this.lastAPICallTimeStamp.getMinutes(), this.lastAPICallTimeStamp.getSeconds());
-
+    function decrementSeconds(lastAPICallTimeStamp){
+      lastAPICallTimeStamp.setSeconds(lastAPICallTimeStamp.getSeconds() - timeDecrementer);
+      return dateLabelBuilder(lastAPICallTimeStamp.getMinutes(), lastAPICallTimeStamp.getSeconds());
     }
 
-    function decrementMinutes(){
+    function decrementMinutes(lastAPICallTimeStamp){
       this.lastAPICallTimeStamp.setMinutes(this.lastAPICallTimeStamp.getMinutes() - timeDecrementer);
       return dateLabelBuilder(this.lastAPICallTimeStamp.getHours(), this.lastAPICallTimeStamp.getMinutes());
     }
 
-    function decrementHours(){
+    function decrementHours(lastAPICallTimeStamp){
       this.lastAPICallTimeStamp.setHours(this.lastAPICallTimeStamp.getHours() - timeDecrementer);
       return dateLabelBuilder(this.lastAPICallTimeStamp.getDate(), this.lastAPICallTimeStamp.getHours());
     }
@@ -452,14 +451,17 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team2Name = data.teamNames.team2;
     //this.timeUnit = data.timeUnit;
     this.availableGraphScales = data.availableGraphScales;
-    //this.timeSpan = data.startingGraphScales.timeSpan;
-    //this.columnNum = data.startingGraphScales.xAxisScale;
+    this.timeSpan = data.startingGraphScales.timeSpan;
+    this.columnNum = data.startingGraphScales.xAxisScale;
     this.lastAPICallTimeStamp = this.parseRetrievedDate(data.timeOfLastAPICall.lastAPICallTimeStamp);
     this.millisecondsBeforeApiCallForNextTeam = data.timeOfLastAPICall.millisecondsBeforeApiCallForNextTeam;
     //not using the provided API call interval at the moment as the graph's
     //rest call interval is different to the server's call to sentiment api
-    this.setUpChart(this.team1Sentiment, data.startingData.team1Sentiment);
-    this.setUpChart(this.team2Sentiment, data.startingData.team2Sentiment);
+    this.team1Sentiment.length = this.columnNum;
+    this.team2Sentiment.length = this.columnNum;
+    this.generateLabelArray(this.timeSpan, this.columnNum);
+    this.setUpSentimentData(this.team1Sentiment, data.startingData.team1Sentiment);
+    this.setUpSentimentData(this.team2Sentiment, data.startingData.team2Sentiment);
     this.team1AverageSentiment = Math.round(data.startingData.team1CurrentAverage * 100) / 100;
     this.team2AverageSentiment = Math.round(data.startingData.team2CurrentAverage * 100) / 100;
   }
@@ -475,7 +477,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   private populateLabelsArrayElements(decrementer, graphScale){
     for(let i = graphScale-1; i > -1; i--){
-      this.labels[i] = decrementer();
+      this.labels[i] = decrementer(this.lastAPICallTimeStamp);
     }
   }
 
@@ -490,9 +492,13 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     console.log(this.generateCurrentTimeSpan());
   }
 
-  public setUpChart(oldSentimentArray, newSentimentArray){
-    for(let i = 0; i < oldSentimentArray.length; i++){
-      oldSentimentArray[i] = newSentimentArray[i];
+  public setUpSentimentData(oldSentimentArray, newSentimentArray){
+    let oldSentimentArrayIndex = oldSentimentArray.length-1;
+    for(let i = newSentimentArray.length-1; i > -1; i--){
+      oldSentimentArray[oldSentimentArrayIndex--] = newSentimentArray[i];
+    }
+    while(oldSentimentArrayIndex > -1){
+      oldSentimentArray[oldSentimentArrayIndex--] = 0;
     }
   }
 

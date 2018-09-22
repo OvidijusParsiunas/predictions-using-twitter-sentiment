@@ -700,15 +700,17 @@ function getPersistedSentimentData(timeSpan, graphScale){
   console.log('Let us look at the math: ' + (team2AverageSentimentArrayIndex -1) + ' and ' + rateOfArrayIndexJump);
   console.log('INDEXX!!!!! ' + Math.floor(team2AverageSentimentArrayIndex/rateOfArrayIndexJump));
   console.log('team1AverageSentimentArray ' + team1AverageSentimentArray);
+  //we populate the array with the newest elements being first to avoid having nulls when populating from the back and not having the data
   for(var i = team2AverageSentimentArrayIndex-1; i > -1; i=i-sentimentArrayIndex){
     console.log(i);
     if(i < lowestArrayIndex){
       break;
     }
-    team1ClientArray[clientArrayIndex] = team1AverageSentimentArray[i];
-    team2ClientArray[clientArrayIndex] = team2AverageSentimentArray[i];
-    clientArrayIndex++;
+    team1ClientArray.push(team1AverageSentimentArray[i]);
+    team2ClientArray.push(team2AverageSentimentArray[i]);
   }
+  team1ClientArray.reverse();
+  team2ClientArray.reverse();
   return buildStartingDataCargo(team1ClientArray, team2ClientArray, timeSpan);
 }
 
