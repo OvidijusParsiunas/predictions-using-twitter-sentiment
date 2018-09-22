@@ -63,8 +63,9 @@ export class AppComponent {
   chart3: Chart;
   team1Name = 'Team 1 Name';
   team2Name = 'Team 2 Name';
-  team1Sentiment  = [];
-  team2Sentiment  = [];
+  team1Sentiment = [];
+  team2Sentiment = [];
+  //default lengths for when the ui is up and the server is on later to allow the new sentiment to be populated
   team1AverageSentiment = 0;
   team2AverageSentiment = 0;
   team1Sparkles = true;
@@ -189,6 +190,7 @@ export class AppComponent {
     htmlRef3: ElementRef;
 
   ngOnInit(){
+        this.setDefaultSentimentArrayLengths();
         this.chart = new Chart(this.htmlRef.nativeElement, {
           type: 'line',
           data: {
@@ -345,6 +347,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.http.get('http://localhost:9000/newSentimentData/45')
     .subscribe(response => {
       var data = response as newSentimentData;
+      console.log('length is: ' + this.team1Sentiment.length);
       for(let index = 0; index < this.team1Sentiment.length-1; index++){
         this.team1Sentiment[index] = this.team1Sentiment[index+1];
       }
@@ -375,6 +378,10 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   //}, sentimentAPICallInterval);
   }
 
+  private setDefaultSentimentArrayLengths(){
+    this.team1Sentiment.length = 10;
+    this.team2Sentiment.length = 10;
+  }
   private updateWinningChartGlow(){
     if(this.team1AverageSentiment > this.team2AverageSentiment){
       document.getElementById('teamCards1').setAttribute("style", '-moz-box-shadow: 0 0 3px #FF0; -webkit-box-shadow: 0 0 3px #FF0; box-shadow:0 0 20px #FF0');
@@ -449,7 +456,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   private mapUISetUpData(data){
     this.team1Name = data.teamNames.team1;
     this.team2Name = data.teamNames.team2;
-    //this.timeUnit = data.timeUnit;
+    this.timeUnit = data.timeUnit;
     this.availableGraphScales = data.availableGraphScales;
     this.timeSpan = data.startingGraphScales.timeSpan;
     this.columnNum = data.startingGraphScales.xAxisScale;
