@@ -61,14 +61,17 @@ if(apiCallIntervalSeconds === undefined || apiCallIntervalSeconds === 0){
   console.log('ERROR - please set the apiCallIntervalSeconds variable (used for calling sentiment analysis API) to 1 or higher');
   process.exit();
 }
+
 if(scaleOfPersistance === undefined || scaleOfPersistance === 0){
   console.log('ERROR - please set the scaleOfPersistance variable (used for defining the amount of stored sentiment data) to 1 or higher');
   process.exit();
 }
+
 if(secondsBeforeApiCallForNextTeam === undefined || apiCallIntervalSeconds == secondsBeforeApiCallForNextTeam || apiCallIntervalSeconds > secondsBeforeApiCallForNextTeam){
-  console.log('ERROR - secondsBeforeApiCallForNextTeam must be set to a value that is lower than the apiCallIntervalSeconds, which is currently set to: ' + apiCallInterval);
+  console.log('ERROR - secondsBeforeApiCallForNextTeam must be set to a value that is lower than the apiCallIntervalSeconds, which is currently set to: ' + apiCallIntervalSeconds);
   process.exit();
 }
+
 if(timeUnit != 'seconds' && timeUnit != 'minutes' && timeUnit!= 'hours'){
   //have an enum to spit out the array and use a loop instead of an if statement
   console.log('ERROR - timeUnit variable unidentified, please set the timeUnit variable to one of the following values: seconds, minutes, hours');
