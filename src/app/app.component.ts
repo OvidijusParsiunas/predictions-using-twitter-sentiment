@@ -35,7 +35,7 @@ interface startingGraphScales{
 
 interface timeOfLastAPICall{
   lastAPICallTimeStamp: Date;
-  millisecondsBeforeApiCallForNextTeam: number;
+  secondsBeforeApiCallForNextTeam: number;
   apiCallInterval: number;
 }
 

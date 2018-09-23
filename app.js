@@ -39,9 +39,10 @@ XAxisRange - number of points on the graph x axis
 //select the time unit and scale at which you will be storing sentiment averages and displaying them on the UI
 //Update the readme for this
 let timeUnit = 'seconds';
-let scaleOfPersistance = 120;
+let scaleOfPersistance = 120; //lower for seconds, stored in seconds true scale
 
 let apiCallIntervalSeconds = 5;
+let secondsBeforeApiCallForNextTeam = 2;
 let availableTimesIncreaseRate = 10;
 let scaleOfPersistanceAsOnlyScale = false;
 let singleGraphScale = 20;
@@ -64,6 +65,7 @@ if(scaleOfPersistance === undefined || scaleOfPersistance === 0){
   console.log('ERROR - please set the scaleOfPersistance variable (used for defining the amount of stored sentiment data) to 1 or higher');
   process.exit();
 }
+if(secondsBeforeApiCallForNextTeam === undefined || apiCallIntervalSeconds > s)
 if(timeUnit != 'seconds' && timeUnit != 'minutes' && timeUnit!= 'hours'){
   //have an enum to spit out the array and use a loop instead of an if statement
   console.log('ERROR - timeUnit variable unidentified, please set the timeUnit variable to one of the following values: seconds, minutes, hours');
@@ -414,6 +416,7 @@ function checkKeyWords(text){
   return false;
 }
 
+let offsetForCallingAPIForNextTeam = secondsBeforeApiCallForNextTeam * 1000;
 let team1Tweets = [400];
 let team1Sentiment = 0;
 let team1Increment = 0;
@@ -433,7 +436,6 @@ let currentTotal = 0;
 let numberOfIterationsForMinutes;
 let numberOfIterationsForHours;
 let apiCallInterval;
-let secondsBeforeApiCallForNextTeam = 2000;
 let lastAPICallTimeStamp = 0;
 
 //appropriator that augments api call interval so minute/hour can be identified for a set number of iterations
@@ -514,7 +516,7 @@ if(team2Increment > 0){
       team2Increment = 0;
     }
   })}
-  , secondsBeforeApiCallForNextTeam);
+  , offsetForCallingAPIForNextTeam);
 }
 else{
   team2Sentiment = 2;
@@ -750,7 +752,7 @@ function buildLastSentimentAPICallUICargo(){
   //include api call interval in seconds incase data arrives too late so it can retry to calculate the offset successfully
   var lastAPICallCargo = {};
   lastAPICallCargo['lastAPICallTimeStamp'] = lastAPICallTimeStamp;
-  lastAPICallCargo['millisecondsBeforeApiCallForNextTeam'] = secondsBeforeApiCallForNextTeam;
+  lastAPICallCargo['secondsBeforeApiCallForNextTeam'] = secondsBeforeApiCallForNextTeam;
   lastAPICallCargo['apiCallInterval'] = apiCallInterval;
   return lastAPICallCargo;
 }
