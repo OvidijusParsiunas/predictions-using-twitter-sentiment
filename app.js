@@ -67,7 +67,7 @@ if(scaleOfPersistance === undefined || scaleOfPersistance === 0){
   process.exit();
 }
 
-if(secondsBeforeApiCallForNextTeam === undefined || apiCallIntervalSeconds == secondsBeforeApiCallForNextTeam || apiCallIntervalSeconds > secondsBeforeApiCallForNextTeam){
+if(secondsBeforeApiCallForNextTeam === undefined || apiCallIntervalSeconds == secondsBeforeApiCallForNextTeam || apiCallIntervalSeconds < secondsBeforeApiCallForNextTeam){
   console.log('ERROR - secondsBeforeApiCallForNextTeam must be set to a value that is lower than the apiCallIntervalSeconds, which is currently set to: ' + apiCallIntervalSeconds);
   process.exit();
 }
@@ -759,7 +759,7 @@ function buildLastSentimentAPICallUICargo(){
   var lastAPICallCargo = {};
   lastAPICallCargo['lastAPICallTimeStamp'] = lastAPICallTimeStamp;
   lastAPICallCargo['secondsBeforeApiCallForNextTeam'] = secondsBeforeApiCallForNextTeam;
-  lastAPICallCargo['apiCallInterval'] = apiCallInterval;
+  lastAPICallCargo['apiCallIntervalSeconds'] = apiCallIntervalSeconds;
   return lastAPICallCargo;
 }
 

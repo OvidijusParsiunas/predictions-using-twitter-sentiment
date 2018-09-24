@@ -36,7 +36,7 @@ interface startingGraphScales{
 interface timeOfLastAPICall{
   lastAPICallTimeStamp: Date;
   secondsBeforeApiCallForNextTeam: number;
-  apiCallInterval: number;
+  apiCallIntervalSeconds: number;
 }
 
 interface startingData{
@@ -81,7 +81,9 @@ export class AppComponent {
   dropDownChangeViewText = "Combined View";
   availableGraphScales = {};
   lastAPICallTimeStamp = new Date();
-  millisecondsBeforeApiCallForNextTeam = 0;
+  apiCallIntervalSeconds = 0;
+  secondsBeforeApiCallForNextTeam = 0;
+  initialAPICallOffset = 0;
 /*
 {
     "teamNames": {
@@ -334,48 +336,54 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 });
     //interval = (time/scale)*minute
 
-    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
 
     this.http.get('http://localhost:9000/UISetUp')
     .subscribe(response => {
       var data = response as UISetUpData;
       this.mapUISetUpData(data);
       this.updateWinningChartGlow();
-});
+      this.setAPICallOffset();
+    });
+    //then
+    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
 
-    setInterval(() => {
-    this.http.get('http://localhost:9000/newSentimentData/45')
-    .subscribe(response => {
-      var data = response as newSentimentData;
-      console.log('length is: ' + this.team1Sentiment.length);
-      for(let index = 0; index < this.team1Sentiment.length-1; index++){
-        this.team1Sentiment[index] = this.team1Sentiment[index+1];
-      }
-      this.team1Sentiment[this.team1Sentiment.length-1] = data.data.team1Sentiment;
-      //Javascript/typescript method for rounding float variables
-      this.team1AverageSentiment = Math.round(data.data.team1AverageSentiment * 100) / 100;
-      for(let index = 0; index < this.labels.length-1; index++){
-        this.labels[index] = this.labels[index+1];
-      }
-      this.labels[this.labels.length-1] = this.generateCurrentTimeSpan();
-      for(let index = 0; index < this.team2Sentiment.length-1; index++){
-        this.team2Sentiment[index] = this.team2Sentiment[index+1];
-      }
+    setTimeout(() => {
+      setInterval(() => {
+      this.http.get('http://localhost:9000/newSentimentData/45')
+      .subscribe(response => {
+        var data = response as newSentimentData;
+        console.log('length is: ' + this.team1Sentiment.length);
+        for(let index = 0; index < this.team1Sentiment.length-1; index++){
+          this.team1Sentiment[index] = this.team1Sentiment[index+1];
+        }
+        this.team1Sentiment[this.team1Sentiment.length-1] = data.data.team1Sentiment;
+        //Javascript/typescript method for rounding float variables
+        this.team1AverageSentiment = Math.round(data.data.team1AverageSentiment * 100) / 100;
+        for(let index = 0; index < this.labels.length-1; index++){
+          this.labels[index] = this.labels[index+1];
+        }
+        this.labels[this.labels.length-1] = this.generateCurrentTimeSpan();
+        for(let index = 0; index < this.team2Sentiment.length-1; index++){
+          this.team2Sentiment[index] = this.team2Sentiment[index+1];
+        }
 
-      this.team2Sentiment[this.team2Sentiment.length-1] = data.data.team2Sentiment;
-      this.team2AverageSentiment = Math.round(data.data.team2AverageSentiment * 100) / 100;
-        // this.team1Sentiment.push(data.data.team1team1Sentiment);
-        // this.team1Sentiment = this.team1Sentiment.splice(-1);
-        //
-        // this.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
-        // this.team1Sentiment = this.team1Sentiment.splice(-1);
-            // this.chart.data.datasets[0].data.push(data.data.team1team1Sentiment);
-            // this.chart.data.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
-        console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
-        this.updateWinningChartGlow();
-      });
-    }, 2000);
-  //}, sentimentAPICallInterval);
+        this.team2Sentiment[this.team2Sentiment.length-1] = data.data.team2Sentiment;
+        this.team2AverageSentiment = Math.round(data.data.team2AverageSentiment * 100) / 100;
+          // this.team1Sentiment.push(data.data.team1team1Sentiment);
+          // this.team1Sentiment = this.team1Sentiment.splice(-1);
+          //
+          // this.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
+          // this.team1Sentiment = this.team1Sentiment.splice(-1);
+              // this.chart.data.datasets[0].data.push(data.data.team1team1Sentiment);
+              // this.chart.data.labels.push(new Date().getHours() + ':' + new Date().getMinutes());
+          console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
+          this.updateWinningChartGlow();
+        });
+      }, 2000);
+      //}, sentimentAPICallInterval);
+      
+    }, 4000)
+    //}, this.initialAPICallOffset);
   }
 
   private setDefaultSentimentArrayLengths(){
@@ -461,7 +469,8 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.timeSpan = data.startingGraphScales.timeSpan;
     this.columnNum = data.startingGraphScales.xAxisScale;
     this.lastAPICallTimeStamp = this.parseRetrievedDate(data.timeOfLastAPICall.lastAPICallTimeStamp);
-    this.millisecondsBeforeApiCallForNextTeam = data.timeOfLastAPICall.millisecondsBeforeApiCallForNextTeam;
+    this.secondsBeforeApiCallForNextTeam = data.timeOfLastAPICall.secondsBeforeApiCallForNextTeam;
+    this.apiCallIntervalSeconds = data.timeOfLastAPICall.apiCallIntervalSeconds;
     //not using the provided API call interval at the moment as the graph's
     //rest call interval is different to the server's call to sentiment api
     this.team1Sentiment.length = this.columnNum;
@@ -475,19 +484,31 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   private parseRetrievedDate(retrievedDate){
     let newDate = new Date(retrievedDate);
-    if(!newDate || newDate.toString() === 'Invalid Date' || !newDate.getDate() || !newDate.getHours() || !newDate.getMinutes() || !newDate.getSeconds()){
-      console.log('ERROR parsing the retrieved date');
+    if(!newDate || newDate.toString() === 'Invalid Date'){
+      console.log('ERROR parsing the retrieved date; the date object before parsing: ' + retrievedDate + ', the date object after parsing: ' + newDate);
       return new Date();
     }
     return newDate;
   }
 
   private populateLabelsArrayElements(decrementer, graphScale){
+    let lastAPICallTimeStampLabel = new Date(this.lastAPICallTimeStamp);
     for(let i = graphScale-1; i > -1; i--){
-      this.labels[i] = decrementer(this.lastAPICallTimeStamp);
+      this.labels[i] = decrementer(lastAPICallTimeStampLabel);
     }
   }
 
+  private setAPICallOffset(){
+    let currentDifference = Date.now() - this.lastAPICallTimeStamp.getTime();
+    this.initialAPICallOffset = currentDifference + this.secondsBeforeApiCallForNextTeam + (this.apiCallIntervalSeconds - this.secondsBeforeApiCallForNextTeam)/2;
+    console.log('The initial api call offset now is: ' + this.initialAPICallOffset);
+  }
+  /*interface timeOfLastAPICall{
+    lastAPICallTimeStamp: Date;
+    secondsBeforeApiCallForNextTeam: number;
+    apiCallInterval: number;
+  }
+  */
   public constructCharts(timeSpan, columnNum) {
     var actualArrayLength = 10;
     var lengthToCut = actualArrayLength - columnNum;
