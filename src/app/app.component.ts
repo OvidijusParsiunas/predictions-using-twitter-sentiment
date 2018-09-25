@@ -343,10 +343,15 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       this.mapUISetUpData(data);
       this.updateWinningChartGlow();
       this.setAPICallOffset();
+      this.instantiateSentimentAPICalls();
+    },
+    error => {
+      console.log('The server is not responding');
     });
-    //then
-    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
+  }
 
+  private instantiateSentimentAPICalls(){
+    var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
     setTimeout(() => {
       setInterval(() => {
       this.http.get('http://localhost:9000/newSentimentData/45')
@@ -381,7 +386,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
         });
       }, 2000);
       //}, sentimentAPICallInterval);
-      
+
     }, 4000)
     //}, this.initialAPICallOffset);
   }
@@ -500,15 +505,14 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   private setAPICallOffset(){
     let currentDifference = Date.now() - this.lastAPICallTimeStamp.getTime();
+    if(currentDifference - 200 > this.apiCallIntervalSeconds * 1000){
+      console.log('The set up data took too long to retrieve in order to enable a sync with the server API using a calculated offset, creating a fixed offset instead...');
+      currentDifference = 0;
+    }
     this.initialAPICallOffset = currentDifference + this.secondsBeforeApiCallForNextTeam + (this.apiCallIntervalSeconds - this.secondsBeforeApiCallForNextTeam)/2;
     console.log('The initial api call offset now is: ' + this.initialAPICallOffset);
   }
-  /*interface timeOfLastAPICall{
-    lastAPICallTimeStamp: Date;
-    secondsBeforeApiCallForNextTeam: number;
-    apiCallInterval: number;
-  }
-  */
+
   public constructCharts(timeSpan, columnNum) {
     var actualArrayLength = 10;
     var lengthToCut = actualArrayLength - columnNum;
