@@ -505,12 +505,25 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   private setAPICallOffset(){
     let currentDifference = Date.now() - this.lastAPICallTimeStamp.getTime();
-    if(currentDifference - 200 > this.apiCallIntervalSeconds * 1000){
+    let apiCallIntervalMilliseconds = this.apiCallIntervalSeconds * 1000;
+    let millisecondsBeforeApiCallForNextTeam = this.secondsBeforeApiCallForNextTeam * 1000;
+    if(currentDifference - 200 > apiCallIntervalMilliseconds){
       console.log('The set up data took too long to retrieve in order to enable a sync with the server API using a calculated offset, creating a fixed offset instead...');
       currentDifference = 0;
     }
-    this.initialAPICallOffset = currentDifference + this.secondsBeforeApiCallForNextTeam + (this.apiCallIntervalSeconds - this.secondsBeforeApiCallForNextTeam)/2;
-    console.log('The initial api call offset now is: ' + this.initialAPICallOffset);
+    let idealAPICallTimeStamp = ((apiCallIntervalMilliseconds - millisecondsBeforeApiCallForNextTeam)/2)+millisecondsBeforeApiCallForNextTeam;
+    if(currentDifference < idealAPICallTimeStamp){
+      this.initialAPICallOffset = idealAPICallTimeStamp - currentDifference;
+    }
+    else if(currentDifference >= idealAPICallTimeStamp){
+      currentDifference = currentDifference%apiCallIntervalMilliseconds;
+      if(currentDifference < idealAPICallTimeStamp){
+        this.initialAPICallOffset = idealAPICallTimeStamp - currentDifference;
+      }
+      else if(currentDifference >= idealAPICallTimeStamp){
+        this.initialAPICallOffset = idealAPICallTimeStamp + apiCallIntervalMilliseconds - currentDifference;
+      }
+    }
   }
 
   public constructCharts(timeSpan, columnNum) {
