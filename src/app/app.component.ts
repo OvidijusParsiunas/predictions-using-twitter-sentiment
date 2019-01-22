@@ -414,6 +414,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.updateCharts();
   }
 
+  //this is important because when the interval is 100s and columns are 10, we want the retrieval to be slower than 20
   public calculateNewSentimentFetchInterval(timeSpan, columnNum, timeUnit){
     var interval = timeSpan/columnNum;
     if(timeUnit === 'seconds'){
