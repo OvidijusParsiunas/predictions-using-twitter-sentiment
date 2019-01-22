@@ -191,6 +191,7 @@ export class AppComponent {
 @ViewChild('chart3')
     htmlRef3: ElementRef;
 
+  //we instantiate 3 arrays, the third one is hidden and appears when the double view is activated (the others are deactivated)
   ngOnInit(){
         this.setDefaultSentimentArrayLengths();
         this.chart = new Chart(this.htmlRef.nativeElement, {
