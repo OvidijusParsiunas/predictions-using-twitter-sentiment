@@ -384,11 +384,8 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
           console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
           this.updateWinningChartGlow();
         });
-      }, 2000);
-      //}, sentimentAPICallInterval);
-
-    }, 4000)
-    //}, this.initialAPICallOffset);
+      }, 2000); // keeping it 2 seconds for testing purposes, but should be the following upon completion: }, sentimentAPICallInterval);
+    }, this.initialAPICallOffset);
   }
 
   private setDefaultSentimentArrayLengths(){
