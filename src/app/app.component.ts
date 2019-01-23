@@ -365,10 +365,13 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
         this.team1Sentiment[this.team1Sentiment.length-1] = data.data.team1Sentiment;
         //Javascript/typescript method for rounding float variables
         this.team1AverageSentiment = Math.round(data.data.team1AverageSentiment * 100) / 100;
+        //move all array element values by one index to the left
         for(let index = 0; index < this.labels.length-1; index++){
           this.labels[index] = this.labels[index+1];
         }
+        //this is used to retrieve the current time, which is then stored in the last array element for every new iteration
         this.labels[this.labels.length-1] = this.generateCurrentTimeSpan();
+
         for(let index = 0; index < this.team2Sentiment.length-1; index++){
           this.team2Sentiment[index] = this.team2Sentiment[index+1];
         }
