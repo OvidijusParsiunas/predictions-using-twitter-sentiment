@@ -418,7 +418,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.updateCharts();
   }
 
-  //this is important because when the interval is 100s and columns are 10, we want the retrieval to be slower than 20
+  //this is important because when the interval is 100s and columns are 20, we want the retrieval to be slower for 20
   public calculateNewSentimentFetchInterval(timeSpan, columnNum, timeUnit){
     var interval = timeSpan/columnNum;
     if(timeUnit === 'seconds'){
@@ -429,12 +429,6 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       interval = interval*3600000;
     }
     return interval;
-  }
-
-  public setTimeScaleTitle(scale, unit){
-    let tempTitle = "Past " + scale + " ";
-    tempTitle += scale > 1 ? unit + "s" : unit;
-    this.timeScaleTitle = tempTitle;
   }
 
   public generateLabelArray(timeSpan, arrayLength){
@@ -536,7 +530,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team2Sentiment.length = columnNum;
     this.generateLabelArray(timeSpan, columnNum);
     this.updateCharts();
-    console.log(this.generateCurrentTimeSpan());
+    //console.log(this.generateCurrentTimeSpan());
   }
 
   public setUpSentimentData(oldSentimentArray, newSentimentArray){
@@ -591,5 +585,12 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.chart.update();
     this.chart2.update();
     this.chart3.update();
+  }
+
+  //Retired functions
+  public setTimeScaleTitle(scale, unit){
+    let tempTitle = "Past " + scale + " ";
+    tempTitle += scale > 1 ? unit + "s" : unit;
+    this.timeScaleTitle = tempTitle;
   }
 }
