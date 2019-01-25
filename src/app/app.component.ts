@@ -84,103 +84,6 @@ export class AppComponent {
   apiCallIntervalSeconds = 0;
   secondsBeforeApiCallForNextTeam = 0;
   initialAPICallOffset = 0;
-/*
-{
-    "teamNames": {
-        "team1": "Brazil",
-        "team2": "Costa,Rica,CostaRica"
-    },
-    "timeUnit": "seconds",
-    "availableGraphScales": {
-        "25": [
-            5
-        ],
-        "30": [
-            6
-        ],
-        "35": [
-            7
-        ],
-        "40": [
-            8
-        ],
-        "45": [
-            9
-        ],
-        "50": [
-            10
-        ],
-        "55": [
-            11
-        ],
-        "60": [
-            12
-        ],
-        "65": [
-            13
-        ],
-        "70": [
-            14
-        ],
-        "75": [
-            15
-        ],
-        "80": [
-            16
-        ],
-        "85": [
-            17
-        ],
-        "90": [
-            18
-        ],
-        "95": [
-            19
-        ],
-        "100": [
-            10,
-            20
-        ],
-        "105": [
-            21
-        ],
-        "110": [
-            11,
-            22
-        ],
-        "115": [
-            23
-        ],
-        "120": [
-            12,
-            24
-        ]
-    },
-    "startingGraphScales": {
-        "timeSpan": 70,
-        "xAxisScale": 14
-    },
-    "timeOfLastAPICall": {
-        "this.lastAPICallTimeStamp": "2018-09-02T14:43:20.000Z",
-        "millisecondsBeforeApiCallForNextTeam": 2000,
-        "apiCallInterval": 5000
-    },
-    "startingData": {
-        "team1Sentiment": [
-            2.3333333333333335,
-            2,
-            2
-        ],
-        "team2Sentiment": [
-            2.3076923076923075,
-            2,
-            2
-        ],
-        "team1CurrentAverage": 2.111111111111111,
-        "team2CurrentAverage": 2.1025641025641026
-    }
-}
-*/
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -191,7 +94,7 @@ export class AppComponent {
 @ViewChild('chart3')
     htmlRef3: ElementRef;
 
-  //we instantiate 3 arrays, the third one is hidden and appears when the double view is activated (the others are deactivated)
+  //we instantiate 3 charts, the third one is hidden and appears when the double view is activated (the others are then deactivated)
   ngOnInit(){
         this.setDefaultSentimentArrayLengths();
         this.chart = new Chart(this.htmlRef.nativeElement, {
@@ -335,8 +238,6 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     }
   }
 });
-    //interval = (time/scale)*minute
-
 
     this.http.get('http://localhost:9000/UISetUp')
     .subscribe(response => {
@@ -350,6 +251,9 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       console.log('The server is not responding');
     });
   }
+
+  //the following is used to create a reusable function
+  generateCurrentTimeSpan = this.setTimeSpanGenerator('seconds');
 
   private instantiateSentimentAPICalls(){
     var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
@@ -529,8 +433,12 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team1Sentiment.length = columnNum;
     this.team2Sentiment.length = columnNum;
     this.generateLabelArray(timeSpan, columnNum);
+    //retrieve the available data
+    //sync initial ping to the server
+    // - update labels
+    // - update the sentiment data
+    //update fetch rate
     this.updateCharts();
-    //console.log(this.generateCurrentTimeSpan());
   }
 
   public setUpSentimentData(oldSentimentArray, newSentimentArray){
@@ -553,8 +461,6 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       this.dropDownChangeViewText = "Combined View";
     }
   }
-
-  generateCurrentTimeSpan = this.setTimeSpanGenerator('seconds');
 
   private setTimeSpanGenerator(precision){
     if(precision === 'seconds'){
@@ -594,3 +500,103 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.timeScaleTitle = tempTitle;
   }
 }
+
+
+//Returned UI Setup code
+/*
+{
+    "teamNames": {
+        "team1": "Brazil",
+        "team2": "Costa,Rica,CostaRica"
+    },
+    "timeUnit": "seconds",
+    "availableGraphScales": {
+        "25": [
+            5
+        ],
+        "30": [
+            6
+        ],
+        "35": [
+            7
+        ],
+        "40": [
+            8
+        ],
+        "45": [
+            9
+        ],
+        "50": [
+            10
+        ],
+        "55": [
+            11
+        ],
+        "60": [
+            12
+        ],
+        "65": [
+            13
+        ],
+        "70": [
+            14
+        ],
+        "75": [
+            15
+        ],
+        "80": [
+            16
+        ],
+        "85": [
+            17
+        ],
+        "90": [
+            18
+        ],
+        "95": [
+            19
+        ],
+        "100": [
+            10,
+            20
+        ],
+        "105": [
+            21
+        ],
+        "110": [
+            11,
+            22
+        ],
+        "115": [
+            23
+        ],
+        "120": [
+            12,
+            24
+        ]
+    },
+    "startingGraphScales": {
+        "timeSpan": 70,
+        "xAxisScale": 14
+    },
+    "timeOfLastAPICall": {
+        "this.lastAPICallTimeStamp": "2018-09-02T14:43:20.000Z",
+        "millisecondsBeforeApiCallForNextTeam": 2000,
+        "apiCallInterval": 5000
+    },
+    "startingData": {
+        "team1Sentiment": [
+            2.3333333333333335,
+            2,
+            2
+        ],
+        "team2Sentiment": [
+            2.3076923076923075,
+            2,
+            2
+        ],
+        "team1CurrentAverage": 2.111111111111111,
+        "team2CurrentAverage": 2.1025641025641026
+    }
+}
+*/
