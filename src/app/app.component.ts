@@ -428,19 +428,27 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   }
 
   public constructCharts(timeSpan, columnNum) {
-    var actualArrayLength = 10;
-    var lengthToCut = actualArrayLength - columnNum;
-    this.labels.splice(0,lengthToCut);
+    this.timeSpan = timeSpan;
+    this.columnNum = columnNum;
+
+    //retrieve the available data
+    this.getPersistedSentimentData(timeSpan, columnNum);
+
+    this.updateCharts();
+  }
+
+  private testCallbackMethod(){
+    console.log(this.team1Sentiment);
+  }
+
+  private mapPersistedData(columnNum, data){
     this.team1Sentiment.length = columnNum;
     this.team2Sentiment.length = columnNum;
-    this.generateLabelArray(timeSpan, columnNum);
-    this.getPersistedSentimentData(timeSpan, columnNum);
-    //retrieve the available data
-    //sync initial ping to the server
-    // - update labels
-    // - update the sentiment data
-    //update fetch rate
-    this.updateCharts();
+    //update sentiment data
+    this.setUpSentimentData(this.team1Sentiment, data.team1Sentiment);
+    this.setUpSentimentData(this.team2Sentiment, data.team2Sentiment);
+    this.team1AverageSentiment = Math.round(data.team1CurrentAverage * 100) / 100;
+    this.team2AverageSentiment = Math.round(data.team2CurrentAverage * 100) / 100;
   }
 
   public setUpSentimentData(oldSentimentArray, newSentimentArray){
@@ -490,9 +498,16 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   }
 
   private getPersistedSentimentData(timeSpan, graphScale){
-    return this.http.get('http://localhost:9000/persistedData/45/6')
+    //call to get last api call timestamp
+    //call to get seconds before api call for next team
+    //call to get api call interval seconds
+    this.http.get('http://localhost:9000/persistedData/45/6')
     .subscribe(response => {
       let data = response as persistedData;
+      this.mapPersistedData(graphScale, data);
+      this.updateWinningChartGlow();
+      this.setAPICallOffset();
+      this.instantiateSentimentAPICalls();
     },
     error => {
       console.log('The server is not responding');
