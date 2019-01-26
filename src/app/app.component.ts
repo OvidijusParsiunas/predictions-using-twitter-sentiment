@@ -253,7 +253,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     });
   }
 
-  //the following is used to create a reusable function
+  //the following is used to create a reusable method
   generateCurrentTimeSpan = this.setTimeSpanGenerator('seconds');
 
   private instantiateSentimentAPICalls(){
@@ -505,7 +505,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.chart3.update();
   }
 
-  //Retired functions
+  //Retired methods
   public setTimeScaleTitle(scale, unit){
     let tempTitle = "Past " + scale + " ";
     tempTitle += scale > 1 ? unit + "s" : unit;
