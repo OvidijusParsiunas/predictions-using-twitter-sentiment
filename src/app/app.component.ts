@@ -20,7 +20,7 @@ interface UISetUpData{
   availableGraphScales: timespanScales[];
   startingGraphScales: startingGraphScales;
   timeOfLastAPICall: timeOfLastAPICall;
-  startingData: startingData;
+  startingData: persistedData;
 }
 
 interface teamNames{
@@ -39,7 +39,7 @@ interface timeOfLastAPICall{
   apiCallIntervalSeconds: number;
 }
 
-interface startingData{
+interface persistedData{
   team1Sentiment: number[];
   team2Sentiment: number[];
   team1CurrentAverage: number;
@@ -50,6 +50,7 @@ interface timespanScales{
   timespan: number;
   availableXAxisScales: number[];
 }
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -433,6 +434,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team1Sentiment.length = columnNum;
     this.team2Sentiment.length = columnNum;
     this.generateLabelArray(timeSpan, columnNum);
+    this.getPersistedSentimentData(timeSpan, columnNum);
     //retrieve the available data
     //sync initial ping to the server
     // - update labels
@@ -485,6 +487,16 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   private dateLabelBuilder(timeUnit1, timeUnit2){
     return timeUnit1 + ':' + ('0' + timeUnit2).slice(-2);
+  }
+
+  private getPersistedSentimentData(timeSpan, graphScale){
+    return this.http.get('http://localhost:9000/persistedData/45/6')
+    .subscribe(response => {
+      let data = response as persistedData;
+    },
+    error => {
+      console.log('The server is not responding');
+    });
   }
 
   private updateCharts(){
