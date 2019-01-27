@@ -430,10 +430,8 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   public constructCharts(timeSpan, columnNum) {
     this.timeSpan = timeSpan;
     this.columnNum = columnNum;
-
     //retrieve the available data
     this.getPersistedSentimentData(timeSpan, columnNum);
-
     this.updateCharts();
   }
 
@@ -451,13 +449,14 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team2AverageSentiment = Math.round(data.team2CurrentAverage * 100) / 100;
   }
 
-  public setUpSentimentData(oldSentimentArray, newSentimentArray){
-    let oldSentimentArrayIndex = oldSentimentArray.length-1;
-    for(let i = newSentimentArray.length-1; i > -1; i--){
-      oldSentimentArray[oldSentimentArrayIndex--] = newSentimentArray[i];
+  //refactor to always use columnNum e.g. columnNum - 1
+  public setUpSentimentData(sentimentArrayUsedByCharts, rertrievedSentimentArray){
+    let finalArrayIndex = rertrievedSentimentArray.length-1;
+    for(let i = rertrievedSentimentArray.length-1; i > -1; i--){
+      sentimentArrayUsedByCharts[finalArrayIndex--] = rertrievedSentimentArray[i];
     }
-    while(oldSentimentArrayIndex > -1){
-      oldSentimentArray[oldSentimentArrayIndex--] = 0;
+    while(finalArrayIndex > -1){
+      sentimentArrayUsedByCharts[finalArrayIndex--] = 0;
     }
   }
 
@@ -501,9 +500,10 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     //call to get last api call timestamp
     //call to get seconds before api call for next team
     //call to get api call interval seconds
-    this.http.get('http://localhost:9000/persistedData/45/6')
+    this.http.get('http://localhost:9000/persistedData/70/14')
     .subscribe(response => {
       let data = response as persistedData;
+      //check why the updated data bounces
       this.mapPersistedData(graphScale, data);
       this.updateWinningChartGlow();
       this.setAPICallOffset();
