@@ -435,10 +435,6 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.updateCharts();
   }
 
-  private testCallbackMethod(){
-    console.log(this.team1Sentiment);
-  }
-
   private mapPersistedData(columnNum, data){
     this.team1Sentiment.length = columnNum;
     this.team2Sentiment.length = columnNum;
