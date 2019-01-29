@@ -516,12 +516,16 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.chart3.update();
   }
 
-  //Retired methods
+
+
+  //////////RETIRED METHODS//////////
+
   // public setTimeScaleTitle(scale, unit){
   //   let tempTitle = "Past " + scale + " ";
   //   tempTitle += scale > 1 ? unit + "s" : unit;
   //   this.timeScaleTitle = tempTitle;
   // }
+
 }
 
 
