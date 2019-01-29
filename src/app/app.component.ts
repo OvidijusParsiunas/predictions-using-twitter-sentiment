@@ -517,11 +517,11 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   }
 
   //Retired methods
-  public setTimeScaleTitle(scale, unit){
-    let tempTitle = "Past " + scale + " ";
-    tempTitle += scale > 1 ? unit + "s" : unit;
-    this.timeScaleTitle = tempTitle;
-  }
+  // public setTimeScaleTitle(scale, unit){
+  //   let tempTitle = "Past " + scale + " ";
+  //   tempTitle += scale > 1 ? unit + "s" : unit;
+  //   this.timeScaleTitle = tempTitle;
+  // }
 }
 
 
