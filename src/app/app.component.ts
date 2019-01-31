@@ -85,7 +85,7 @@ export class AppComponent {
   apiCallIntervalSeconds = 0;
   secondsBeforeApiCallForNextTeam = 0;
   initialAPICallOffset = 0;
-  timeOut = '';
+  timeOut = 0;
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -502,7 +502,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
       let data = response as persistedData;
       //check why the updated data bounces
-      clearTimout(this.timeOut);
+      clearTimeout(this.timeOut);
       this.mapPersistedData(graphScale, data);
       this.updateWinningChartGlow();
       this.setAPICallOffset();
