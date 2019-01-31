@@ -85,6 +85,7 @@ export class AppComponent {
   apiCallIntervalSeconds = 0;
   secondsBeforeApiCallForNextTeam = 0;
   initialAPICallOffset = 0;
+  timeOut = '';
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -259,7 +260,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   private instantiateSentimentAPICalls(){
     var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
     setTimeout(() => {
-      setInterval(() => {
+      this.timeOut = setInterval(() => {
       this.http.get('http://localhost:9000/newSentimentData/45')
       .subscribe(response => {
         var data = response as newSentimentData;
@@ -498,8 +499,10 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     //call to get api call interval seconds
     this.http.get('http://localhost:9000/persistedData/70/14')
     .subscribe(response => {
+
       let data = response as persistedData;
       //check why the updated data bounces
+      clearTimout(this.timeOut);
       this.mapPersistedData(graphScale, data);
       this.updateWinningChartGlow();
       this.setAPICallOffset();
