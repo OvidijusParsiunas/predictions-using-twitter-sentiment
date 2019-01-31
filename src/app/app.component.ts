@@ -85,7 +85,7 @@ export class AppComponent {
   apiCallIntervalSeconds = 0;
   secondsBeforeApiCallForNextTeam = 0;
   initialAPICallOffset = 0;
-  timeOut = 0;
+  timeOutFunc = 0;
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -260,7 +260,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   private instantiateSentimentAPICalls(){
     var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
     setTimeout(() => {
-      this.timeOut = setInterval(() => {
+      this.timeOutFunc = setInterval(() => {
       this.http.get('http://localhost:9000/newSentimentData/45')
       .subscribe(response => {
         var data = response as newSentimentData;
@@ -383,8 +383,8 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team1Sentiment.length = this.columnNum;
     this.team2Sentiment.length = this.columnNum;
     this.generateLabelArray(this.timeSpan, this.columnNum);
-    this.setUpSentimentData(this.team1Sentiment, data.startingData.team1Sentiment);
-    this.setUpSentimentData(this.team2Sentiment, data.startingData.team2Sentiment);
+    this.setUpSentimentData(this.team1Sentiment, data.startingData.team1Sentiment, this.columnNum);
+    this.setUpSentimentData(this.team2Sentiment, data.startingData.team2Sentiment, this.columnNum);
     this.team1AverageSentiment = Math.round(data.startingData.team1CurrentAverage * 100) / 100;
     this.team2AverageSentiment = Math.round(data.startingData.team2CurrentAverage * 100) / 100;
   }
@@ -440,17 +440,16 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team1Sentiment.length = columnNum;
     this.team2Sentiment.length = columnNum;
     //update sentiment data
-    this.setUpSentimentData(this.team1Sentiment, data.team1Sentiment);
-    this.setUpSentimentData(this.team2Sentiment, data.team2Sentiment);
+    this.setUpSentimentData(this.team1Sentiment, data.team1Sentiment, columnNum);
+    this.setUpSentimentData(this.team2Sentiment, data.team2Sentiment, columnNum);
     this.team1AverageSentiment = Math.round(data.team1CurrentAverage * 100) / 100;
     this.team2AverageSentiment = Math.round(data.team2CurrentAverage * 100) / 100;
   }
 
-  //refactor to always use columnNum e.g. columnNum - 1
-  public setUpSentimentData(sentimentArrayUsedByCharts, rertrievedSentimentArray){
-    let finalArrayIndex = rertrievedSentimentArray.length-1;
-    for(let i = rertrievedSentimentArray.length-1; i > -1; i--){
-      sentimentArrayUsedByCharts[finalArrayIndex--] = rertrievedSentimentArray[i];
+  public setUpSentimentData(sentimentArrayUsedByCharts, retrievedSentimentArray, columnNum){
+    let finalArrayIndex = columnNum -1;
+    for(let i = retrievedSentimentArray.length-1; i > -1; i--){
+      sentimentArrayUsedByCharts[finalArrayIndex--] = retrievedSentimentArray[i];
     }
     while(finalArrayIndex > -1){
       sentimentArrayUsedByCharts[finalArrayIndex--] = 0;
@@ -499,10 +498,8 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     //call to get api call interval seconds
     this.http.get('http://localhost:9000/persistedData/70/14')
     .subscribe(response => {
-
       let data = response as persistedData;
-      //check why the updated data bounces
-      clearTimeout(this.timeOut);
+      clearTimeout(this.timeOutFunc);
       this.mapPersistedData(graphScale, data);
       this.updateWinningChartGlow();
       this.setAPICallOffset();
