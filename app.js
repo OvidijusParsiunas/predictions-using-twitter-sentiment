@@ -686,7 +686,9 @@ app.get('/newSentimentData/:timeSpan',function(req,res){
 });
 
 app.get('/persistedData/:timeSpan/:graphScale',function(req,res){
-  res.send(getPersistedSentimentData(req.params.timeSpan, req.params.graphScale));
+  let persistedSentimentData = getPersistedSentimentData(req.params.timeSpan, req.params.graphScale);
+  persistedSentimentData['timeOfLastAPICall'] = buildLastSentimentAPICallUICargo();
+  res.send(persistedSentimentData);
 });
 
 //refactor clientArrayIndex calculation and flip the array

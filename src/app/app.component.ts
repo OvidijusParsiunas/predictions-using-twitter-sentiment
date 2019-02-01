@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, Inject} from '@angular/core';
+import {Component, ElementRef, ViewChild, Inject} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {DOCUMENT} from '@angular/common';
 import {Chart} from 'chart.js';
@@ -44,6 +44,7 @@ interface persistedData{
   team2Sentiment: number[];
   team1CurrentAverage: number;
   team2CurrentAverage: number;
+  timeOfLastAPICall: timeOfLastAPICall;
 }
 
 interface timespanScales{
@@ -444,6 +445,9 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.setUpSentimentData(this.team2Sentiment, data.team2Sentiment, columnNum);
     this.team1AverageSentiment = Math.round(data.team1CurrentAverage * 100) / 100;
     this.team2AverageSentiment = Math.round(data.team2CurrentAverage * 100) / 100;
+    this.lastAPICallTimeStamp = this.parseRetrievedDate(data.timeOfLastAPICall.lastAPICallTimeStamp);
+    this.secondsBeforeApiCallForNextTeam = data.timeOfLastAPICall.secondsBeforeApiCallForNextTeam;
+    this.apiCallIntervalSeconds = data.timeOfLastAPICall.apiCallIntervalSeconds;
   }
 
   public setUpSentimentData(sentimentArrayUsedByCharts, retrievedSentimentArray, columnNum){
