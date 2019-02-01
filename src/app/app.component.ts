@@ -86,7 +86,8 @@ export class AppComponent {
   apiCallIntervalSeconds = 0;
   secondsBeforeApiCallForNextTeam = 0;
   initialAPICallOffset = 0;
-  timeOutFunc = 0;
+  intervalFunc = 0;
+  timeoutFunc = 0;
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -260,8 +261,8 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   private instantiateSentimentAPICalls(){
     var sentimentAPICallInterval = this.calculateNewSentimentFetchInterval(this.timeSpan, this.columnNum, this.timeUnit);
-    setTimeout(() => {
-      this.timeOutFunc = setInterval(() => {
+    this.timeoutFunc = setTimeout(() => {
+      this.intervalFunc = setInterval(() => {
       this.http.get('http://localhost:9000/newSentimentData/45')
       .subscribe(response => {
         var data = response as newSentimentData;
@@ -295,7 +296,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
           console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
           this.updateWinningChartGlow();
         });
-      }, 2000); // keeping it 2 seconds for testing purposes, but should be the following upon completion: }, sentimentAPICallInterval);
+      }, 8000); // keeping it 2 seconds for testing purposes, but should be the following upon completion: }, sentimentAPICallInterval);
     }, this.initialAPICallOffset);
   }
 
@@ -339,6 +340,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   }
 
   public generateLabelArray(timeSpan, arrayLength){
+    console.log('timespan: ' + timeSpan + ' , arrayLength: ' + arrayLength);
     var timeDecrementer = timeSpan/arrayLength;
     var timeUnit = 'seconds';
     var dateLabelBuilder = this.dateLabelBuilder;
@@ -404,6 +406,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     for(let i = graphScale-1; i > -1; i--){
       this.labels[i] = decrementer(lastAPICallTimeStampLabel);
     }
+    this.labels.length = graphScale;
   }
 
   private setAPICallOffset(){
@@ -440,6 +443,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   private mapPersistedData(columnNum, data){
     this.team1Sentiment.length = columnNum;
     this.team2Sentiment.length = columnNum;
+    this.generateLabelArray(this.timeSpan, this.columnNum);
     //update sentiment data
     this.setUpSentimentData(this.team1Sentiment, data.team1Sentiment, columnNum);
     this.setUpSentimentData(this.team2Sentiment, data.team2Sentiment, columnNum);
@@ -451,7 +455,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   }
 
   public setUpSentimentData(sentimentArrayUsedByCharts, retrievedSentimentArray, columnNum){
-    let finalArrayIndex = columnNum -1;
+    let finalArrayIndex = columnNum - 1;
     for(let i = retrievedSentimentArray.length-1; i > -1; i--){
       sentimentArrayUsedByCharts[finalArrayIndex--] = retrievedSentimentArray[i];
     }
@@ -503,7 +507,8 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.http.get('http://localhost:9000/persistedData/70/14')
     .subscribe(response => {
       let data = response as persistedData;
-      clearTimeout(this.timeOutFunc);
+      clearTimeout(this.timeoutFunc);
+      clearInterval(this.intervalFunc);
       this.mapPersistedData(graphScale, data);
       this.updateWinningChartGlow();
       this.setAPICallOffset();
