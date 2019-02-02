@@ -423,11 +423,13 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     }
     else if(currentDifference >= idealAPICallTimeStamp){
       currentDifference = currentDifference%apiCallIntervalMilliseconds;
+      //if the result is on another box
       if(currentDifference < idealAPICallTimeStamp){
         this.initialAPICallOffset = idealAPICallTimeStamp - currentDifference;
       }
+      //if the result is on the same box
       else if(currentDifference >= idealAPICallTimeStamp){
-        this.initialAPICallOffset = idealAPICallTimeStamp + apiCallIntervalMilliseconds - currentDifference;
+        this.initialAPICallOffset = (apiCallIntervalMilliseconds - currentDifference) + idealAPICallTimeStamp;
       }
     }
   }
