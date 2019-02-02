@@ -296,7 +296,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
           console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
           this.updateWinningChartGlow();
         });
-      }, 8000); // keeping it 2 seconds for testing purposes, but should be the following upon completion: }, sentimentAPICallInterval);
+      }, 2000); // keeping it 2 seconds for testing purposes, but should be the following upon completion: }, sentimentAPICallInterval);
     }, this.initialAPICallOffset);
   }
 
@@ -437,7 +437,6 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.columnNum = columnNum;
     //retrieve the available data
     this.getPersistedSentimentData(timeSpan, columnNum);
-    this.updateCharts();
   }
 
   private mapPersistedData(columnNum, data){
@@ -456,6 +455,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   public setUpSentimentData(sentimentArrayUsedByCharts, retrievedSentimentArray, columnNum){
     let finalArrayIndex = columnNum - 1;
+    console.log('Sentiment array: ' + retrievedSentimentArray.length);
     for(let i = retrievedSentimentArray.length-1; i > -1; i--){
       sentimentArrayUsedByCharts[finalArrayIndex--] = retrievedSentimentArray[i];
     }
@@ -504,7 +504,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     //call to get last api call timestamp
     //call to get seconds before api call for next team
     //call to get api call interval seconds
-    this.http.get('http://localhost:9000/persistedData/70/14')
+    this.http.get('http://localhost:9000/persistedData/' + timeSpan + '/' + graphScale)
     .subscribe(response => {
       let data = response as persistedData;
       clearTimeout(this.timeoutFunc);
@@ -513,6 +513,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       this.updateWinningChartGlow();
       this.setAPICallOffset();
       this.instantiateSentimentAPICalls();
+      this.updateCharts();
     },
     error => {
       console.log('The server is not responding');
