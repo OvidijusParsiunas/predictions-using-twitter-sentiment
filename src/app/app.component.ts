@@ -30,6 +30,7 @@ interface teamNames{
 
 interface startingGraphScales{
   timeSpan: number;
+  timeSpanIndexAtAvailableGraphScales: number;
   xAxisScale: number;
 }
 
@@ -81,13 +82,16 @@ export class AppComponent {
   timeSpan = 10;
   hideCombinedView: boolean = true;
   dropDownChangeViewText = "Combined View";
-  availableGraphScales = {};
+  availableGraphScales = [];
   lastAPICallTimeStamp = new Date();
   apiCallIntervalSeconds = 0;
   secondsBeforeApiCallForNextTeam = 0;
   initialAPICallOffset = 0;
   intervalFunc = 0;
   timeoutFunc = 0;
+  currentlySelectedTimeSpan = 0;
+  currentlySelectedGraphScale = 0;
+  currrentlyAvailableGraphScales = [];
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -376,8 +380,9 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team2Name = data.teamNames.team2;
     this.timeUnit = data.timeUnit;
     this.availableGraphScales = data.availableGraphScales;
-    this.timeSpan = data.startingGraphScales.timeSpan;
-    this.columnNum = data.startingGraphScales.xAxisScale;
+    this.timeSpan, this.currentlySelectedTimeSpan = data.startingGraphScales.timeSpan;
+    this.currrentlyAvailableGraphScales = data.availableGraphScales[data.startingGraphScales.timeSpanIndexAtAvailableGraphScales].availableXAxisScales;
+    this.columnNum, this.currentlySelectedGraphScale = data.startingGraphScales.xAxisScale;
     this.lastAPICallTimeStamp = this.parseRetrievedDate(data.timeOfLastAPICall.lastAPICallTimeStamp);
     this.secondsBeforeApiCallForNextTeam = data.timeOfLastAPICall.secondsBeforeApiCallForNextTeam;
     this.apiCallIntervalSeconds = data.timeOfLastAPICall.apiCallIntervalSeconds;
@@ -530,7 +535,15 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.chart3.update();
   }
 
+  public setCurrentlySelectedTimeSpan(timeSpan, index){
+    this.currentlySelectedTimeSpan = timeSpan;
+    this.currentlySelectedGraphScale = 'Select';
+    this.currrentlyAvailableGraphScales = this.availableGraphScales[index].availableXAxisScales;
+  }
 
+  public setCurrentlySelectedGraphScale(graphScale){
+    this.currentlySelectedGraphScale = graphScale;
+  }
 
   //////////RETIRED METHODS//////////
 

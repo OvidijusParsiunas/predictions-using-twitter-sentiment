@@ -234,6 +234,7 @@ function identifyStartingTimespanPerPreferredXAxisScale(){
       var differenceToPreferredScale = Math.abs(preferredInitialGraphScale - xAxisScales[a]);
       if(differenceToPreferredScale === 0){
         startingGraphScales['timeSpan'] = parseInt(availableGraphScales[i].timespan);
+        startingGraphScales['timeSpanIndexAtAvailableGraphScales'] = i;
         startingGraphScales['xAxisScale'] = xAxisScales[a];
         foundPreferredScale = 1;
         break timeSpanLoop;
@@ -243,12 +244,14 @@ function identifyStartingTimespanPerPreferredXAxisScale(){
           lowestDifferenceToPreferredScale = differenceToPreferredScale;
           closestIdentifiedScale = xAxisScales[a];
           timeSpanForClosestIdentifiedScale = parseInt(availableGraphScales[i].timespan);
+          timeSpanIndexForClosestIdentifiedScale = i;
         }
       }
     }
   }
   if(!foundPreferredScale){
     startingGraphScales['timeSpan'] = closestIdentifiedScale;
+    startingGraphScales['timeSpanIndexAtAvailableGraphScales'] = timeSpanIndexForClosestIdentifiedScale;
     startingGraphScales['xAxisScale'] = timeSpanForClosestIdentifiedScale;
   }
 }

@@ -25,25 +25,25 @@
           <div style="padding-top: 26px">Available graph scales:</div>
         </div>
         <div>
-        <div class="btn-group" style="padding-left: 64px">
+        <div class="btn-group" style="float: right; padding-right: 15px; padding-left: 10px">
           <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #dfdfdf; color: black; border-color: #dfdfdf">
-            10{{currentlySelectedTimeSpan}}
+            {{currentlySelectedTimeSpan}}
           </button>
-          <div class="dropdown-menu dropdown-menu-right">
-            <button class="dropdown-item" type="button">Action</button>
-            <button class="dropdown-item" type="button">Another action</button>
-            <button class="dropdown-item" type="button">Something else here</button>
+          <div class="dropdown-menu dropdown-menu-right" style="max-height: 50vh; border-right-width: 0; overflow-x: hidden">
+            <button class="dropdown-item" type="button" *ngFor="let timespanScales of availableGraphScales; let currentIndex = index" (click)="setCurrentlySelectedTimeSpan(timespanScales.timespan, currentIndex)">
+              {{timespanScales.timespan}}
+            </button>
           </div>
         </div>
         <div style="padding-top: 14px">
-        <div class="btn-group" style="padding-left: 64px">
+        <div class="btn-group" style="float: right; padding-right: 15px; padding-left: 20px; padding-top: 14px">
           <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #dfdfdf; color: black; border-color: #dfdfdf">
-            20{{currentlySelectedTimeSpan}}
+            {{currentlySelectedGraphScale}}
           </button>
           <div class="dropdown-menu dropdown-menu-right">
-            <button class="dropdown-item" type="button">Action</button>
-            <button class="dropdown-item" type="button">Another action</button>
-            <button class="dropdown-item" type="button">Something else here</button>
+            <button class="dropdown-item" type="button" *ngFor="let graphScales of currrentlyAvailableGraphScales;" (click)="setCurrentlySelectedGraphScale(graphScales)">
+              {{graphScales}}
+            </button>
           </div>
         </div>
         </div>
