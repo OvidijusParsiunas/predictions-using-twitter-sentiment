@@ -296,7 +296,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
           console.log('team1team1Sentiment ' + data.data.team1Sentiment + ' team2team1Sentiment ' + data.data.team2Sentiment);
           this.updateWinningChartGlow();
         });
-      }, 2000); // keeping it 2 seconds for testing purposes, but should be the following upon completion: }, sentimentAPICallInterval);
+      }, sentimentAPICallInterval); // keeping it 2 seconds for testing purposes, but should be the following upon completion: }, sentimentAPICallInterval);
     }, this.initialAPICallOffset);
   }
 
@@ -417,7 +417,9 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       console.log('The set up data took too long to retrieve in order to enable a sync with the server API using a calculated offset, creating a fixed offset instead...');
       currentDifference = 0;
     }
+    //the ideal time at which the server should be called
     let idealAPICallTimeStamp = ((apiCallIntervalMilliseconds - millisecondsBeforeApiCallForNextTeam)/2)+millisecondsBeforeApiCallForNextTeam;
+    //if time differernce lower than expected, call as soon as possible
     if(currentDifference < idealAPICallTimeStamp){
       this.initialAPICallOffset = idealAPICallTimeStamp - currentDifference;
     }
