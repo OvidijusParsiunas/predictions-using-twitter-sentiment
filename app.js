@@ -202,8 +202,8 @@ function cleanUpTimeSpansWithOutOfBoundsGraphXAxisScales(){
         return false;
     });
     if(availableXAxisScales.length === 0){
+      availableTimeSpans.splice(availableTimeSpans.indexOf(availableGraphScales[i].timespan), 1);
       availableGraphScales.splice(i,1);
-      availableTimeSpans.splice(availableTimeSpans.indexOf(availableGraphScales[i].timeSpan), 1);
     }
   }
 }
@@ -728,6 +728,7 @@ function buildStartingDataCargo(team1ClientArray, team2ClientArray, timeSpan){
   let initialData = {};
   initialData['team1Sentiment'] = team1ClientArray;
   initialData['team2Sentiment'] = team2ClientArray;
+  console.log('\n\n\n\n\n\n\n\n\n' + JSON.stringify(sentimentAveragesForTeam1));
   initialData['team1CurrentAverage'] = sentimentAveragesForTeam1[timeSpan][1];
   initialData['team2CurrentAverage'] = sentimentAveragesForTeam2[timeSpan][1];
   return initialData;
