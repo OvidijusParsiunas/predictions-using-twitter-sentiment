@@ -38,7 +38,7 @@
         <div style="padding-top: 14px">
         <div class="btn-group" style="float: right; padding-right: 15px; padding-left: 20px; padding-top: 14px">
           <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #dfdfdf; color: black; border-color: #dfdfdf">
-            {{currentlySelectedGraphScale}}
+            {{currentlySelectedGraphScale ? currentlySelectedGraphScale : 'Select'}}
           </button>
           <div class="dropdown-menu dropdown-menu-right">
             <button class="dropdown-item" type="button" *ngFor="let graphScales of currrentlyAvailableGraphScales;" (click)="setCurrentlySelectedGraphScale(graphScales)">
