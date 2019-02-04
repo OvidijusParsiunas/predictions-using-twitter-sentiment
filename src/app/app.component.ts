@@ -539,7 +539,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   public setCurrentlySelectedTimeSpan(timeSpan, index){
     this.currentlySelectedTimeSpan = timeSpan;
-    this.currentlySelectedGraphScale = 'Select';
+    this.currentlySelectedGraphScale = Undefined;
     this.currrentlyAvailableGraphScales = this.availableGraphScales[index].availableXAxisScales;
   }
 
