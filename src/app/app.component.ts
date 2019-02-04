@@ -380,9 +380,11 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.team2Name = data.teamNames.team2;
     this.timeUnit = data.timeUnit;
     this.availableGraphScales = data.availableGraphScales;
-    this.timeSpan, this.currentlySelectedTimeSpan = data.startingGraphScales.timeSpan;
+    this.timeSpan = data.startingGraphScales.timeSpan;
+    this.currentlySelectedTimeSpan = this.timeSpan;
     this.currrentlyAvailableGraphScales = data.availableGraphScales[data.startingGraphScales.timeSpanIndexAtAvailableGraphScales].availableXAxisScales;
-    this.columnNum, this.currentlySelectedGraphScale = data.startingGraphScales.xAxisScale;
+    this.columnNum = data.startingGraphScales.xAxisScale;
+    this.currentlySelectedGraphScale = data.startingGraphScales.xAxisScale;
     this.lastAPICallTimeStamp = this.parseRetrievedDate(data.timeOfLastAPICall.lastAPICallTimeStamp);
     this.secondsBeforeApiCallForNextTeam = data.timeOfLastAPICall.secondsBeforeApiCallForNextTeam;
     this.apiCallIntervalSeconds = data.timeOfLastAPICall.apiCallIntervalSeconds;
@@ -441,11 +443,11 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     }
   }
 
-  public constructCharts(timeSpan, columnNum) {
-    this.timeSpan = timeSpan;
-    this.columnNum = columnNum;
+  public constructCharts() {
+    this.timeSpan = this.currentlySelectedTimeSpan;
+    this.columnNum = this.currentlySelectedGraphScale;
     //retrieve the available data
-    this.getPersistedSentimentData(timeSpan, columnNum);
+    this.getPersistedSentimentData(this.currentlySelectedTimeSpan, this.currentlySelectedGraphScale);
   }
 
   private mapPersistedData(columnNum, data){
