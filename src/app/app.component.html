@@ -5,7 +5,6 @@
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" (click)="changeView()">{{dropDownChangeViewText}}</a>
     <a class="dropdown-item" data-toggle="modal" data-target="#diagramSettingsModal" (click)="generateDefaultModalData()">Modal</a>
-    <a class="dropdown-item" (click)="constructCharts(100, 20)">Diagram Settings</a>
   </div>
 </div>
 
@@ -55,8 +54,8 @@
       </div>
       </div>
       <div class="modal-footer" style="margin-right: 16px">
-        <button type="button" class="btn btn-secondary" style="background-color: #ffe682; color: black; border-color: #ffe682">Close</button>
-        <button type="button" class="btn btn-primary" style="background-color: #ffe682; color: black; border-color: #ffe682; outline: none" (click)="constructCharts(modal)">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #ffe682; color: black; border-color: #ffe682">Close</button>
+        <button type="button" class="btn btn-primary" style="background-color: #ffe682; color: black; border-color: #ffe682; outline: none" (click)="constructCharts()">Save changes</button>
       </div>
     </div>
   </div>
