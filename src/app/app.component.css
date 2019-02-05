@@ -64,6 +64,18 @@
     text-align: center;
   }
 
+  .selectGraphScaleError{
+    background-color: #f8d7da;
+    color: #633d3d;
+    border-color: #f9c0c0;
+  }
+
+  .noSelectGraphScaleError{
+    background-color: #dfdfdf;
+    color: black;
+    border-color: #dfdfdf;
+  }
+
   #combinedViewTitleCard{
     height: 60px;
     padding-top: 10px;

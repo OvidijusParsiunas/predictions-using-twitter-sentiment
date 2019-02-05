@@ -93,9 +93,9 @@ export class AppComponent {
   currentlySelectedGraphScale = 0;
   currrentlyAvailableGraphScales = [];
   graphScaleNotSelected: boolean = false;
-  graphScalesButtonColor = "#dfdfdf";
-  graphScalesButtonBorderColor = "#dfdfdf";
-  graphScalesButtonTextColor = "black";
+  timeSpanIndexAtAvailableGraphScales = 0;
+  currentlySelectedGraphScaleIndex = 0;
+  changeClass = true;
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -389,7 +389,8 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.availableGraphScales = data.availableGraphScales;
     this.timeSpan = data.startingGraphScales.timeSpan;
     this.currentlySelectedTimeSpan = this.timeSpan;
-    this.currrentlyAvailableGraphScales = data.availableGraphScales[data.startingGraphScales.timeSpanIndexAtAvailableGraphScales].availableXAxisScales;
+    this.timeSpanIndexAtAvailableGraphScales = data.startingGraphScales.timeSpanIndexAtAvailableGraphScales
+    this.currrentlyAvailableGraphScales = data.availableGraphScales[this.timeSpanIndexAtAvailableGraphScales].availableXAxisScales;
     this.columnNum = data.startingGraphScales.xAxisScale;
     this.currentlySelectedGraphScale = data.startingGraphScales.xAxisScale;
     this.lastAPICallTimeStamp = this.parseRetrievedDate(data.timeOfLastAPICall.lastAPICallTimeStamp);
@@ -454,14 +455,13 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     if(this.currentlySelectedGraphScale){
       this.timeSpan = this.currentlySelectedTimeSpan;
       this.columnNum = this.currentlySelectedGraphScale;
+      this.timeSpanIndexAtAvailableGraphScales = this.currentlySelectedGraphScaleIndex;
+      console.log(this.currentlySelectedGraphScaleIndex);
       //retrieve the available data
       this.getPersistedSentimentData(this.currentlySelectedTimeSpan, this.currentlySelectedGraphScale);
       $(this.completeModal.nativeElement).modal('hide');
     }
     else {
-      this.graphScalesButtonColor = "#f8d7da";
-      this.graphScalesButtonBorderColor = "#f9c0c0";
-      this.graphScalesButtonTextColor = "#633d3d";
       this.graphScaleNotSelected = true;
     }
   }
@@ -547,15 +547,29 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     });
   }
 
+  public generateDefaultModalData(){
+    this.currentlySelectedTimeSpan = this.timeSpan;
+    this.currentlySelectedGraphScale = this.columnNum;
+    if(this.graphScaleNotSelected){
+      this.graphScaleNotSelected = false;
+    }
+    this.currrentlyAvailableGraphScales = this.availableGraphScales[this.timeSpanIndexAtAvailableGraphScales].availableXAxisScales;
+  }
+
   private updateCharts(){
     this.chart.update();
     this.chart2.update();
     this.chart3.update();
   }
 
+  public afterHidden(){
+    console.log('The modeal is now hidden');
+  }
+
   public setCurrentlySelectedTimeSpan(timeSpan, index){
     this.currentlySelectedTimeSpan = timeSpan;
     this.currentlySelectedGraphScale = undefined;
+    this.currentlySelectedGraphScaleIndex = index;
     this.currrentlyAvailableGraphScales = this.availableGraphScales[index].availableXAxisScales;
   }
 
@@ -563,11 +577,7 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
     this.currentlySelectedGraphScale = graphScale;
     if(this.graphScaleNotSelected){
       this.graphScaleNotSelected = false;
-      this.graphScalesButtonColor = "#dfdfdf";
-      this.graphScalesButtonBorderColor = "#dfdfdf";
-      this.graphScalesButtonTextColor = "black";
     }
-
   }
 
   //////////RETIRED METHODS//////////

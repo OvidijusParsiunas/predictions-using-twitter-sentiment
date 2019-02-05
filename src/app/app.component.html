@@ -4,13 +4,13 @@
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" (click)="changeView()">{{dropDownChangeViewText}}</a>
-    <a class="dropdown-item" data-toggle="modal" data-target="#exampleModal">Modal</a>
+    <a class="dropdown-item" data-toggle="modal" data-target="#diagramSettingsModal" (click)="generateDefaultModalData()">Modal</a>
     <a class="dropdown-item" (click)="constructCharts(100, 20)">Diagram Settings</a>
   </div>
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" #saveModalButton>
+<div class="modal fade" id="diagramSettingsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" #saveModalButton>
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="width: 440px; margin-left: 32px">
       <div class="modal-header">
@@ -37,7 +37,7 @@
         </div>
         <div style="padding-top: 14px; border-width: 2px; border-color: red">
         <div class="btn-group" style="float: right; padding-right: 15px; padding-left: 20px; padding-top: 14px; border-width: 2px; border-color: red">
-          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [ngStyle]="{'backgroundColor':graphScalesButtonColor, 'borderColor':graphScalesButtonBorderColor, 'color':graphScalesButtonTextColor}">
+          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [ngClass]="graphScaleNotSelected === false ? 'noSelectGraphScaleError' : 'selectGraphScaleError'">
             {{currentlySelectedGraphScale ? currentlySelectedGraphScale : 'Select'}}
           </button>
           <div class="dropdown-menu dropdown-menu-right" >
@@ -55,7 +55,7 @@
       </div>
       </div>
       <div class="modal-footer" style="margin-right: 16px">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #ffe682; color: black; border-color: #ffe682">Close</button>
+        <button type="button" class="btn btn-secondary" style="background-color: #ffe682; color: black; border-color: #ffe682">Close</button>
         <button type="button" class="btn btn-primary" style="background-color: #ffe682; color: black; border-color: #ffe682; outline: none" (click)="constructCharts(modal)">Save changes</button>
       </div>
     </div>
