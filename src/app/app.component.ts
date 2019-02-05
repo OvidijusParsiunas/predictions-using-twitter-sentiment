@@ -92,6 +92,10 @@ export class AppComponent {
   currentlySelectedTimeSpan = 0;
   currentlySelectedGraphScale = 0;
   currrentlyAvailableGraphScales = [];
+  graphScaleNotSelected: boolean = false;
+  graphScalesButtonColor = "#dfdfdf";
+  graphScalesButtonBorderColor = "#dfdfdf";
+  graphScalesButtonTextColor = "black";
 
 @ViewChild('chart')
     htmlRef: ElementRef;
@@ -101,6 +105,9 @@ export class AppComponent {
 
 @ViewChild('chart3')
     htmlRef3: ElementRef;
+
+@ViewChild('saveModalButton')
+    completeModal: ElementRef;
 
   //we instantiate 3 charts, the third one is hidden and appears when the double view is activated (the others are then deactivated)
   ngOnInit(){
@@ -444,10 +451,19 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
   }
 
   public constructCharts() {
-    this.timeSpan = this.currentlySelectedTimeSpan;
-    this.columnNum = this.currentlySelectedGraphScale;
-    //retrieve the available data
-    this.getPersistedSentimentData(this.currentlySelectedTimeSpan, this.currentlySelectedGraphScale);
+    if(this.currentlySelectedGraphScale){
+      this.timeSpan = this.currentlySelectedTimeSpan;
+      this.columnNum = this.currentlySelectedGraphScale;
+      //retrieve the available data
+      this.getPersistedSentimentData(this.currentlySelectedTimeSpan, this.currentlySelectedGraphScale);
+      $(this.completeModal.nativeElement).modal('hide');
+    }
+    else {
+      this.graphScalesButtonColor = "#f8d7da";
+      this.graphScalesButtonBorderColor = "#f9c0c0";
+      this.graphScalesButtonTextColor = "#633d3d";
+      this.graphScaleNotSelected = true;
+    }
   }
 
   private mapPersistedData(columnNum, data){
@@ -539,12 +555,19 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
 
   public setCurrentlySelectedTimeSpan(timeSpan, index){
     this.currentlySelectedTimeSpan = timeSpan;
-    this.currentlySelectedGraphScale = Undefined;
+    this.currentlySelectedGraphScale = undefined;
     this.currrentlyAvailableGraphScales = this.availableGraphScales[index].availableXAxisScales;
   }
 
   public setCurrentlySelectedGraphScale(graphScale){
     this.currentlySelectedGraphScale = graphScale;
+    if(this.graphScaleNotSelected){
+      this.graphScaleNotSelected = false;
+      this.graphScalesButtonColor = "#dfdfdf";
+      this.graphScalesButtonBorderColor = "#dfdfdf";
+      this.graphScalesButtonTextColor = "black";
+    }
+
   }
 
   //////////RETIRED METHODS//////////

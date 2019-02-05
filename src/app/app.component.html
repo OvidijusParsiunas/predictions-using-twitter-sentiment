@@ -10,7 +10,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" #saveModalButton>
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="width: 440px; margin-left: 32px">
       <div class="modal-header">
@@ -35,12 +35,12 @@
             </button>
           </div>
         </div>
-        <div style="padding-top: 14px">
-        <div class="btn-group" style="float: right; padding-right: 15px; padding-left: 20px; padding-top: 14px">
-          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #dfdfdf; color: black; border-color: #dfdfdf">
+        <div style="padding-top: 14px; border-width: 2px; border-color: red">
+        <div class="btn-group" style="float: right; padding-right: 15px; padding-left: 20px; padding-top: 14px; border-width: 2px; border-color: red">
+          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [ngStyle]="{'backgroundColor':graphScalesButtonColor, 'borderColor':graphScalesButtonBorderColor, 'color':graphScalesButtonTextColor}">
             {{currentlySelectedGraphScale ? currentlySelectedGraphScale : 'Select'}}
           </button>
-          <div class="dropdown-menu dropdown-menu-right">
+          <div class="dropdown-menu dropdown-menu-right" >
             <button class="dropdown-item" type="button" *ngFor="let graphScales of currrentlyAvailableGraphScales;" (click)="setCurrentlySelectedGraphScale(graphScales)">
               {{graphScales}}
             </button>
@@ -48,10 +48,15 @@
         </div>
         </div>
       </div>
+      <div [hidden]="!graphScaleNotSelected">
+        <div class="alert alert-danger" style="float: left; padding-top: 7px; padding-left: 10px; padding-right: 40px; padding-left: 40px; padding-bottom: 10px; margin-top: 14px; margin-left: 60px; margin-bottom: 0px">
+          Please select a graph scale
+        </div>
+      </div>
       </div>
       <div class="modal-footer" style="margin-right: 16px">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #ffe682; color: black; border-color: #ffe682">Close</button>
-        <button type="button" class="btn btn-primary" style="background-color: #ffe682; color: black; border-color: #ffe682" (click)="constructCharts()" data-dismiss="modal">Save changes</button>
+        <button type="button" class="btn btn-primary" style="background-color: #ffe682; color: black; border-color: #ffe682; outline: none" (click)="constructCharts(modal)">Save changes</button>
       </div>
     </div>
   </div>
