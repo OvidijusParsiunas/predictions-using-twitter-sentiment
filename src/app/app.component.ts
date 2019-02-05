@@ -2,6 +2,8 @@ import {Component, ElementRef, ViewChild, Inject} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {DOCUMENT} from '@angular/common';
 import {Chart} from 'chart.js';
+import * as $ from 'jquery';
+declare var $: $
 
 interface sentimentDetails{
   team1Sentiment: number;
@@ -59,6 +61,7 @@ interface timespanScales{
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+
   title = 'app';
   constructor(@Inject(DOCUMENT) private document: any, private http: HttpClient){}
   chart: Chart;
@@ -500,6 +503,10 @@ this.chart3 = new Chart(this.htmlRef3.nativeElement, {
       this.hideCombinedView = true;
       this.dropDownChangeViewText = "Combined View";
     }
+  }
+
+  public executeThisEvent(){
+    console.log('event');
   }
 
   private setTimeSpanGenerator(precision){
