@@ -1,5 +1,5 @@
 import {Component, ElementRef, ViewChild, Inject} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {DOCUMENT} from '@angular/common';
 import {Chart} from 'chart.js';
 import * as $ from 'jquery';
