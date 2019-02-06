@@ -64,16 +64,16 @@
     text-align: center;
   }
 
-  .selectGraphScaleError{
-    background-color: #f8d7da;
-    color: #633d3d;
-    border-color: #f9c0c0;
-  }
-
-  .noSelectGraphScaleError{
+  .default-graph-scale-button{
     background-color: #dfdfdf;
     color: black;
     border-color: #dfdfdf;
+  }
+
+  .error-graph-scale-button{
+    background-color: #f8d7da;
+    color: #633d3d;
+    border-color: #f9c0c0;
   }
 
   #combinedViewTitleCard{
@@ -258,6 +258,66 @@ background:url(http://i.imgur.com/2T5M8.png?1);
 
 }
 
-.dropdown-item{
+.dropdown-item {
     cursor: pointer;
+}
+
+.modal-content {
+  width: 440px;
+  margin-left: 30px;
+}
+
+.modal-dropdown-description-panel {
+  float: left;
+  padding-left: 6%;
+  font-size: 1.1rem;
+}
+
+.first-description {
+  padding-top: 5px;
+}
+
+.second-description {
+  padding-top: 26px;
+}
+
+.modal-dropdown-panel-first {
+  float: right;
+  padding-right: 15px;
+  padding-left: 10px;
+}
+
+.modal-first-dropdown {
+  max-height: 50vh;
+  border-right-width: 0;
+  overflow-x: hidden;
+}
+
+.modal-dropdown-panel-second {
+  float: right;
+  padding-right: 15px;
+  padding-left: 20px;
+  padding-top: 14px;
+}
+
+.modal-error {
+  float: left;
+  padding-top: 7px;
+  padding-left: 10px;
+  padding-right: 40px;
+  padding-left: 40px;
+  padding-bottom: 10px;
+  margin-top: 14px;
+  margin-left: 60px;
+  margin-bottom: 0px
+}
+
+.modal-footer {
+  margin-right: 16px;
+}
+
+.modal-footer-button {
+  background-color: #ffe682;
+  color: black;
+  border-color: #ffe682;
 }

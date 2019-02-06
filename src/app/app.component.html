@@ -11,7 +11,7 @@
 <!-- Modal -->
 <div class="modal fade" id="diagramSettingsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" #saveModalButton>
   <div class="modal-dialog" role="document">
-    <div class="modal-content" style="width: 440px; margin-left: 32px">
+    <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Diagram Settings</h5>
         <button type="button" style="outline: none" class="close" data-dismiss="modal" aria-label="Close">
@@ -19,24 +19,23 @@
         </button>
       </div>
       <div class="modal-body">
-        <div style="float: left; padding-left: 6%; font-size: 1.1rem">
-          <div style="padding-top: 5px">Select a time span ({{timeUnit}}):</div>
-          <div style="padding-top: 26px">Available graph scales:</div>
+        <div class="modal-dropdown-description-panel">
+          <div class="first-description">Select a time span ({{timeUnit}}):</div>
+          <div class="second-description">Available graph scales:</div>
         </div>
         <div>
-        <div class="btn-group" style="float: right; padding-right: 15px; padding-left: 10px">
-          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #dfdfdf; color: black; border-color: #dfdfdf">
+        <div class="btn-group modal-dropdown-panel-first">
+          <button type="button" class="btn btn-secondary dropdown-toggle default-graph-scale-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {{currentlySelectedTimeSpan}}
           </button>
-          <div class="dropdown-menu dropdown-menu-right" style="max-height: 50vh; border-right-width: 0; overflow-x: hidden">
+          <div class="dropdown-menu dropdown-menu-right modal-first-dropdown">
             <button class="dropdown-item" type="button" *ngFor="let timespanScales of availableGraphScales; let currentIndex = index" (click)="setCurrentlySelectedTimeSpan(timespanScales.timespan, currentIndex)">
               {{timespanScales.timespan}}
             </button>
           </div>
         </div>
-        <div style="padding-top: 14px; border-width: 2px; border-color: red">
-        <div class="btn-group" style="float: right; padding-right: 15px; padding-left: 20px; padding-top: 14px; border-width: 2px; border-color: red">
-          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [ngClass]="graphScaleNotSelected === false ? 'noSelectGraphScaleError' : 'selectGraphScaleError'">
+        <div class="btn-group modal-dropdown-panel-second">
+          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [ngClass]="graphScaleNotSelected === false ? 'default-graph-scale-button' : 'error-graph-scale-button'">
             {{currentlySelectedGraphScale ? currentlySelectedGraphScale : 'Select'}}
           </button>
           <div class="dropdown-menu dropdown-menu-right" >
@@ -45,17 +44,16 @@
             </button>
           </div>
         </div>
-        </div>
       </div>
       <div [hidden]="!graphScaleNotSelected">
-        <div class="alert alert-danger" style="float: left; padding-top: 7px; padding-left: 10px; padding-right: 40px; padding-left: 40px; padding-bottom: 10px; margin-top: 14px; margin-left: 60px; margin-bottom: 0px">
+        <div class="alert alert-danger modal-error">
           Please select a graph scale
         </div>
       </div>
       </div>
-      <div class="modal-footer" style="margin-right: 16px">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #ffe682; color: black; border-color: #ffe682">Close</button>
-        <button type="button" class="btn btn-primary" style="background-color: #ffe682; color: black; border-color: #ffe682; outline: none" (click)="constructCharts()">Save changes</button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-footer-button" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary modal-footer-button" (click)="constructCharts()">Save changes</button>
       </div>
     </div>
   </div>
