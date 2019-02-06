@@ -23,13 +23,15 @@
               "src/assets",
               "src/image.jpg"
             ],
-            "styles": [      "./node_modules/font-awesome/css/font-awesome.css",
-              "src/bootstrap.css",
+            "styles": [
+              "./node_modules/font-awesome/css/font-awesome.css",
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
-            "scripts": ["./node_modules/jquery/dist/jquery.min.js",
-            "./node_modules/popper.js/dist/umd/popper.min.js",
-            "./node_modules/bootstrap/dist/js/bootstrap.min.js"
+            "scripts": [
+              "./node_modules/jquery/dist/jquery.min.js",
+              "./node_modules/popper.js/dist/umd/popper.min.js",
+              "./node_modules/bootstrap/dist/js/bootstrap.min.js"
             ]
           },
           "configurations": {
