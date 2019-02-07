@@ -4,7 +4,7 @@
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" (click)="changeView()">{{dropDownChangeViewText}}</a>
-    <a class="dropdown-item" data-toggle="modal" data-target="#diagramSettingsModal" (click)="generateDefaultModalData()">Modal</a>
+    <a class="dropdown-item" data-toggle="modal" data-target="#diagramSettingsModal" (click)="generateDefaultModalData()">Diagram Settings</a>
   </div>
 </div>
 
@@ -19,31 +19,31 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="modal-dropdown-description-panel">
+        <div class="modal-first-row">
           <div class="first-description">Select a time span ({{timeUnit}}):</div>
+          <div class="btn-group modal-first-dropdown">
+            <button type="button" class="btn btn-secondary dropdown-toggle default-graph-scale-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{currentlySelectedTimeSpan}}
+            </button>
+            <div class="dropdown-menu dropdown-menu-right modal-dropdown-items">
+              <button class="dropdown-item" type="button" *ngFor="let timespanScales of availableGraphScales; let currentIndex = index" (click)="setCurrentlySelectedTimeSpan(timespanScales.timespan, currentIndex)">
+                {{timespanScales.timespan}}
+              </button>
+           </div>
+          </div>
+        </div>
+        <div class="modal-second-row">
           <div class="second-description">Available graph scales:</div>
-        </div>
-        <div>
-        <div class="btn-group modal-dropdown-panel-first">
-          <button type="button" class="btn btn-secondary dropdown-toggle default-graph-scale-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{currentlySelectedTimeSpan}}
-          </button>
-          <div class="dropdown-menu dropdown-menu-right modal-first-dropdown">
-            <button class="dropdown-item" type="button" *ngFor="let timespanScales of availableGraphScales; let currentIndex = index" (click)="setCurrentlySelectedTimeSpan(timespanScales.timespan, currentIndex)">
-              {{timespanScales.timespan}}
+          <div class="btn-group modal-second-dropdown">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [ngClass]="graphScaleNotSelected === false ? 'default-graph-scale-button' : 'error-graph-scale-button'">
+              {{currentlySelectedGraphScale ? currentlySelectedGraphScale : 'Select'}}
             </button>
+            <div class="dropdown-menu dropdown-menu-right modal-dropdown-items" >
+              <button class="dropdown-item" type="button" *ngFor="let graphScales of currrentlyAvailableGraphScales;" (click)="setCurrentlySelectedGraphScale(graphScales)">
+                {{graphScales}}
+              </button>
+            </div>
           </div>
-        </div>
-        <div class="btn-group modal-dropdown-panel-second">
-          <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [ngClass]="graphScaleNotSelected === false ? 'default-graph-scale-button' : 'error-graph-scale-button'">
-            {{currentlySelectedGraphScale ? currentlySelectedGraphScale : 'Select'}}
-          </button>
-          <div class="dropdown-menu dropdown-menu-right" >
-            <button class="dropdown-item" type="button" *ngFor="let graphScales of currrentlyAvailableGraphScales;" (click)="setCurrentlySelectedGraphScale(graphScales)">
-              {{graphScales}}
-            </button>
-          </div>
-        </div>
       </div>
       <div [hidden]="!graphScaleNotSelected">
         <div class="alert alert-danger modal-error">
